@@ -141,3 +141,52 @@ test("passes other props through when using mods", () => {
     expect(el.title).toBe("a title");
     expect(el.className).toBe("test-block test-block--ding");
 });
+
+test("can use custom elements", () => {
+    const createBlock = createBEMNamespace();
+
+    const Block = createBlock({
+        name: "test-block",
+        el: "input",
+    });
+
+    const rtl = render(<Block type="submit" role="test" />);
+    const el = rtl.getByRole("test");
+
+    expect(el.tagName).toBe("INPUT");
+    expect((el as any).type).toBe("submit");
+});
+
+test("can pass custom class names", () => {
+    const createBlock = createBEMNamespace();
+
+    const Block = createBlock({
+        name: "test-block",
+    });
+
+    const rtl = render(<Block className="my-class">test</Block>);
+    const el = rtl.getByText("test");
+
+    expect(el.className).toBe("my-class test-block");
+});
+
+test("forwards refs", () => {
+    expect.assertions(1);
+    const createBlock = createBEMNamespace();
+
+    const Block = createBlock({
+        name: "test-block",
+    });
+
+    render(
+        <Block
+            ref={el => {
+                if (el) {
+                    expect(el.tagName).toBe("DIV");
+                }
+            }}
+        >
+            test
+        </Block>,
+    );
+});
