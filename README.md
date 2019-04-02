@@ -17,13 +17,13 @@ component builder API for working with BEM classes.
 ```tsx
 import { bemed } from "react-bemed";
 
-// Create namespaced BEM component creator. You can also import "createBlock"
+// Create namespaced BEM component creator. You can also import "block"
 // directly if you don't care about namepacing
-const createBlock = bemed("app");
+const block = bemed("app");
 
 // Create a "bemed component"
 // <button class="app-button">
-const Button = createBlock("button", {
+const Button = block("button", {
     el: "button", // defaults to div
     mods: {
         // <button class="app-button app-button--add">

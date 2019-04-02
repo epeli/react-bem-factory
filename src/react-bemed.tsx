@@ -146,4 +146,4 @@ export function bemed(
     };
 }
 
-export const createBlock = bemed();
+export const block = bemed();
