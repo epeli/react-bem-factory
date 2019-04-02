@@ -81,8 +81,7 @@ export function classNamed<
     Comp extends ElementNames,
     KnownMods extends Record<string, boolean | undefined>
 >(comp: Comp, blockName: string, knownMods: KnownMods) {
-    type ComponentType = React.ReactHTML[Comp];
-    type ReactProps = Parameters<ComponentType>[0];
+    type ReactProps = JSX.IntrinsicElements[Comp];
 
     type FinalProps = typeof knownMods extends undefined
         ? ReactProps
@@ -148,7 +147,7 @@ function generateBEMModClassNames(name: string, mods: string[]) {
 
 export function createBEMNamespace(prefix?: string) {
     return function createBEMBlock<
-        BEMBlock extends ElementNames,
+        BEMBlock extends ElementNames = "div",
         BEMBlockMods extends Record<string, boolean> | undefined = undefined
     >(block: {el?: BEMBlock; name: string; mods?: BEMBlockMods}) {
         type BEMBlockProps = BoolDict<BEMBlockMods>;

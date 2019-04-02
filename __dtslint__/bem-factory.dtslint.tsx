@@ -35,3 +35,36 @@ test("does not allow bad types on block element components", () => {
     // $ExpectError
     console.log(<BlockElement bad>test</BlockElement>);
 });
+
+test("does not allow bad types on block components", () => {
+    const createBlock = createBEMNamespace("prefix-");
+
+    const Block = createBlock({
+        name: "test-block",
+        el: "div",
+        mods: {
+            ding: true,
+        },
+    });
+
+    console.log(
+        // $ExpectError
+        <Block playsInline>test</Block>,
+    );
+});
+
+test("defaults to div", () => {
+    const createBlock = createBEMNamespace("prefix-");
+
+    const Block = createBlock({
+        name: "test-block",
+        mods: {
+            ding: true,
+        },
+    });
+
+    console.log(
+        // $ExpectError
+        <Block playsInline>test</Block>,
+    );
+});
