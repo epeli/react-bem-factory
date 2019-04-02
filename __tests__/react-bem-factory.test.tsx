@@ -1,5 +1,5 @@
-import {act, render, fireEvent, cleanup} from "react-testing-library";
-import {bemed} from "../src/react-bem-factory";
+import {render, cleanup} from "react-testing-library";
+import {bemed} from "../src/react-bemed";
 import React from "react";
 
 afterEach(cleanup);

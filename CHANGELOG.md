@@ -1,1 +1,1 @@
-See <https://github.com/epeli/bem-factory/releases>
+See <https://github.com/epeli/react-bemed/releases>

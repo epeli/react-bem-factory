@@ -1,11 +1,11 @@
 {
-    "name": "react-bem-factory",
+    "name": "react-bemed",
     "version": "0.1.0",
     "description": "",
-    "main": "lib/react-bem-factory.js",
-    "types": "lib/react-bem-factory.d.ts",
+    "main": "lib/react-bemed.js",
+    "types": "lib/react-bemed.d.ts",
     "repository": {
-        "url": "https://github.com/epeli/bem-factory"
+        "url": "https://github.com/epeli/react-bemed"
     },
     "scripts": {
         "test": "npm run dtslint && jest",
