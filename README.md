@@ -1,6 +1,6 @@
-# react-bemed
+# 🦖 react-bemed
 
-🦖 Like BEM in your React? Me neither.
+Like BEM in your React? Me neither.
 
 I wholeheartedly prefer the styled components API like [Emotion][] or
 [Linaria][] but sometimes you just have to move the CSS away from your
