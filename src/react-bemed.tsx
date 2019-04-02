@@ -1,4 +1,4 @@
-import React from "react";
+import { forwardRef, createElement } from "react";
 
 type ElementNames = keyof React.ReactHTML;
 
@@ -30,29 +30,26 @@ export function createReactBEMComponent<
         ? ReactProps
         : ReactProps & BoolDict<typeof knownMods>;
 
-    const ClassNamed = React.forwardRef((props: FinalProps, ref) => {
-        const { className, ...passedProps } = props as {
-            className?: string;
-            [prop: string]: unknown;
-        };
+    const ClassNamed = forwardRef((props: FinalProps, ref) => {
+        const className = props.className;
 
         let componentProps: Record<string, any> = {};
         const usedMods: string[] = [];
 
         if (knownMods) {
-            for (const prop in passedProps) {
+            for (const prop in props) {
                 const isMod = prop in knownMods;
                 if (isMod) {
-                    const isActive = passedProps[prop];
+                    const isActive = props[prop];
                     if (isActive) {
                         usedMods.push(prop);
                     }
                 } else {
-                    componentProps[prop] = passedProps[prop];
+                    componentProps[prop] = props[prop];
                 }
             }
         } else {
-            componentProps = passedProps;
+            componentProps = props;
         }
 
         const parentClassNames =
@@ -65,11 +62,13 @@ export function createReactBEMComponent<
                 .concat(blockName),
         );
 
-        return React.createElement(comp, {
-            ...componentProps,
-            className: finalClassName,
-            ref,
-        });
+        return createElement(
+            comp,
+            Object.assign({}, componentProps, {
+                className: finalClassName,
+                ref,
+            }),
+        );
     });
 
     ClassNamed.displayName = `ClassNamed(${comp})`;
