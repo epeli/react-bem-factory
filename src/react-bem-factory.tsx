@@ -1,83 +1,21 @@
 import React from "react";
 
-type ClassNamePrimitive = string | false | undefined | null;
-
-interface ClassNamesFunction<Props> {
-    (props: Props): ClassNamePrimitive | ClassNamePrimitive[];
-}
-
-interface ClassNamesDict<Props> {
-    [className: string]: boolean | ((props: Props) => boolean);
-}
-
 type ElementNames = keyof React.ReactHTML;
 
-type ClassNames<Props> =
-    | ClassNamePrimitive
-    | ClassNamesFunction<Props>
-    | ClassNamesDict<Props>
-    | Array<
-          ClassNamePrimitive | ClassNamesFunction<Props> | ClassNamesDict<Props>
-      >;
+function buildClassName(classNames: string[]) {
+    const dups: Record<string, boolean> = {};
 
-function isClassNamesDict<Props>(
-    o: ClassNames<Props>,
-): o is ClassNamesDict<Props> {
-    if (!o) {
-        return false;
+    for (const cn of classNames) {
+        dups[cn] = true;
     }
-    return typeof o === "object" && o.constructor === Object;
+
+    return Object.keys(dups)
+        .sort()
+        .join(" ")
+        .trim();
 }
 
-function buildClassName(
-    props: unknown,
-    cns: ClassNames<any>[],
-    _ret?: Record<string, boolean>,
-) {
-    if (!_ret) {
-        _ret = {};
-    }
-
-    for (const cn of cns) {
-        if (!cn) {
-            continue;
-        }
-
-        if (typeof cn === "string" && cn.trim() !== "") {
-            _ret[cn] = true;
-            continue;
-        }
-
-        if (typeof cn === "function") {
-            buildClassName(props, [cn(props)], _ret);
-            continue;
-        }
-
-        if (Array.isArray(cn)) {
-            buildClassName(props, cn, _ret);
-            continue;
-        }
-
-        if (isClassNamesDict(cn)) {
-            Object.keys(cn).forEach(className => {
-                let cond = cn[className];
-
-                if (typeof cond === "function") {
-                    cond = cond(props);
-                }
-
-                if (cond) {
-                    buildClassName(props, [className], _ret);
-                }
-            });
-            continue;
-        }
-    }
-
-    return _ret;
-}
-
-export function classNamed<
+export function createReactBEMComponent<
     Comp extends ElementNames,
     KnownMods extends Record<string, boolean | undefined>
 >(comp: Comp, blockName: string, knownMods: KnownMods) {
@@ -112,16 +50,11 @@ export function classNamed<
         const parentClassNames =
             typeof className === "string" ? className.split(" ") : [];
 
-        const finalClassName = Object.keys(
-            buildClassName(
-                {},
-                parentClassNames
-                    .concat(generateBEMModClassNames(blockName, usedMods))
-                    .concat(blockName),
-            ),
-        )
-            .sort()
-            .join(" ");
+        const finalClassName = buildClassName(
+            parentClassNames
+                .concat(generateBEMModClassNames(blockName, usedMods))
+                .concat(blockName),
+        );
 
         return React.createElement(comp, {
             ...componentProps,
@@ -153,7 +86,7 @@ export function createBEMNamespace(prefix?: string) {
         type BEMBlockProps = BoolDict<BEMBlockMods>;
         const blockClassName = (prefix || "") + block.name;
 
-        const Block = classNamed(
+        const Block = createReactBEMComponent(
             block.el || "div",
             blockClassName,
             block.mods as BEMBlockProps,
@@ -171,15 +104,15 @@ export function createBEMNamespace(prefix?: string) {
             >(bemEl: {el?: BEMElement; name: string; mods?: BEMElementMods}) {
                 type BEMElementProps = BoolDict<BEMElementMods>;
 
-                const fullBEMName = blockClassName + "__" + bemEl.name;
+                const fullElementName = blockClassName + "__" + bemEl.name;
 
-                const BEMElement = classNamed(
+                const BEMElement = createReactBEMComponent(
                     bemEl.el || "div",
-                    fullBEMName,
+                    fullElementName,
                     bemEl.mods as BEMElementProps,
                 );
 
-                BEMElement.displayName = `BEMElement(${fullBEMName})`;
+                BEMElement.displayName = `BEMElement(${fullElementName})`;
 
                 return BEMElement;
             },

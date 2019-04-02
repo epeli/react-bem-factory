@@ -1,5 +1,5 @@
 import {act, render, fireEvent, cleanup} from "react-testing-library";
-import {createBEMNamespace} from "../src/bem-factory";
+import {createBEMNamespace} from "../src/react-bem-factory";
 import React from "react";
 
 afterEach(cleanup);
@@ -15,6 +15,16 @@ test("single class name", () => {
     const el = rtl.getByText("test");
 
     expect(el.className).toBe("test-block");
+});
+
+test("has class property", () => {
+    const createBlock = createBEMNamespace();
+
+    const Block = createBlock({
+        name: "test-block",
+    });
+
+    expect(Block.className).toBe("test-block");
 });
 
 test("single class name with prefix", () => {

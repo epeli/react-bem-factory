@@ -1,4 +1,4 @@
-import {createBEMNamespace} from "../src/bem-factory";
+import {createBEMNamespace} from "../src/react-bem-factory";
 import React from "react";
 
 test("does not allow bad types on block components", () => {

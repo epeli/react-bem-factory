@@ -1,5 +1,5 @@
 {
-    "name": "bem-factory",
+    "name": "react-bem-factory",
     "version": "0.1.0",
     "description": "",
     "main": "lib/bem-factory.js",
