@@ -28,7 +28,7 @@ export function createReactBEMComponent<
     const ClassNamed = React.forwardRef((props: FinalProps, ref) => {
         const {className, ...passedProps} = props as {
             className?: string;
-            mods?: Record<string, unknown>;
+            [prop: string]: unknown;
         };
 
         let componentProps: Record<string, any> = {};
@@ -36,11 +36,14 @@ export function createReactBEMComponent<
 
         if (knownMods) {
             for (const prop in passedProps) {
-                const isActive = knownMods[prop];
-                if (isActive) {
-                    usedMods.push(prop);
+                const isMod = prop in knownMods;
+                if (isMod) {
+                    const isActive = passedProps[prop];
+                    if (isActive) {
+                        usedMods.push(prop);
+                    }
                 } else {
-                    componentProps[prop] = (passedProps as any)[prop];
+                    componentProps[prop] = passedProps[prop];
                 }
             }
         } else {

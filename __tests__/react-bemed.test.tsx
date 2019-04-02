@@ -1,4 +1,4 @@
-import {render, cleanup} from "react-testing-library";
+import {render, cleanup, fireEvent} from "react-testing-library";
 import {bemed} from "../src/react-bemed";
 import React from "react";
 
@@ -47,6 +47,43 @@ test("can use block mods", () => {
     const el = rtl.getByText("test");
 
     expect(el.className).toBe("prefix-test-block prefix-test-block--ding");
+});
+
+test("block mods can change", () => {
+    const createBlock = bemed("prefix-");
+
+    const Block = createBlock("test-block", {
+        mods: {
+            ding: true,
+        },
+    });
+
+    function App() {
+        const [tog, setToggle] = React.useState(false);
+        return (
+            <div>
+                <button
+                    onClick={() => {
+                        setToggle(t => !t);
+                        console.log("CHANGE");
+                    }}
+                >
+                    button
+                </button>
+
+                <Block ding={tog}>test</Block>
+            </div>
+        );
+    }
+
+    const rtl = render(<App />);
+    const el = rtl.getByText("test");
+
+    expect(el.className).toBe("prefix-test-block");
+    fireEvent.click(rtl.getByText("button"));
+    expect(el.className).toBe("prefix-test-block prefix-test-block--ding");
+    fireEvent.click(rtl.getByText("button"));
+    expect(el.className).toBe("prefix-test-block");
 });
 
 test("mods are optional", () => {
