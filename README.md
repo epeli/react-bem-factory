@@ -20,6 +20,7 @@ import { bemed } from "react-bemed";
 // Create namespaced BEM component creator
 const createBlock = bemed("app");
 
+// Create a "bemed component"
 // <button class="app-button">
 const Button = createBlock("button", {
     el: "button", // defaults to div
@@ -73,7 +74,16 @@ Checkout this example on CodeSandbox https://codesandbox.io/s/pyzwpv0lmm
 
 ## Noteworthy features
 
--   It's tiny! 875B (minified+gzipped)
+-   [It's tiny!][tiny] 623B (min+gzip)
 -   Zero deps
 -   100% typed with TypeScript
+    -   The created components respect the `el` option. So `video` elements
+        have their special attributes etc.
+    -   The modifiers are typed as optional boolean props
 -   Forwards refs correctly
+-   You can still pass custom class names to the bemed components `<Button className="custom">`
+-   Nice names in React Devtools
+    -   `<BEMBlock(app-button) add={true}>`
+    -   `<BEMElement(app-button__icon)>`
+
+[tiny]: https://bundlephobia.com/result?p=react-bemed@0.1.6
