@@ -2,8 +2,8 @@
     "name": "react-bem-factory",
     "version": "0.1.0",
     "description": "",
-    "main": "lib/bem-factory.js",
-    "types": "lib/bem-factory.d.ts",
+    "main": "lib/react-bem-factory.js",
+    "types": "lib/react-bem-factory.d.ts",
     "repository": {
         "url": "https://github.com/epeli/bem-factory"
     },
