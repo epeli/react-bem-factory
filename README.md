@@ -3,9 +3,9 @@
 Like BEM in your React? Me neither.
 
 I wholeheartedly prefer the styled components API like [Emotion][] or
-[Linaria][] but sometimes you just have to move the CSS away from your
-components to a separate and CSS files and [BEM][] might be the best way to
-go with it.
+[Linaria][] but sometimes one just has to move the CSS away from the
+components to separate CSS files and [BEM][] might be the best way to go
+about it.
 
 [emotion]: https://emotion.sh/docs/introduction
 [linaria]: https://linaria.now.sh/
