@@ -74,5 +74,6 @@ Checkout this example on CodeSandbox https://codesandbox.io/s/pyzwpv0lmm
 ## Noteworthy features
 
 -   It's tiny! 875B (minified+gzipped)
+-   Zero deps
 -   100% typed with TypeScript
--   Forwards ref correctly
+-   Forwards refs correctly
