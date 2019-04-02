@@ -24,7 +24,7 @@ test("has class property", () => {
 });
 
 test("single class name with prefix", () => {
-    const createBlock = bemed("prefix-");
+    const createBlock = bemed("prefix");
 
     const Block = createBlock("test-block");
 
@@ -35,7 +35,7 @@ test("single class name with prefix", () => {
 });
 
 test("can use block mods", () => {
-    const createBlock = bemed("prefix-");
+    const createBlock = bemed("prefix");
 
     const Block = createBlock("test-block", {
         mods: {
@@ -50,7 +50,7 @@ test("can use block mods", () => {
 });
 
 test("block mods can change", () => {
-    const createBlock = bemed("prefix-");
+    const createBlock = bemed("prefix");
 
     const Block = createBlock("test-block", {
         mods: {
@@ -87,7 +87,7 @@ test("block mods can change", () => {
 });
 
 test("mods are optional", () => {
-    const createBlock = bemed("prefix-");
+    const createBlock = bemed("prefix");
 
     const Block = createBlock("test-block", {
         mods: {
@@ -102,7 +102,7 @@ test("mods are optional", () => {
 });
 
 test("can create block elements", () => {
-    const createBlock = bemed("prefix-");
+    const createBlock = bemed("prefix");
 
     const Block = createBlock("test-block", {
         mods: {
@@ -119,7 +119,7 @@ test("can create block elements", () => {
 });
 
 test("block elements can have mods too", () => {
-    const createBlock = bemed("prefix-");
+    const createBlock = bemed("prefix");
 
     const Block = createBlock("test-block", {
         mods: {
@@ -227,5 +227,5 @@ test("can use extra class names from the factory", () => {
     const rtl = render(<Block>test</Block>);
     const el = rtl.getByText("test");
 
-    expect(el.className).toBe("bar footest-block");
+    expect(el.className).toBe("bar foo-test-block");
 });

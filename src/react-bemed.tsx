@@ -103,7 +103,7 @@ export function bemed(
         options: {el?: BEMBlock; mods?: BEMBlockMods} | undefined = {},
     ) {
         type BEMBlockProps = BoolDict<BEMBlockMods>;
-        const blockClassName = (prefix || "") + blockName;
+        const blockClassName = (prefix ? prefix + "-" : "") + blockName;
 
         const Block = createReactBEMComponent(
             options.el || "div",
