@@ -81,7 +81,7 @@ function generateBEMModClassNames(name: string, mods: string[]) {
 export function createBEMNamespace(prefix?: string) {
     return function createBEMBlock<
         BEMBlock extends ElementNames = "div",
-        BEMBlockMods extends Record<string, boolean> | undefined = undefined
+        BEMBlockMods extends Record<string, true> | undefined = undefined
     >(block: {el?: BEMBlock; name: string; mods?: BEMBlockMods}) {
         type BEMBlockProps = BoolDict<BEMBlockMods>;
         const blockClassName = (prefix || "") + block.name;
@@ -99,7 +99,7 @@ export function createBEMNamespace(prefix?: string) {
             createBEMElement<
                 BEMElement extends ElementNames,
                 BEMElementMods extends
-                    | Record<string, boolean>
+                    | Record<string, true>
                     | undefined = undefined
             >(bemEl: {el?: BEMElement; name: string; mods?: BEMElementMods}) {
                 type BEMElementProps = BoolDict<BEMElementMods>;

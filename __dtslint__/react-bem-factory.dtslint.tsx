@@ -68,3 +68,23 @@ test("defaults to div", () => {
         <Block playsInline>test</Block>,
     );
 });
+
+test("mods are true", () => {
+    const createBlock = createBEMNamespace("prefix-");
+
+    const Block = createBlock({
+        name: "test-block",
+        // $ExpectError
+        mods: {
+            foo: false,
+        },
+    });
+
+    // const El = Block.createBEMElement({
+    //     name: "el",
+    //     // $ExpectError
+    //     mods: {
+    //         bar: false,
+    //     },
+    // });
+});
