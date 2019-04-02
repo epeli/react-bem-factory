@@ -145,3 +145,5 @@ export function bemed(
         });
     };
 }
+
+export const createBlock = bemed();

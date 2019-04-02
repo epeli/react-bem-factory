@@ -17,7 +17,8 @@ component builder API for working with BEM classes.
 ```tsx
 import { bemed } from "react-bemed";
 
-// Create namespaced BEM component creator
+// Create namespaced BEM component creator. You can also import "createBlock" if
+// you don't care about namepacing
 const createBlock = bemed("app");
 
 // Create a "bemed component"
