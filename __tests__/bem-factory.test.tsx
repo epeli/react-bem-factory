@@ -40,7 +40,7 @@ test("can use block mods", () => {
         },
     });
 
-    const rtl = render(<Block mods={{ding: true}}>test</Block>);
+    const rtl = render(<Block ding>test</Block>);
     const el = rtl.getByText("test");
 
     expect(el.className).toBe("prefix-test-block prefix-test-block--ding");
@@ -99,7 +99,7 @@ test("block elements can have mods too", () => {
         },
     });
 
-    const rtl = render(<BlockElement mods={{dong: true}}>test</BlockElement>);
+    const rtl = render(<BlockElement dong>test</BlockElement>);
     const el = rtl.getByText("test");
 
     expect(el.className).toBe(
