@@ -116,7 +116,7 @@ export function bemed(
 
         return Object.assign(Block, {
             className: blockClassName,
-            createBEMElement<
+            element<
                 BEMElement extends ElementNames,
                 BEMElementMods extends
                     | Record<string, true>

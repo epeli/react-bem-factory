@@ -110,7 +110,7 @@ test("can create block elements", () => {
         },
     });
 
-    const BlockElement = Block.createBEMElement("test-element");
+    const BlockElement = Block.element("test-element");
 
     const rtl = render(<BlockElement>test</BlockElement>);
     const el = rtl.getByText("test");
@@ -127,7 +127,7 @@ test("block elements can have mods too", () => {
         },
     });
 
-    const BlockElement = Block.createBEMElement("test-element", {
+    const BlockElement = Block.element("test-element", {
         mods: {
             dong: true,
         },

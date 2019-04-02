@@ -23,7 +23,7 @@ test("does not allow bad types on block element components", () => {
         },
     });
 
-    const BlockElement = Block.createBEMElement("test-element", {
+    const BlockElement = Block.element("test-element", {
         mods: {
             dong: true,
         },
