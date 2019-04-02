@@ -78,18 +78,21 @@ function generateBEMModClassNames(name: string, mods: string[]) {
     });
 }
 
-export function createBEMNamespace(prefix?: string) {
+export function bemed(prefix?: string) {
     return function createBEMBlock<
         BEMBlock extends ElementNames = "div",
         BEMBlockMods extends Record<string, true> | undefined = undefined
-    >(block: {el?: BEMBlock; name: string; mods?: BEMBlockMods}) {
+    >(
+        blockName: string,
+        options: {el?: BEMBlock; mods?: BEMBlockMods} | undefined = {},
+    ) {
         type BEMBlockProps = BoolDict<BEMBlockMods>;
-        const blockClassName = (prefix || "") + block.name;
+        const blockClassName = (prefix || "") + blockName;
 
         const Block = createReactBEMComponent(
-            block.el || "div",
+            options.el || "div",
             blockClassName,
-            block.mods as BEMBlockProps,
+            options.mods as BEMBlockProps,
         );
 
         Block.displayName = `BEMBlock(${blockClassName})`;
@@ -101,15 +104,21 @@ export function createBEMNamespace(prefix?: string) {
                 BEMElementMods extends
                     | Record<string, true>
                     | undefined = undefined
-            >(bemEl: {el?: BEMElement; name: string; mods?: BEMElementMods}) {
+            >(
+                blockElementName: string,
+                elementOptions:
+                    | {el?: BEMElement; mods?: BEMElementMods}
+                    | undefined = {},
+            ) {
                 type BEMElementProps = BoolDict<BEMElementMods>;
 
-                const fullElementName = blockClassName + "__" + bemEl.name;
+                const fullElementName =
+                    blockClassName + "__" + blockElementName;
 
                 const BEMElement = createReactBEMComponent(
-                    bemEl.el || "div",
+                    elementOptions.el || "div",
                     fullElementName,
-                    bemEl.mods as BEMElementProps,
+                    elementOptions.mods as BEMElementProps,
                 );
 
                 BEMElement.displayName = `BEMElement(${fullElementName})`;

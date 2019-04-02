@@ -1,11 +1,10 @@
-import {createBEMNamespace} from "../src/react-bem-factory";
+import {bemed} from "../src/react-bem-factory";
 import React from "react";
 
 test("does not allow bad types on block components", () => {
-    const createBlock = createBEMNamespace("prefix-");
+    const createBlock = bemed("prefix-");
 
-    const Block = createBlock({
-        name: "test-block",
+    const Block = createBlock("test-block", {
         mods: {
             ding: true,
         },
@@ -16,17 +15,15 @@ test("does not allow bad types on block components", () => {
 });
 
 test("does not allow bad types on block element components", () => {
-    const createBlock = createBEMNamespace("prefix-");
+    const createBlock = bemed("prefix-");
 
-    const Block = createBlock({
-        name: "test-block",
+    const Block = createBlock("test-block", {
         mods: {
             ding: true,
         },
     });
 
-    const BlockElement = Block.createBEMElement({
-        name: "test-element",
+    const BlockElement = Block.createBEMElement("test-element", {
         mods: {
             dong: true,
         },
@@ -37,10 +34,9 @@ test("does not allow bad types on block element components", () => {
 });
 
 test("does not allow bad types on block components", () => {
-    const createBlock = createBEMNamespace("prefix-");
+    const createBlock = bemed("prefix-");
 
-    const Block = createBlock({
-        name: "test-block",
+    const Block = createBlock("test-block", {
         el: "div",
         mods: {
             ding: true,
@@ -54,10 +50,9 @@ test("does not allow bad types on block components", () => {
 });
 
 test("defaults to div", () => {
-    const createBlock = createBEMNamespace("prefix-");
+    const createBlock = bemed("prefix-");
 
-    const Block = createBlock({
-        name: "test-block",
+    const Block = createBlock("test-block", {
         mods: {
             ding: true,
         },
@@ -70,15 +65,17 @@ test("defaults to div", () => {
 });
 
 test("mods are true", () => {
-    const createBlock = createBEMNamespace("prefix-");
+    const createBlock = bemed("prefix-");
 
-    const Block = createBlock({
-        name: "test-block",
+    const Block = createBlock(
+        "test-block",
         // $ExpectError
-        mods: {
-            foo: false,
+        {
+            mods: {
+                foo: false,
+            },
         },
-    });
+    );
 
     // const El = Block.createBEMElement({
     //     name: "el",
