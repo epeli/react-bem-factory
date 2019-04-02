@@ -18,7 +18,12 @@ function buildClassName(classNames: string[]) {
 export function createReactBEMComponent<
     Comp extends ElementNames,
     KnownMods extends Record<string, boolean | undefined>
->(comp: Comp, blockName: string, knownMods: KnownMods) {
+>(
+    comp: Comp,
+    blockName: string,
+    knownMods: KnownMods,
+    extraClassNames?: string[],
+) {
     type ReactProps = JSX.IntrinsicElements[Comp];
 
     type FinalProps = typeof knownMods extends undefined
@@ -55,6 +60,7 @@ export function createReactBEMComponent<
 
         const finalClassName = buildClassName(
             parentClassNames
+                .concat(extraClassNames || [])
                 .concat(generateBEMModClassNames(blockName, usedMods))
                 .concat(blockName),
         );
@@ -81,7 +87,14 @@ function generateBEMModClassNames(name: string, mods: string[]) {
     });
 }
 
-export function bemed(prefix?: string) {
+interface BemedOptions {
+    classNames?: string[];
+}
+
+export function bemed(
+    prefix?: string,
+    bemedOptions: BemedOptions | undefined = {},
+) {
     return function createBEMBlock<
         BEMBlock extends ElementNames = "div",
         BEMBlockMods extends Record<string, true> | undefined = undefined
@@ -96,6 +109,7 @@ export function bemed(prefix?: string) {
             options.el || "div",
             blockClassName,
             options.mods as BEMBlockProps,
+            bemedOptions.classNames,
         );
 
         Block.displayName = `BEMBlock(${blockClassName})`;
@@ -122,6 +136,7 @@ export function bemed(prefix?: string) {
                     elementOptions.el || "div",
                     fullElementName,
                     elementOptions.mods as BEMElementProps,
+                    bemedOptions.classNames,
                 );
 
                 BEMElement.displayName = `BEMElement(${fullElementName})`;

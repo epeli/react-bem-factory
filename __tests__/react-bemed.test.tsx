@@ -216,3 +216,16 @@ test("forwards refs", () => {
         </Block>,
     );
 });
+
+test("can use extra class names from the factory", () => {
+    const createBlock = bemed("foo", {
+        classNames: ["bar"],
+    });
+
+    const Block = createBlock("test-block");
+
+    const rtl = render(<Block>test</Block>);
+    const el = rtl.getByText("test");
+
+    expect(el.className).toBe("bar footest-block");
+});
