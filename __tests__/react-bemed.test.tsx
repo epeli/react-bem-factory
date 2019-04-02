@@ -65,7 +65,6 @@ test("block mods can change", () => {
                 <button
                     onClick={() => {
                         setToggle(t => !t);
-                        console.log("CHANGE");
                     }}
                 >
                     button
