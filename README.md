@@ -34,10 +34,12 @@ const Button = createBlock("button", {
 // <span class="app-button__icon">
 const Icon = Button.element("icon", {
     el: "span",
+    // Modifiers work here too
+    // mods: {}
 });
 
-// And write you components are idiomatic React code without BEM classes
-// mutilating it's readability.
+// And write you components in idiomatic React code without BEM classes
+// mutilating their readability.
 function App() {
     return (
         <div className="App">
@@ -68,3 +70,9 @@ The resulting DOM will look like this
 ```
 
 Checkout this example on CodeSandbox https://codesandbox.io/s/pyzwpv0lmm
+
+## Noteworthy features
+
+-   It's tiny! 875B (minified+gzipped)
+-   100% typed with TypeScript
+-   Forwards ref correctly
