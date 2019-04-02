@@ -1,4 +1,4 @@
-import {bemed} from "../src/react-bemed";
+import { bemed } from "../src/react-bemed";
 import React from "react";
 
 test("does not allow bad types on block components", () => {

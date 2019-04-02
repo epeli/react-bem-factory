@@ -31,7 +31,7 @@ export function createReactBEMComponent<
         : ReactProps & BoolDict<typeof knownMods>;
 
     const ClassNamed = React.forwardRef((props: FinalProps, ref) => {
-        const {className, ...passedProps} = props as {
+        const { className, ...passedProps } = props as {
             className?: string;
             [prop: string]: unknown;
         };
@@ -79,7 +79,7 @@ export function createReactBEMComponent<
     };
 }
 
-type BoolDict<T> = {[P in keyof T]?: boolean};
+type BoolDict<T> = { [P in keyof T]?: boolean };
 
 function generateBEMModClassNames(name: string, mods: string[]) {
     return mods.map(mod => {
@@ -100,7 +100,7 @@ export function bemed(
         BEMBlockMods extends Record<string, true> | undefined = undefined
     >(
         blockName: string,
-        options: {el?: BEMBlock; mods?: BEMBlockMods} | undefined = {},
+        options: { el?: BEMBlock; mods?: BEMBlockMods } | undefined = {},
     ) {
         type BEMBlockProps = BoolDict<BEMBlockMods>;
         const blockClassName = (prefix ? prefix + "-" : "") + blockName;
@@ -124,7 +124,7 @@ export function bemed(
             >(
                 blockElementName: string,
                 elementOptions:
-                    | {el?: BEMElement; mods?: BEMElementMods}
+                    | { el?: BEMElement; mods?: BEMElementMods }
                     | undefined = {},
             ) {
                 type BEMElementProps = BoolDict<BEMElementMods>;
