@@ -106,3 +106,38 @@ test("block elements can have mods too", () => {
         "prefix-test-block__test-element prefix-test-block__test-element--dong",
     );
 });
+
+test("passes other props through", () => {
+    const createBlock = createBEMNamespace();
+
+    const Block = createBlock({
+        name: "test-block",
+    });
+
+    const rtl = render(<Block title="a title">test</Block>);
+    const el = rtl.getByText("test");
+
+    expect(el.title).toBe("a title");
+});
+
+test("passes other props through when using mods", () => {
+    const createBlock = createBEMNamespace();
+
+    const Block = createBlock({
+        name: "test-block",
+        mods: {
+            ding: true,
+        },
+    });
+
+    const rtl = render(
+        <Block ding title="a title">
+            test
+        </Block>,
+    );
+
+    const el = rtl.getByText("test");
+
+    expect(el.title).toBe("a title");
+    expect(el.className).toBe("test-block test-block--ding");
+});
