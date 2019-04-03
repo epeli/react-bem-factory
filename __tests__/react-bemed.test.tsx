@@ -229,6 +229,19 @@ test("can use extra class names from the factory", () => {
     expect(el.className).toBe("bar foo-test-block");
 });
 
+test("can use multiple extra class names from the factory", () => {
+    const block = bemed("foo", {
+        className: "ding dong",
+    });
+
+    const Block = block("test-block");
+
+    const rtl = render(<Block>test</Block>);
+    const el = rtl.getByText("test");
+
+    expect(el.className).toBe("ding dong foo-test-block");
+});
+
 test("can use custom mod class names with block", () => {
     const block = bemed("prefix");
 
