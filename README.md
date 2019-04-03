@@ -84,7 +84,7 @@ Wonder why this better than manually writing the above HTML?
 -   Typed when using TypeScript
     -   The created components respect the `el` option so `video` elements
         have their special attributes as props etc.
-    -   The modifiers are typed as optional boolean props
+    -   The BEM modifiers are typed as optional boolean props
 
 ## Noteworthy features
 
