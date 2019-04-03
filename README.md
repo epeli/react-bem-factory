@@ -71,7 +71,7 @@ The resulting DOM will look like this
 </div>
 ```
 
-Checkout this example on CodeSandbox https://codesandbox.io/s/pyzwpv0lmm
+Checkout this example on CodeSandbox https://codesandbox.io/s/300yll99y6
 
 ## Why?
 
