@@ -143,7 +143,11 @@ export function bemed(
             >(
                 blockElementName: string,
                 elementOptions:
-                    | { el?: BEMElement; mods?: BEMElementMods }
+                    | {
+                          el?: BEMElement;
+                          mods?: BEMElementMods;
+                          className?: string | string[];
+                      }
                     | undefined = {},
             ) {
                 type BEMElementProps = BoolDict<BEMElementMods>;
@@ -155,7 +159,9 @@ export function bemed(
                     elementOptions.el || "div",
                     fullElementName,
                     elementOptions.mods as BEMElementProps,
-                    extraClassNames,
+                    extraClassNames.concat(
+                        classNameToArray(elementOptions.className),
+                    ),
                 );
 
                 BEMElement.displayName = `BEMElement(${fullElementName})`;

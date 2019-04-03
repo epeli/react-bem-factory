@@ -336,3 +336,20 @@ test("custom class name in a block don't leak to elements", () => {
 
     expect(el.className).toBe("ns-test-block__el");
 });
+
+test("elements can add custom class names too", () => {
+    const block = bemed("ns");
+
+    const Block = block("test-block", {
+        className: "block-custom",
+    });
+
+    const El = Block.element("el", {
+        className: "el-custom",
+    });
+
+    const rtl = render(<El>test</El>);
+    const el = rtl.getByText("test");
+
+    expect(el.className).toBe("el-custom ns-test-block__el");
+});
