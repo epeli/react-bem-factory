@@ -140,6 +140,34 @@ test("block elements can have mods too", () => {
     );
 });
 
+test("block elements can have multiple mods", () => {
+    const block = bemed("prefix");
+
+    const Block = block("test-block", {
+        mods: {
+            ding: true,
+        },
+    });
+
+    const BlockElement = Block.element("test-element", {
+        mods: {
+            dong: true,
+            dong2: true,
+        },
+    });
+
+    const rtl = render(
+        <BlockElement dong dong2>
+            test
+        </BlockElement>,
+    );
+    const el = rtl.getByText("test");
+
+    expect(el.className).toBe(
+        "prefix-test-block__test-element prefix-test-block__test-element--dong prefix-test-block__test-element--dong2",
+    );
+});
+
 test("passes other props through", () => {
     const block = bemed();
 
