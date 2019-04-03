@@ -114,13 +114,32 @@ If you need to work with Bootstrap classes for example you can pass a string
 as the modifier value which will be added as a raw class instead of creating
 custom modifier.
 
-```ts
-const Alert = block("alert", {
+```tsx
+const block = bemed("bs", {
+    className: "btn",
+});
+
+const Button = block("button", {
+    el: "button",
     mods: {
-        // <div class="alert alert-primary">
-        primary: "alert-primary",
-        // <div class="alert alert-warning">
-        warning: "alert-warning",
+        primary: "btn-primary",
+        danger: "btn-danger",
     },
 });
+
+export function BootstrapExample() {
+    return (
+        <>
+            <Button primary>Primary</Button>
+            <Button danger>Danger</Button>
+        </>
+    );
+}
+```
+
+outputs
+
+```html
+<button class="bs-button btn btn-primary">Primary</button>
+<button class="bs-button btn btn-danger">Danger</button>
 ```
