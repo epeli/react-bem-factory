@@ -35,14 +35,19 @@ export function createReactBEMComponent<
 
         let componentProps: Record<string, any> = {};
         const usedMods: string[] = [];
+        const customMods: string[] = [];
 
         if (knownMods) {
             for (const prop in props) {
-                const isMod = prop in knownMods;
-                if (isMod) {
+                const modType = knownMods[prop];
+                if (modType) {
                     const isActive = props[prop];
                     if (isActive) {
-                        usedMods.push(prop);
+                        if (typeof modType === "string") {
+                            customMods.push(modType);
+                        } else {
+                            usedMods.push(prop);
+                        }
                     }
                 } else {
                     componentProps[prop] = props[prop];
@@ -59,7 +64,8 @@ export function createReactBEMComponent<
             parentClassNames
                 .concat(extraClassNames || [])
                 .concat(generateBEMModClassNames(blockName, usedMods))
-                .concat(blockName),
+                .concat(blockName)
+                .concat(customMods),
         );
 
         return createElement(
@@ -96,7 +102,9 @@ export function bemed(
 ) {
     return function createBEMBlock<
         BEMBlock extends ElementNames = "div",
-        BEMBlockMods extends Record<string, true> | undefined = undefined
+        BEMBlockMods extends
+            | Record<string, true | string>
+            | undefined = undefined
     >(
         blockName: string,
         options: { el?: BEMBlock; mods?: BEMBlockMods } | undefined = {},
@@ -118,7 +126,7 @@ export function bemed(
             element<
                 BEMElement extends ElementNames,
                 BEMElementMods extends
-                    | Record<string, true>
+                    | Record<string, true | string>
                     | undefined = undefined
             >(
                 blockElementName: string,

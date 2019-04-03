@@ -228,3 +228,42 @@ test("can use extra class names from the factory", () => {
 
     expect(el.className).toBe("bar foo-test-block");
 });
+
+test("can use custom mod class names with block", () => {
+    const block = bemed("prefix");
+
+    const Block = block("test-block", {
+        mods: {
+            custom: "custommod",
+            normal: true,
+        },
+    });
+
+    const rtl = render(
+        <Block custom normal>
+            test
+        </Block>,
+    );
+    const el = rtl.getByText("test");
+
+    expect(el.className).toBe(
+        "custommod prefix-test-block prefix-test-block--normal",
+    );
+});
+
+test("can use custom mod class names with block", () => {
+    const block = bemed("prefix");
+
+    const Block = block("test-block");
+
+    const El = Block.element("myel", {
+        mods: {
+            dong: "customel",
+        },
+    });
+
+    const rtl = render(<El dong>test</El>);
+    const el = rtl.getByText("test");
+
+    expect(el.className).toBe("customel prefix-test-block__myel");
+});
