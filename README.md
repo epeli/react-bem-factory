@@ -1,4 +1,4 @@
-# 🦖 react-bemed
+# 🦖 BEMed Components
 
 Like BEM in your React? Me neither.
 
@@ -11,37 +11,32 @@ about it.
 [linaria]: https://linaria.now.sh/
 [bem]: http://getbem.com/
 
-The react-bemed library gives you a simple styled components inspired
-component builder API for working with BEM classes.
+This module gives you a simple styled components inspired component builder
+API for working with BEM classes in React.
 
 ```tsx
 import { bemed } from "react-bemed";
 
-// Create namespaced BEM component creator. You can also import "block"
-// directly if you don't care about namepacing
+// Create namespaced BEM component creator
 const block = bemed("app");
 
-// Create a "bemed component"
-// <button class="app-button">
-const Button = block("button", {
-    el: "button", // defaults to div
+// Create a "BEMed Block Component"
+const Button = block("item-button", {
+    el: "button",
     mods: {
-        // <button class="app-button app-button--add">
+        // BEM modiers
         add: true,
-        // <button class="app-button app-button--delete">
         delete: true,
     },
 });
 
-// <span class="app-button__icon">
+// Block components can create child "BEMed Element Components"
 const Icon = Button.element("icon", {
     el: "span",
-    // Modifiers work here too
-    // mods: {}
 });
 
-// And write you components in idiomatic React code without BEM classes
-// mutilating their readability.
+// Usage of BEMed Components is idiomatic React
+// without BEM classes mutilating the readability
 function App() {
     return (
         <div className="App">
@@ -61,58 +56,106 @@ The resulting DOM will look like this
 
 ```html
 <div class="App">
-    <button class="app-button">Normal Button</button>
-    <button class="app-button app-button--add">
-        <span class="app-button__icon">+</span> Add Button
+    <button class="app-item-button">Normal Button</button>
+    <button class="app-item-button app-button--add">
+        <span class="app-item-button__icon">+</span> Add Button
     </button>
-    <button class="app-button app-button--delete">
-        <span class="app-button__icon">X</span> Delete Button
+    <button class="app-item-button app-item-button--delete">
+        <span class="app-item-button__icon">X</span> Delete Button
     </button>
 </div>
 ```
 
 Checkout this example on CodeSandbox https://codesandbox.io/s/300yll99y6
 
-## Why?
+## 📦 Install
+
+    npm install react-bemed
+
+## 🤔 Why?
 
 Wonder why this better than manually writing the above HTML?
 
--   Autcomplete for components and modifier props
--   The resulting JSX is not overly verbose and thus more readable
--   No need to manually concatenate class names when doing dymamic styling
+-   **Encapsulation!** Usage of BEM is an implementation detail of a
+    component and it should not leak to consumers
+    -   Users should be able just use them like any other React components
+-   Easy reuseability – no need to keep typing the class names all the time
+-   Composability – BEMed Components compose cleanly into bigger React Components
+-   Editor autocomplete for components and modifier props
+    -   vs. typing the class name strings
+-   No need to manually concatenate class name strings when doing dymamic styling
     -   `<Button add={props.isAdding}>` just works
 -   Typed when using TypeScript
     -   The created components respect the `el` option so `video` elements
         have their special attributes as props etc.
     -   The BEM modifiers are typed as optional boolean props
 
-## Noteworthy features
+## 🧐 Noteworthy features
 
 -   [It's tiny!][tiny] 623B (min+gzip)
 -   Zero deps
 -   Forwards refs correctly
--   You can still pass custom class names to the bemed components `<Button className="custom">`
+-   You can still pass custom class names to the BEMed Components `<Button className="custom">`
 -   Nice names in React Devtools
     -   `<BEMBlock(app-button) add={true}>`
     -   `<BEMElement(app-button__icon)>`
 
 [tiny]: https://bundlephobia.com/result?p=react-bemed@0.1.6
 
-## Advanced APIs
+## 🚶 API Walkthrough
 
-### Custom classes
+This example uses every exposed API.
 
-Add class name `foo` to every component created by this bemed namespace
+```tsx
+// You can also import "block" directly if you don't care about namespaces
+import { bemed } from "react-bemed";
 
-```ts
-const block = bemed("app", { className: "foo" });
+// The first argument will be used as prefix to all generated BEM class names
+// from this BEM component creator. A dash will be appended to it.
+const block = bemed("app", {
+    // Add a static class names for all BEM Block and Element components created
+    // by this block creator. The prefix is not be applied to these.
+    className: "flexbox border-box",
+});
+
+// All options are optional
+const Button = block("item-button", {
+    // What element should the component render to.
+    // If omitted it defaults to "div"
+    el: "button",
+
+    // Custom static class name for this component.
+    // The prefix is not applied to this
+    className: "button-reset",
+
+    // Modifier definitions
+    mods: {
+        // When the value is true a BEM modifier class name is generated based
+        // on the block name. Ex. app-item-button--add
+        add: true,
+
+        // But if the value is a string it will be used
+        // directly as is when the modifier prop is true
+        primary: "is-primary",
+    },
+});
+
+// The element API is excatly the same as the block API
+const Icon = Button.element("icon", {
+    el: "span",
+    className: "icon-position-top-left",
+    mods: {
+        // "app-item-button__icon--big" is generated
+        big: true,
+        // Just "cool-shadow" is added when shawdow prop is true
+        shadow: "cool-shadow",
+    },
+});
 ```
 
-### Custom mod classes
+## 🧟 Usage with Bootstrap
 
-If you need to work with Bootstrap classes for example you can pass a string
-as the modifier value which will be added as a raw class instead of creating
-custom modifier.
+or with other non-BEM class systems
 
 ```tsx
 const block = bemed("bs", {
@@ -143,3 +186,10 @@ outputs
 <button class="bs-button btn btn-primary">Primary</button>
 <button class="bs-button btn btn-danger">Danger</button>
 ```
+
+## Prior Art
+
+There's already a [`bemed-components`][bc] module on npm but it's deprecated
+in favor of something completely different.
+
+[bc]: https://www.npmjs.com/package/bemed-components
