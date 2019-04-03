@@ -78,9 +78,9 @@ Checkout this example on CodeSandbox https://codesandbox.io/s/pyzwpv0lmm
 Wonder why this better than manually writing the above HTML?
 
 -   Autcomplete for components and modifier props
--   The resulting JSX is more readable
+-   The resulting JSX is not overly verbose and thus more readable
 -   No need to manually concatenate class names when doing dymamic styling
-    -   `<Button add={props.variable}>` just works
+    -   `<Button add={props.isAdding}>` just works
 -   Typed when using TypeScript
     -   The created components respect the `el` option. So `video` elements
         have their special attributes etc.
