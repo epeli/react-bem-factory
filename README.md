@@ -97,3 +97,30 @@ Wonder why this better than manually writing the above HTML?
     -   `<BEMElement(app-button__icon)>`
 
 [tiny]: https://bundlephobia.com/result?p=react-bemed@0.1.6
+
+## Advanced APIs
+
+### Custom classes
+
+Add class name `foo` to every component created by this bemed namespace
+
+```ts
+const block = bemed("app", { className: "foo" });
+```
+
+### Custom mod classes
+
+If you need to work with Bootstrap classes for example you can pass a string
+as the modifier value which will be added as a raw class instead of creating
+custom modifier.
+
+```ts
+const Alert = block("alert", {
+    mods: {
+        // <div class="alert alert-primary">
+        primary: "alert-primary",
+        // <div class="alert alert-warning">
+        warning: "alert-warning",
+    },
+});
+```
