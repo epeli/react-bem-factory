@@ -73,14 +73,23 @@ The resulting DOM will look like this
 
 Checkout this example on CodeSandbox https://codesandbox.io/s/pyzwpv0lmm
 
+## Why?
+
+Wonder why this better than manually writing the above HTML?
+
+-   Autcomplete for components and modifier props
+-   The resulting JSX is more readable
+-   No need to manually concatenate class names when doing dymamic styling
+    -   `<Button add={props.variable}>` just works
+-   Typed when using TypeScript
+    -   The created components respect the `el` option. So `video` elements
+        have their special attributes etc.
+    -   The modifiers are typed as optional boolean props
+
 ## Noteworthy features
 
 -   [It's tiny!][tiny] 623B (min+gzip)
 -   Zero deps
--   100% typed with TypeScript
-    -   The created components respect the `el` option. So `video` elements
-        have their special attributes etc.
-    -   The modifiers are typed as optional boolean props
 -   Forwards refs correctly
 -   You can still pass custom class names to the bemed components `<Button className="custom">`
 -   Nice names in React Devtools
