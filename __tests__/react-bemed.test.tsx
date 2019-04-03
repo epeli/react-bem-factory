@@ -308,3 +308,31 @@ test("can use custom mod class names with block", () => {
 
     expect(el.className).toBe("customel prefix-test-block__myel");
 });
+
+test("blocks can add custom class names", () => {
+    const block = bemed("ns");
+
+    const Block = block("test-block", {
+        className: "custom",
+    });
+
+    const rtl = render(<Block>test</Block>);
+    const el = rtl.getByText("test");
+
+    expect(el.className).toBe("custom ns-test-block");
+});
+
+test("custom class name in a block don't leak to elements", () => {
+    const block = bemed("ns");
+
+    const Block = block("test-block", {
+        className: "custom",
+    });
+
+    const El = Block.element("el");
+
+    const rtl = render(<El>test</El>);
+    const el = rtl.getByText("test");
+
+    expect(el.className).toBe("ns-test-block__el");
+});

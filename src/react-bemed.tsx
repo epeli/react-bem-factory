@@ -15,6 +15,10 @@ function buildClassName(classNames: string[]) {
         .trim();
 }
 
+function classNameToArray(className: undefined | string | string[]) {
+    return Array.isArray(className) ? className : (className || "").split(" ");
+}
+
 export function createReactBEMComponent<
     Comp extends ElementNames,
     KnownMods extends Record<string, boolean | undefined>
@@ -107,20 +111,24 @@ export function bemed(
             | undefined = undefined
     >(
         blockName: string,
-        options: { el?: BEMBlock; mods?: BEMBlockMods } | undefined = {},
+        options:
+            | {
+                  el?: BEMBlock;
+                  mods?: BEMBlockMods;
+                  className?: string | string[];
+              }
+            | undefined = {},
     ) {
         type BEMBlockProps = BoolDict<BEMBlockMods>;
         const blockClassName = (prefix ? prefix + "-" : "") + blockName;
 
-        const extraClassNames = Array.isArray(bemedOptions.className)
-            ? bemedOptions.className
-            : (bemedOptions.className || "").split(" ");
+        const extraClassNames = classNameToArray(bemedOptions.className);
 
         const Block = createReactBEMComponent(
             options.el || "div",
             blockClassName,
             options.mods as BEMBlockProps,
-            extraClassNames,
+            extraClassNames.concat(classNameToArray(options.className)),
         );
 
         Block.displayName = `BEMBlock(${blockClassName})`;
