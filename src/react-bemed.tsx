@@ -34,7 +34,7 @@ export function createReactBEMComponent<
         ? ReactProps
         : ReactProps & BoolDict<typeof knownMods>;
 
-    const ClassNamed = forwardRef((props: FinalProps, ref) => {
+    const BEMComponent = forwardRef((props: FinalProps, ref) => {
         const className = props.className;
 
         let componentProps: Record<string, any> = {};
@@ -81,9 +81,7 @@ export function createReactBEMComponent<
         );
     });
 
-    ClassNamed.displayName = `ClassNamed(${comp})`;
-
-    return (ClassNamed as any) as ((props: FinalProps) => any) & {
+    return (BEMComponent as any) as ((props: FinalProps) => any) & {
         displayName: string;
     };
 }
