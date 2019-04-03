@@ -218,7 +218,7 @@ test("forwards refs", () => {
 
 test("can use extra class names from the factory", () => {
     const block = bemed("foo", {
-        classNames: ["bar"],
+        className: "bar",
     });
 
     const Block = block("test-block");

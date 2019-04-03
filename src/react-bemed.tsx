@@ -93,7 +93,7 @@ function generateBEMModClassNames(name: string, mods: string[]) {
 }
 
 interface BemedOptions {
-    classNames?: string[];
+    className?: string | string[];
 }
 
 export function bemed(
@@ -112,11 +112,15 @@ export function bemed(
         type BEMBlockProps = BoolDict<BEMBlockMods>;
         const blockClassName = (prefix ? prefix + "-" : "") + blockName;
 
+        const extraClassNames = Array.isArray(bemedOptions.className)
+            ? bemedOptions.className
+            : (bemedOptions.className || "").split(" ");
+
         const Block = createReactBEMComponent(
             options.el || "div",
             blockClassName,
             options.mods as BEMBlockProps,
-            bemedOptions.classNames,
+            extraClassNames,
         );
 
         Block.displayName = `BEMBlock(${blockClassName})`;
@@ -143,7 +147,7 @@ export function bemed(
                     elementOptions.el || "div",
                     fullElementName,
                     elementOptions.mods as BEMElementProps,
-                    bemedOptions.classNames,
+                    extraClassNames,
                 );
 
                 BEMElement.displayName = `BEMElement(${fullElementName})`;
