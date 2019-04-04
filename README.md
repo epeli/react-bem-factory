@@ -17,10 +17,10 @@ in React.
 ```tsx
 import { bemed } from "react-bemed";
 
-const defineAppBlock = bemed("app");
+const defineBlock = bemed("app");
 
 // Define a "BEMed Block Component" with element components
-const Button = defineAppBlock("Button", {
+const Button = defineBlock("Button", {
     el: "button",
     mods: {
         add: true,
@@ -101,8 +101,8 @@ Wonder why this better than manually writing the above HTML?
 -   Forwards refs correctly
 -   You can still pass custom class names to the BEMed Components `<Button className="custom">`
 -   Nice names in React Devtools
-    -   `<BEMBlock(app-button) add={true}>`
-    -   `<BEMElement(app-button__icon)>`
+    -   `<BEMBlock(app-Button) add={true}>`
+    -   `<BEMElement(app-Button__Icon)>`
 
 [tiny]: https://bundlephobia.com/result?p=react-bemed@0.1.6
 
@@ -116,14 +116,14 @@ import { bemed } from "react-bemed";
 
 // The first argument will be used as prefix to all generated BEM class names
 // from this BEM component creator. A dash will be appended to it.
-const defineAppBlock = bemed("app", {
+const defineBlock = bemed("app", {
     // Add a static class names for all BEM Block and Element components created
     // by this block creator. The prefix is not be applied to these.
     className: "flexbox border-box",
 });
 
 // The string "Button" is the BEM block name
-const Button = defineAppBlock("Button", {
+const Button = defineBlock("Button", {
     // All options are optional
 
     // What DOM element should the component render to.
