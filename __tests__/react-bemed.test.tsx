@@ -368,3 +368,42 @@ test("elements can add custom class names too", () => {
 
     expect(el.className).toBe("ns-TestBlock__Elm el-custom");
 });
+
+test("can use custom separators", () => {
+    const block = bemed("ns", {
+        separators: {
+            namespace: "__NS__",
+            modifier: "__M__",
+            element: "__E__",
+        },
+    });
+
+    const Block = block("TestBlock", {
+        mods: {
+            blockmod: true,
+        },
+        elements: {
+            Elm: {
+                el: "div",
+                className: "el-custom",
+                mods: {
+                    elmmod: true,
+                },
+            },
+        },
+    });
+
+    const rtl = render(
+        <div>
+            <Block blockmod>block</Block>
+            <Block.Elm elmmod>element</Block.Elm>
+        </div>,
+    );
+
+    expect(rtl.getByText("block").className).toBe(
+        "ns__NS__TestBlock ns__NS__TestBlock__M__blockmod",
+    );
+    expect(rtl.getByText("element").className).toBe(
+        "ns__NS__TestBlock__E__Elm ns__NS__TestBlock__E__Elm__M__elmmod el-custom",
+    );
+});

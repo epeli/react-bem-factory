@@ -120,6 +120,14 @@ const defineBlock = bemed("app", {
     // Add a static class names for all BEM Block and Element components created
     // by this block creator. The prefix is not be applied to these.
     className: "flexbox border-box",
+
+    // Customize separators in the generated class names
+    // The defaults are shown.
+    separators: {
+        namespace: "-",
+        modifier: "--",
+        element: "__",
+    },
 });
 
 // The string "Button" is the BEM block name

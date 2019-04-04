@@ -13,7 +13,8 @@ export function createReactBEMComponent<
     comp: Comp,
     blockName: string,
     knownMods: KnownMods,
-    extraClassNames?: string[],
+    extraClassNames: string[],
+    modifierSeparator: string,
 ) {
     type ReactProps = JSX.IntrinsicElements[Comp];
 
@@ -53,7 +54,13 @@ export function createReactBEMComponent<
 
         const finalClassName = parentClassNames
             .concat(blockName)
-            .concat(generateBEMModClassNames(blockName, usedMods))
+            .concat(
+                generateBEMModClassNames(
+                    blockName,
+                    usedMods,
+                    modifierSeparator,
+                ),
+            )
             .concat(customMods)
             .concat(extraClassNames || [])
             .map(cn => cn.trim())
@@ -77,16 +84,21 @@ export function createReactBEMComponent<
 
 type BoolDict<T> = { [P in keyof T]?: boolean };
 
-function generateBEMModClassNames(name: string, mods: string[]) {
+function generateBEMModClassNames(name: string, mods: string[], sep: string) {
     return mods
         .map(mod => {
-            return name.trim() + "--" + mod.trim();
+            return name.trim() + sep + mod.trim();
         })
         .sort();
 }
 
 interface BemedOptions {
     className?: string | string[];
+    separators?: {
+        namespace?: string;
+        modifier?: string;
+        element?: string;
+    };
 }
 
 interface BEMComponentDefinition {
@@ -131,8 +143,18 @@ export function bemed(
               }
             | undefined = {},
     ) {
+        const separators = Object.assign(
+            {
+                namespace: "-",
+                modifier: "--",
+                element: "__",
+            },
+            bemedOptions ? bemedOptions.separators : {},
+        );
+
         type BEMBlockProps = BoolDict<BEMBlockMods>;
-        const blockClassName = (prefix ? prefix + "-" : "") + blockName;
+        const blockClassName =
+            (prefix ? prefix + separators.namespace : "") + blockName;
 
         const globalClassNames = classNameToArray(bemedOptions.className);
 
@@ -141,6 +163,7 @@ export function bemed(
             blockClassName,
             blockOptions.mods as BEMBlockProps,
             classNameToArray(blockOptions.className).concat(globalClassNames),
+            separators.modifier,
         );
 
         Block.displayName = `BEMBlock(${blockClassName})`;
@@ -162,7 +185,8 @@ export function bemed(
         ) {
             type BEMElementProps = BoolDict<BEMElementMods>;
 
-            const fullElementName = blockClassName + "__" + blockElementName;
+            const fullElementName =
+                blockClassName + separators.element + blockElementName;
 
             const BEMElement = createReactBEMComponent(
                 elementOptions.el || "div",
@@ -171,6 +195,7 @@ export function bemed(
                 classNameToArray(elementOptions.className).concat(
                     globalClassNames,
                 ),
+                separators.modifier,
             );
 
             BEMElement.displayName = `BEMElement(${fullElementName})`;
