@@ -17,35 +17,36 @@ API for working with BEM classes in React.
 ```tsx
 import { bemed } from "react-bemed";
 
-// Create namespaced BEM component creator
-const block = bemed("app");
+const defineAppBlock = bemed("app");
 
-// Create a "BEMed Block Component"
-const Button = block("item-button", {
+// Define a "BEMed Block Component" with element components
+const Button = defineAppBlock("Button", {
     el: "button",
     mods: {
-        // BEM modiers
         add: true,
         delete: true,
     },
-});
-
-// Block components can create child "BEMed Element Components"
-const Icon = Button.element("icon", {
-    el: "span",
+    elements: {
+        Icon: {
+            el: "span",
+            mods: {
+                danger: true,
+            },
+        },
+    },
 });
 
 // Usage of BEMed Components is idiomatic React
 // without BEM classes mutilating the readability
 function App() {
     return (
-        <div className="App">
+        <div>
             <Button>Normal Button</Button>
             <Button add>
-                <Icon>+</Icon> Add Button
+                <Button.Icon>+</Button.Icon> Add Button
             </Button>
             <Button delete>
-                <Icon>X</Icon> Delete Button
+                <Button.Icon danger>X</Button.Icon> Delete Button
             </Button>
         </div>
     );

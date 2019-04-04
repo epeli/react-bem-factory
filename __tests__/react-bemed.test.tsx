@@ -103,68 +103,75 @@ test("mods are optional", () => {
 test("can create block elements", () => {
     const block = bemed("prefix");
 
-    const Block = block("test-block", {
+    const Block = block("TestBlock", {
         mods: {
             ding: true,
         },
+        elements: {
+            TestElement: {
+                el: "div",
+            },
+        },
     });
 
-    const BlockElement = Block.element("test-element");
-
-    const rtl = render(<BlockElement>test</BlockElement>);
+    const rtl = render(<Block.TestElement>test</Block.TestElement>);
     const el = rtl.getByText("test");
 
-    expect(el.className).toBe("prefix-test-block__test-element");
+    expect(el.className).toBe("prefix-TestBlock__TestElement");
 });
 
 test("block elements can have mods too", () => {
     const block = bemed("prefix");
 
-    const Block = block("test-block", {
+    const Block = block("TestBlock", {
         mods: {
             ding: true,
         },
-    });
-
-    const BlockElement = Block.element("test-element", {
-        mods: {
-            dong: true,
+        elements: {
+            TestElement: {
+                el: "div",
+                mods: {
+                    dong: true,
+                },
+            },
         },
     });
 
-    const rtl = render(<BlockElement dong>test</BlockElement>);
+    const rtl = render(<Block.TestElement dong>test</Block.TestElement>);
     const el = rtl.getByText("test");
 
     expect(el.className).toBe(
-        "prefix-test-block__test-element prefix-test-block__test-element--dong",
+        "prefix-TestBlock__TestElement prefix-TestBlock__TestElement--dong",
     );
 });
 
 test("block elements can have multiple mods", () => {
     const block = bemed("prefix");
 
-    const Block = block("test-block", {
+    const Block = block("TestBlock", {
         mods: {
             ding: true,
         },
-    });
-
-    const BlockElement = Block.element("test-element", {
-        mods: {
-            dong: true,
-            dong2: true,
+        elements: {
+            TestElement: {
+                el: "div",
+                mods: {
+                    dong: true,
+                    dong2: true,
+                },
+            },
         },
     });
 
     const rtl = render(
-        <BlockElement dong dong2>
+        <Block.TestElement dong dong2>
             test
-        </BlockElement>,
+        </Block.TestElement>,
     );
     const el = rtl.getByText("test");
 
     expect(el.className).toBe(
-        "prefix-test-block__test-element prefix-test-block__test-element--dong prefix-test-block__test-element--dong2",
+        "prefix-TestBlock__TestElement prefix-TestBlock__TestElement--dong prefix-TestBlock__TestElement--dong2",
     );
 });
 
@@ -292,21 +299,24 @@ test("can use custom mod class names with block", () => {
     );
 });
 
-test("can use custom mod class names with block", () => {
+test("can use custom mod class names with element", () => {
     const block = bemed("prefix");
 
-    const Block = block("test-block");
-
-    const El = Block.element("myel", {
-        mods: {
-            dong: "customel",
+    const Block = block("TestBlock", {
+        elements: {
+            TestElement: {
+                el: "div",
+                mods: {
+                    dong: "customel",
+                },
+            },
         },
     });
 
-    const rtl = render(<El dong>test</El>);
+    const rtl = render(<Block.TestElement dong>test</Block.TestElement>);
     const el = rtl.getByText("test");
 
-    expect(el.className).toBe("customel prefix-test-block__myel");
+    expect(el.className).toBe("customel prefix-TestBlock__TestElement");
 });
 
 test("blocks can add custom class names", () => {
@@ -327,14 +337,17 @@ test("custom class name in a block don't leak to elements", () => {
 
     const Block = block("test-block", {
         className: "custom",
+        elements: {
+            Elm: {
+                el: "div",
+            },
+        },
     });
 
-    const El = Block.element("el");
-
-    const rtl = render(<El>test</El>);
+    const rtl = render(<Block.Elm>test</Block.Elm>);
     const el = rtl.getByText("test");
 
-    expect(el.className).toBe("ns-test-block__el");
+    expect(el.className).toBe("ns-test-block__Elm");
 });
 
 test("elements can add custom class names too", () => {
@@ -342,14 +355,16 @@ test("elements can add custom class names too", () => {
 
     const Block = block("test-block", {
         className: "block-custom",
+        elements: {
+            Elm: {
+                el: "div",
+                className: "el-custom",
+            },
+        },
     });
 
-    const El = Block.element("el", {
-        className: "el-custom",
-    });
-
-    const rtl = render(<El>test</El>);
+    const rtl = render(<Block.Elm>test</Block.Elm>);
     const el = rtl.getByText("test");
 
-    expect(el.className).toBe("el-custom ns-test-block__el");
+    expect(el.className).toBe("el-custom ns-test-block__Elm");
 });

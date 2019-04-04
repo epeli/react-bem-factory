@@ -2,6 +2,7 @@ import { bemed } from "../src/react-bemed";
 import React from "react";
 
 function assertNotAny(a: number) {}
+function render(jsx: any) {}
 
 test("does not allow bad types on block components", () => {
     const createBlock = bemed("prefix-");
@@ -21,25 +22,6 @@ test("does not allow bad types on block components", () => {
     console.log(<Block bad>test</Block>);
 });
 
-test("does not allow bad types on block element components", () => {
-    const createBlock = bemed("prefix-");
-
-    const Block = createBlock("test-block", {
-        mods: {
-            ding: true,
-        },
-    });
-
-    const BlockElement = Block.element("test-element", {
-        mods: {
-            dong: true,
-        },
-    });
-
-    // $ExpectError
-    console.log(<BlockElement bad>test</BlockElement>);
-});
-
 test("does not allow bad types on block components", () => {
     const createBlock = bemed("prefix-");
 
@@ -54,6 +36,19 @@ test("does not allow bad types on block components", () => {
         // $ExpectError
         <Block playsInline>test</Block>,
     );
+});
+
+test("can use custom els", () => {
+    const createBlock = bemed("prefix-");
+
+    const Block = createBlock("test-block", {
+        el: "video",
+        mods: {
+            ding: true,
+        },
+    });
+
+    render(<Block playsInline>test</Block>);
 });
 
 test("defaults to div", () => {
@@ -83,12 +78,95 @@ test("mods are true", () => {
             },
         },
     );
+});
 
-    // const El = Block.createBEMElement({
-    //     name: "el",
-    //     // $ExpectError
-    //     mods: {
-    //         bar: false,
-    //     },
-    // });
+test("can create inline elements", () => {
+    const block = bemed();
+
+    const Block = block("test-block", {
+        mods: {
+            bar: true,
+        },
+        elements: {
+            FooDiv: {
+                className: "sdf",
+                el: "div",
+                mods: {
+                    ding: "sdf",
+                },
+            },
+            BarVideo: {
+                el: "video",
+                mods: {
+                    ding: true,
+                },
+            },
+        },
+    });
+
+    // $ExpectError
+    render(<Block bar playsInline />);
+
+    render(<Block.FooDiv ding />);
+
+    // $ExpectError
+    render(<Block.FooDiv ding bad />);
+
+    // $ExpectError
+    render(<Block.FooDiv bad />);
+
+    render(<Block.FooDiv />);
+
+    render(<Block.BarVideo playsInline />);
+
+    // $ExpectError
+    render(<Block.FooDiv playsInline />);
+
+    // $ExpectError
+    render(<Block.Bad />);
+});
+
+test("inline elements default to divs", () => {
+    const block = bemed();
+
+    const Block = block("test-block", {
+        mods: {
+            bar: true,
+        },
+        elements: {
+            FooDiv: {
+                mods: {
+                    ding: true,
+                },
+            },
+        },
+    });
+
+    render(<Block.FooDiv ding />);
+
+    // $ExpectError
+    render(<Block.FooDiv bad />);
+
+    // $ExpectError
+    render(<Block.FooDiv playsInline />);
+});
+
+test("do not allow extra props", () => {
+    const block = bemed();
+
+    const Block = block("test-block", {
+        // $ExpectError
+        bad: 1,
+        mods: {
+            bar: true,
+        },
+        elements: {
+            FooDiv: {
+                bad: 2, // XXX should fail!
+                mods: {
+                    ding: true,
+                },
+            },
+        },
+    });
 });

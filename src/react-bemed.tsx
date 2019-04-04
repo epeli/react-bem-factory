@@ -98,11 +98,33 @@ interface BemedOptions {
     className?: string | string[];
 }
 
+interface BEMComponentDefinition {
+    el?: ElementNames;
+    className?: string;
+    mods?: {
+        [mod: string]: true | string;
+    };
+}
+
+type DefaultToDiv<T> = T extends undefined | null ? "div" : T;
+
+type Def2FC<Def extends BEMComponentDefinition> = (
+    props: JSX.IntrinsicElements[DefaultToDiv<Def["el"]>] &
+        BoolDict<Def["mods"]>,
+) => any;
+
+type AllBEMDefToFC<T extends { [key: string]: BEMComponentDefinition }> = {
+    [P in keyof T]: Def2FC<T[P]>
+};
+
 export function bemed(
     prefix?: string,
     bemedOptions: BemedOptions | undefined = {},
 ) {
     return function createBEMBlock<
+        Elements extends {
+            [key: string]: BEMComponentDefinition;
+        },
         BEMBlock extends ElementNames = "div",
         BEMBlockMods extends
             | Record<string, true | string>
@@ -114,6 +136,7 @@ export function bemed(
                   el?: BEMBlock;
                   mods?: BEMBlockMods;
                   className?: string | string[];
+                  elements?: Elements;
               }
             | undefined = {},
     ) {
@@ -131,7 +154,7 @@ export function bemed(
 
         Block.displayName = `BEMBlock(${blockClassName})`;
 
-        function createElement<
+        function createBEMElement<
             BEMElement extends ElementNames,
             BEMElementMods extends
                 | Record<string, true | string>
@@ -164,13 +187,26 @@ export function bemed(
             return BEMElement;
         }
 
-        return (Object.assign(Block, {
+        const out: any = {};
+
+        if (options.elements) {
+            for (const key in options.elements) {
+                const def = options.elements[key];
+                out[key] = createBEMElement(key, {
+                    el: def.el,
+                    mods: def.mods,
+                    className: def.className,
+                });
+            }
+        }
+
+        const final = Object.assign(Block, out, {
             className: blockClassName,
-            element: createElement,
-        }) as any) as typeof Block & {
+        });
+
+        return final as typeof Block & {
             className: string;
-            element: typeof createElement;
-        };
+        } & AllBEMDefToFC<Elements>;
     };
 }
 
