@@ -11,8 +11,8 @@ about it.
 [linaria]: https://linaria.now.sh/
 [bem]: http://getbem.com/
 
-This module gives you a simple styled components inspired component builder
-API for working with BEM classes in React.
+This module gives you a simple declarative API for working with BEM classes
+in React.
 
 ```tsx
 import { bemed } from "react-bemed";
@@ -53,21 +53,24 @@ function App() {
 }
 ```
 
-The resulting DOM will look like this
+The resulting DOM will have the BEM class name jazz generated 🎷
 
 ```html
-<div class="App">
-    <button class="app-item-button">Normal Button</button>
-    <button class="app-item-button app-button--add">
-        <span class="app-item-button__icon">+</span> Add Button
+<div>
+    <button class="app-Button">Normal Button</button>
+    <button class="app-Button app-Button--add">
+        <span class="app-Button__Icon">+</span> Add Button
     </button>
-    <button class="app-item-button app-item-button--delete">
-        <span class="app-item-button__icon">X</span> Delete Button
+    <button class="app-Button app-Button--delete">
+        <span class="app-Button__Icon app-Button__Icon--danger">X</span> Delete
+        Button
     </button>
 </div>
 ```
 
-Checkout this example on CodeSandbox https://codesandbox.io/s/300yll99y6
+You now free to enhance it with your familiar BEM CSS ❤️
+
+Checkout this example on CodeSandbox https://codesandbox.io/s/k393yrj6p5
 
 ## 📦 Install
 
@@ -113,10 +116,49 @@ import { bemed } from "react-bemed";
 
 // The first argument will be used as prefix to all generated BEM class names
 // from this BEM component creator. A dash will be appended to it.
-const block = bemed("app", {
+const defineAppBlock = bemed("app", {
     // Add a static class names for all BEM Block and Element components created
     // by this block creator. The prefix is not be applied to these.
     className: "flexbox border-box",
+});
+
+// The string "Button" is the BEM block name
+const Button = defineAppBlock("Button", {
+    // All options are optional
+
+    // What DOM element should the component render to.
+    // If omitted it defaults to "div"
+    el: "button",
+
+    // Custom static class name for this component.
+    // The prefix is not applied to this.
+    className: "button-reset",
+
+    // Modifier definitions
+    mods: {
+        // When the value is true a BEM modifier class name is generated based
+        // on the block name. Ex. app-Button--add
+        add: true,
+
+        // But if the value is a string it will be used
+        // directly as is when the modifier prop is true
+        primary: "is-primary",
+    },
+
+    // The element object define the Element components
+    elements: {
+        // The object key will be the component and BEM element name
+        Icon: {
+            // The element options are the same as with the block
+            el: "span",
+            // Multiple class names are cool too
+            className: "icon-position-top-left",
+            mods: {
+                danger: true,
+                secondary: "is-secondary",
+            },
+        },
+    },
 });
 
 // All options are optional
@@ -140,18 +182,6 @@ const Button = block("item-button", {
         primary: "is-primary",
     },
 });
-
-// The element API is excatly the same as the block API
-const Icon = Button.element("icon", {
-    el: "span",
-    className: "icon-position-top-left",
-    mods: {
-        // "app-item-button__icon--big" is generated
-        big: true,
-        // Just "cool-shadow" is added when shawdow prop is true
-        shadow: "cool-shadow",
-    },
-});
 ```
 
 ## 🧟 Usage with Bootstrap
@@ -159,11 +189,11 @@ const Icon = Button.element("icon", {
 or with other non-BEM class systems
 
 ```tsx
-const block = bemed("bs", {
+const createBSBlock = bemed("bs", {
     className: "btn",
 });
 
-const Button = block("button", {
+const Button = createBSBlock("Button", {
     el: "button",
     mods: {
         primary: "btn-primary",
@@ -184,8 +214,8 @@ export function BootstrapExample() {
 outputs
 
 ```html
-<button class="bs-button btn btn-primary">Primary</button>
-<button class="bs-button btn btn-danger">Danger</button>
+<button class="bs-Button btn btn-primary">Primary</button>
+<button class="bs-Button btn btn-danger">Danger</button>
 ```
 
 ## Prior Art
