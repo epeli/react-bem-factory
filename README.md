@@ -19,7 +19,7 @@ import { bemed } from "react-bemed";
 
 const defineBlock = bemed("app");
 
-// Define a "BEMed Block Component" with element components
+// Define a "BEMed Block Component" with an additional "Icon" element component
 const Button = defineBlock("Button", {
     el: "button",
     mods: {
@@ -43,32 +43,35 @@ function App() {
         <div>
             <Button>Normal Button</Button>
             <Button add>
-                <Button.Icon>+</Button.Icon> Add Button
+                <Button.Icon>+</Button.Icon>
+                Add Button
             </Button>
             <Button delete>
-                <Button.Icon danger>X</Button.Icon> Delete Button
+                <Button.Icon danger>X</Button.Icon>
+                Delete Button
             </Button>
         </div>
     );
 }
 ```
 
-The resulting DOM will have the BEM class name jazz generated 🎷
+The resulting DOM will have all the BEM class name jazz generated for you 🎷
 
 ```html
 <div>
     <button class="app-Button">Normal Button</button>
     <button class="app-Button app-Button--add">
-        <span class="app-Button__Icon">+</span> Add Button
+        <span class="app-Button__Icon">+</span>
+        Add Button
     </button>
     <button class="app-Button app-Button--delete">
-        <span class="app-Button__Icon app-Button__Icon--danger">X</span> Delete
-        Button
+        <span class="app-Button__Icon app-Button__Icon--danger">X</span>
+        Delete Button
     </button>
 </div>
 ```
 
-You now free to enhance it with your familiar BEM CSS ❤️
+You are now free to enhance it with your lovely BEM CSS ❤️
 
 Checkout this example on CodeSandbox https://codesandbox.io/s/k393yrj6p5
 
@@ -119,7 +122,7 @@ import { bemed } from "react-bemed";
 const defineBlock = bemed("app", {
     // Add a static class names for all BEM Block and Element components created
     // by this block creator. The prefix is not be applied to these.
-    className: "flexbox border-box",
+    className: "flex-box border-box",
 
     // Customize separators in the generated class names
     // The defaults are shown.
@@ -153,41 +156,17 @@ const Button = defineBlock("Button", {
         primary: "is-primary",
     },
 
-    // The element object define the Element components
     elements: {
         // The object key will be the component and BEM element name
         Icon: {
             // The element options are the same as with the block
             el: "span",
-            // Multiple class names are cool too
             className: "icon-position-top-left",
             mods: {
                 danger: true,
                 secondary: "is-secondary",
             },
         },
-    },
-});
-
-// All options are optional
-const Button = block("item-button", {
-    // What element should the component render to.
-    // If omitted it defaults to "div"
-    el: "button",
-
-    // Custom static class name for this component.
-    // The prefix is not applied to this
-    className: "button-reset",
-
-    // Modifier definitions
-    mods: {
-        // When the value is true a BEM modifier class name is generated based
-        // on the block name. Ex. app-item-button--add
-        add: true,
-
-        // But if the value is a string it will be used
-        // directly as is when the modifier prop is true
-        primary: "is-primary",
     },
 });
 ```
