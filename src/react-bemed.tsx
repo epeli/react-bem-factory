@@ -2,19 +2,6 @@ import { forwardRef, createElement } from "react";
 
 type ElementNames = keyof React.ReactHTML;
 
-function buildClassName(classNames: string[]) {
-    const dups: Record<string, boolean> = {};
-
-    for (const cn of classNames) {
-        dups[cn] = true;
-    }
-
-    return Object.keys(dups)
-        .sort()
-        .join(" ")
-        .trim();
-}
-
 function classNameToArray(className: undefined | string | string[]) {
     return Array.isArray(className) ? className : (className || "").split(" ");
 }
@@ -64,13 +51,15 @@ export function createReactBEMComponent<
         const parentClassNames =
             typeof className === "string" ? className.split(" ") : [];
 
-        const finalClassName = buildClassName(
-            parentClassNames
-                .concat(extraClassNames || [])
-                .concat(generateBEMModClassNames(blockName, usedMods))
-                .concat(blockName)
-                .concat(customMods),
-        );
+        const finalClassName = parentClassNames
+            .concat(blockName)
+            .concat(generateBEMModClassNames(blockName, usedMods))
+            .concat(customMods)
+            .concat(extraClassNames || [])
+            .map(cn => cn.trim())
+            .filter(Boolean)
+            .join(" ")
+            .trim();
 
         return createElement(
             comp,
@@ -89,9 +78,11 @@ export function createReactBEMComponent<
 type BoolDict<T> = { [P in keyof T]?: boolean };
 
 function generateBEMModClassNames(name: string, mods: string[]) {
-    return mods.map(mod => {
-        return name + "--" + mod;
-    });
+    return mods
+        .map(mod => {
+            return name.trim() + "--" + mod.trim();
+        })
+        .sort();
 }
 
 interface BemedOptions {
@@ -131,7 +122,7 @@ export function bemed(
             | undefined = undefined
     >(
         blockName: string,
-        options:
+        blockOptions:
             | {
                   el?: BEMBlock;
                   mods?: BEMBlockMods;
@@ -143,13 +134,13 @@ export function bemed(
         type BEMBlockProps = BoolDict<BEMBlockMods>;
         const blockClassName = (prefix ? prefix + "-" : "") + blockName;
 
-        const extraClassNames = classNameToArray(bemedOptions.className);
+        const globalClassNames = classNameToArray(bemedOptions.className);
 
         const Block = createReactBEMComponent(
-            options.el || "div",
+            blockOptions.el || "div",
             blockClassName,
-            options.mods as BEMBlockProps,
-            extraClassNames.concat(classNameToArray(options.className)),
+            blockOptions.mods as BEMBlockProps,
+            classNameToArray(blockOptions.className).concat(globalClassNames),
         );
 
         Block.displayName = `BEMBlock(${blockClassName})`;
@@ -177,8 +168,8 @@ export function bemed(
                 elementOptions.el || "div",
                 fullElementName,
                 elementOptions.mods as BEMElementProps,
-                extraClassNames.concat(
-                    classNameToArray(elementOptions.className),
+                classNameToArray(elementOptions.className).concat(
+                    globalClassNames,
                 ),
             );
 
@@ -189,9 +180,9 @@ export function bemed(
 
         const out: any = {};
 
-        if (options.elements) {
-            for (const key in options.elements) {
-                const def = options.elements[key];
+        if (blockOptions.elements) {
+            for (const key in blockOptions.elements) {
+                const def = blockOptions.elements[key];
                 out[key] = createBEMElement(key, {
                     el: def.el,
                     mods: def.mods,
