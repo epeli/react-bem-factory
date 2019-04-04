@@ -1,14 +1,21 @@
 import { bemed } from "../src/react-bemed";
 import React from "react";
 
+function assertNotAny(a: number) {}
+
 test("does not allow bad types on block components", () => {
     const createBlock = bemed("prefix-");
+    // $ExpectError
+    assertNotAny(createBlock);
 
     const Block = createBlock("test-block", {
         mods: {
             ding: true,
         },
     });
+
+    // $ExpectError
+    assertNotAny(Block);
 
     // $ExpectError
     console.log(<Block bad>test</Block>);

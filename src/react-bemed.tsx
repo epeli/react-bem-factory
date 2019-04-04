@@ -131,42 +131,46 @@ export function bemed(
 
         Block.displayName = `BEMBlock(${blockClassName})`;
 
-        return Object.assign(Block, {
+        function createElement<
+            BEMElement extends ElementNames,
+            BEMElementMods extends
+                | Record<string, true | string>
+                | undefined = undefined
+        >(
+            blockElementName: string,
+            elementOptions:
+                | {
+                      el?: BEMElement;
+                      mods?: BEMElementMods;
+                      className?: string | string[];
+                  }
+                | undefined = {},
+        ) {
+            type BEMElementProps = BoolDict<BEMElementMods>;
+
+            const fullElementName = blockClassName + "__" + blockElementName;
+
+            const BEMElement = createReactBEMComponent(
+                elementOptions.el || "div",
+                fullElementName,
+                elementOptions.mods as BEMElementProps,
+                extraClassNames.concat(
+                    classNameToArray(elementOptions.className),
+                ),
+            );
+
+            BEMElement.displayName = `BEMElement(${fullElementName})`;
+
+            return BEMElement;
+        }
+
+        return (Object.assign(Block, {
             className: blockClassName,
-            element<
-                BEMElement extends ElementNames,
-                BEMElementMods extends
-                    | Record<string, true | string>
-                    | undefined = undefined
-            >(
-                blockElementName: string,
-                elementOptions:
-                    | {
-                          el?: BEMElement;
-                          mods?: BEMElementMods;
-                          className?: string | string[];
-                      }
-                    | undefined = {},
-            ) {
-                type BEMElementProps = BoolDict<BEMElementMods>;
-
-                const fullElementName =
-                    blockClassName + "__" + blockElementName;
-
-                const BEMElement = createReactBEMComponent(
-                    elementOptions.el || "div",
-                    fullElementName,
-                    elementOptions.mods as BEMElementProps,
-                    extraClassNames.concat(
-                        classNameToArray(elementOptions.className),
-                    ),
-                );
-
-                BEMElement.displayName = `BEMElement(${fullElementName})`;
-
-                return BEMElement;
-            },
-        });
+            element: createElement,
+        }) as any) as typeof Block & {
+            className: string;
+            element: typeof createElement;
+        };
     };
 }
 
