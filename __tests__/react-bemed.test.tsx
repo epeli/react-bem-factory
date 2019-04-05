@@ -16,11 +16,16 @@ test("single class name", () => {
 });
 
 test("has class property", () => {
-    const block = bemed();
+    const block = bemed("ns");
 
-    const Block = block("test-block");
+    const Block = block("TestBlock", {
+        elements: {
+            Foo: {},
+        },
+    });
 
-    expect(Block.className).toBe("test-block");
+    expect(Block.className).toBe("ns-TestBlock");
+    expect(Block.Foo.className).toBe("ns-TestBlock__Foo");
 });
 
 test("single class name with prefix", () => {

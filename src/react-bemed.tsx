@@ -121,9 +121,9 @@ interface BEMComponentDefinitionStrict {
 /**
  * Convert BEMComponentDefinition to BEMElement component type
  */
-type BEMElement<Def extends BEMComponentDefinitionStrict> = (
+type BEMElement<Def extends BEMComponentDefinitionStrict> = ((
     props: JSX.IntrinsicElements[Def["el"]] & ModProps<Def["mods"]>,
-) => any;
+) => any) & { className: string };
 
 type BEMElements<T extends { [key: string]: BEMComponentDefinition }> = {
     [P in keyof T]: T[P] extends { el: ElementNames }
@@ -221,6 +221,7 @@ export function bemed(
             );
 
             (BEMElement as any).displayName = `BEMElement(${fullElementName})`;
+            (BEMElement as any).className = fullElementName;
 
             return BEMElement;
         }
