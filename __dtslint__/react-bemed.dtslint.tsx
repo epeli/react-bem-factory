@@ -117,7 +117,7 @@ test("can create inline elements", () => {
 
     render(<Block.FooDiv />);
 
-    render(<Block.BarVideo playsInline />);
+    render(<Block.BarVideo playsInline title="video" />);
 
     // $ExpectError
     render(<Block.FooDiv playsInline />);
@@ -200,4 +200,34 @@ test("can use other components as children", () => {
     );
 
     render(<Block.Foo>{"string"}</Block.Foo>);
+});
+
+test("can use style attribute", () => {
+    const block = bemed();
+
+    const Block = block("Block", {
+        elements: {
+            Foo: {},
+        },
+    });
+
+    render(<Block style={{ color: "red" }} />);
+
+    render(<Block.Foo style={{ color: "red" }} />);
+
+    // $ExpectError
+    render(<Block.Foo style={{ bad: "red" }} />);
+});
+
+test("some other default attributes work too", () => {
+    const block = bemed();
+
+    const Block = block("Block", {
+        elements: {
+            Foo: {},
+        },
+    });
+
+    render(<Block.Foo role="sdaf"  />);
+    render(<Block.Foo title="sdaf" />);
 });

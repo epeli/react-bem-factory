@@ -110,18 +110,25 @@ interface BEMComponentDefinition {
     };
 }
 
-type DefaultToDiv<T> = T extends undefined | null ? "div" : T;
+interface BEMComponentDefinitionStrict {
+    el: ElementNames;
+    className?: string;
+    mods?: {
+        [mod: string]: true | string;
+    };
+}
 
 /**
  * Convert BEMComponentDefinition to BEMElement component type
  */
-type BEMElement<Def extends BEMComponentDefinition> = (
-    props: JSX.IntrinsicElements[DefaultToDiv<Def["el"]>] &
-        ModProps<Def["mods"]> & { children?: React.ReactNode },
+type BEMElement<Def extends BEMComponentDefinitionStrict> = (
+    props: JSX.IntrinsicElements[Def["el"]] & ModProps<Def["mods"]>,
 ) => any;
 
 type BEMElements<T extends { [key: string]: BEMComponentDefinition }> = {
-    [P in keyof T]: BEMElement<T[P]>
+    [P in keyof T]: T[P] extends { el: ElementNames }
+        ? BEMElement<T[P]>
+        : BEMElement<T[P] & { el: "div" }>
 };
 
 /**
