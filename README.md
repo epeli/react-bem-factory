@@ -99,7 +99,7 @@ Wonder why this better than manually writing the above HTML?
 
 ## 🧐 Noteworthy features
 
--   [It's tiny!][tiny] 623B (min+gzip)
+-   [It's tiny!][tiny] 743B (min+gzip)
 -   Zero deps
 -   Forwards refs correctly
 -   You can still pass custom class names to the BEMed Components `<Button className="custom">`
@@ -107,7 +107,7 @@ Wonder why this better than manually writing the above HTML?
     -   `<BEMBlock(app-Button) add={true}>`
     -   `<BEMElement(app-Button__Icon)>`
 
-[tiny]: https://bundlephobia.com/result?p=react-bemed@0.1.6
+[tiny]: https://bundlephobia.com/result?p=react-bemed@0.3.3
 
 ## 🚶 API Walkthrough
 
