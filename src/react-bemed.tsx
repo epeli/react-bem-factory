@@ -20,7 +20,7 @@ export function createReactBEMComponent<
 
     type FinalProps = typeof knownMods extends undefined
         ? ReactProps
-        : ReactProps & BoolDict<typeof knownMods>;
+        : ReactProps & ModProps<typeof knownMods>;
 
     const BEMComponent = forwardRef((props: FinalProps, ref) => {
         const className = props.className;
@@ -82,7 +82,10 @@ export function createReactBEMComponent<
     };
 }
 
-type BoolDict<T> = { [P in keyof T]?: boolean };
+/**
+ * Convert dict of mods to boolean react props
+ */
+type ModProps<T> = { [P in keyof T]?: boolean };
 
 function generateBEMModClassNames(name: string, mods: string[], sep: string) {
     return mods
@@ -113,7 +116,7 @@ type DefaultToDiv<T> = T extends undefined | null ? "div" : T;
 
 type Def2FC<Def extends BEMComponentDefinition> = (
     props: JSX.IntrinsicElements[DefaultToDiv<Def["el"]>] &
-        BoolDict<Def["mods"]>,
+        ModProps<Def["mods"]> & { children?: React.ReactNode },
 ) => any;
 
 type AllBEMDefToFC<T extends { [key: string]: BEMComponentDefinition }> = {
@@ -152,7 +155,7 @@ export function bemed(
             bemedOptions ? bemedOptions.separators : {},
         );
 
-        type BEMBlockProps = BoolDict<BEMBlockMods>;
+        type BEMBlockProps = ModProps<BEMBlockMods>;
         const blockClassName =
             (prefix ? prefix + separators.namespace : "") + blockName;
 
@@ -183,7 +186,7 @@ export function bemed(
                   }
                 | undefined = {},
         ) {
-            type BEMElementProps = BoolDict<BEMElementMods>;
+            type BEMElementProps = ModProps<BEMElementMods>;
 
             const fullElementName =
                 blockClassName + separators.element + blockElementName;

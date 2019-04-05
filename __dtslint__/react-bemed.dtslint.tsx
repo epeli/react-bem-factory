@@ -170,3 +170,34 @@ test("do not allow extra props", () => {
         },
     });
 });
+
+test("can use other components as children", () => {
+    const block = bemed();
+
+    const Block = block("test-block", {
+        elements: {
+            Foo: { mods: { right: true } },
+            Bar: {},
+        },
+    });
+
+    render(
+        <Block>
+            <div>hello</div> text
+        </Block>,
+    );
+
+    render(
+        <Block.Bar>
+            <div>hello</div>
+        </Block.Bar>,
+    );
+
+    render(
+        <Block.Foo>
+            <div>hello</div>
+        </Block.Foo>,
+    );
+
+    render(<Block.Foo>{"string"}</Block.Foo>);
+});
