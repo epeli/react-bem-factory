@@ -229,12 +229,24 @@ test("can use custom elements", () => {
 test("can pass custom class names", () => {
     const block = bemed();
 
-    const Block = block("test-block");
+    const Block = block("TestBlock", {
+        elements: {
+            Foo: {},
+        },
+    });
 
-    const rtl = render(<Block className="my-class">test</Block>);
-    const el = rtl.getByText("test");
+    const rtl = render(
+        <div>
+            <Block className="my-class">block</Block>
+            <Block.Foo className="foo-custom">element</Block.Foo>
+        </div>,
+    );
 
-    expect(el.className).toBe("my-class test-block");
+    const blockEl = rtl.getByText("block");
+    expect(blockEl.className).toBe("my-class TestBlock");
+
+    const elEl = rtl.getByText("element");
+    expect(elEl.className).toBe("foo-custom TestBlock__Foo");
 });
 
 test("forwards refs", () => {
