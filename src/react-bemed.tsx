@@ -77,9 +77,7 @@ export function createReactBEMComponent<
         );
     });
 
-    return (BEMComponent as any) as ((props: FinalProps) => any) & {
-        displayName: string;
-    };
+    return (BEMComponent as any) as ((props: FinalProps) => any);
 }
 
 /**
@@ -114,14 +112,28 @@ interface BEMComponentDefinition {
 
 type DefaultToDiv<T> = T extends undefined | null ? "div" : T;
 
-type Def2FC<Def extends BEMComponentDefinition> = (
+/**
+ * Convert BEMComponentDefinition to BEMElement component type
+ */
+type BEMElement<Def extends BEMComponentDefinition> = (
     props: JSX.IntrinsicElements[DefaultToDiv<Def["el"]>] &
         ModProps<Def["mods"]> & { children?: React.ReactNode },
 ) => any;
 
-type AllBEMDefToFC<T extends { [key: string]: BEMComponentDefinition }> = {
-    [P in keyof T]: Def2FC<T[P]>
+type BEMElements<T extends { [key: string]: BEMComponentDefinition }> = {
+    [P in keyof T]: BEMElement<T[P]>
 };
+
+/**
+ * Create BEMBlock component type
+ */
+type BEMBlock<
+    Block,
+    Elements extends { [key: string]: BEMComponentDefinition }
+> = Block & {
+    className: string;
+    displayName: string;
+} & BEMElements<Elements>;
 
 export function bemed(
     prefix?: string,
@@ -131,7 +143,7 @@ export function bemed(
         Elements extends {
             [key: string]: BEMComponentDefinition;
         },
-        BEMBlock extends ElementNames = "div",
+        BEMBlockDOMElement extends ElementNames = "div",
         BEMBlockMods extends
             | Record<string, true | string>
             | undefined = undefined
@@ -139,7 +151,7 @@ export function bemed(
         blockName: string,
         blockOptions:
             | {
-                  el?: BEMBlock;
+                  el?: BEMBlockDOMElement;
                   mods?: BEMBlockMods;
                   className?: string | string[];
                   elements?: Elements;
@@ -169,7 +181,7 @@ export function bemed(
             separators.modifier,
         );
 
-        Block.displayName = `BEMBlock(${blockClassName})`;
+        (Block as any).displayName = `BEMBlock(${blockClassName})`;
 
         function createBEMElement<
             BEMElement extends ElementNames,
@@ -201,7 +213,7 @@ export function bemed(
                 separators.modifier,
             );
 
-            BEMElement.displayName = `BEMElement(${fullElementName})`;
+            (BEMElement as any).displayName = `BEMElement(${fullElementName})`;
 
             return BEMElement;
         }
@@ -223,9 +235,7 @@ export function bemed(
             className: blockClassName,
         });
 
-        return final as typeof Block & {
-            className: string;
-        } & AllBEMDefToFC<Elements>;
+        return final as BEMBlock<typeof Block, Elements>;
     };
 }
 
