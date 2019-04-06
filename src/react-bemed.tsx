@@ -39,7 +39,7 @@ function createReactBEMComponent<
         /**
          * Class names passed during rendering in JSX
          */
-        const runtimeClassName = props.className;
+        const runtimeClassNames = (props.className || "").split(" ");
 
         const usedMods: string[] = [];
 
@@ -92,10 +92,34 @@ function createReactBEMComponent<
             .concat(customModClassNames)
             .concat(extraClassNames)
             .concat(globalClassNames)
-            .concat([runtimeClassName || ""])
-            .map(cn => cn.trim())
-            .filter(Boolean)
-            .join(" ")
+            .concat(runtimeClassNames)
+            .reduce(
+                (acc, className) => {
+                    className = className.trim();
+
+                    if (!className) {
+                        return acc;
+                    }
+
+                    // Remove duplicates
+                    //
+                    // Use @: prefix to avoid collision with the Object
+                    // prototype properties
+                    if (acc.used["@:" + className]) {
+                        return acc;
+                    }
+
+                    acc.used["@:" + className] = true;
+                    acc.final.push(className);
+
+                    return acc;
+                },
+                {
+                    final: [] as string[],
+                    used: {} as Record<string, true>,
+                },
+            )
+            .final.join(" ")
             .trim();
 
         return createElement(

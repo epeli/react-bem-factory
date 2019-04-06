@@ -424,3 +424,31 @@ test("can use custom separators", () => {
         "ns__NS__TestBlock__E__Elm ns__NS__TestBlock__E__Elm__M__elmmod el-custom",
     );
 });
+
+test("duplicate classnames are removed", () => {
+    const block = bemed("ns", {
+        className: "dup",
+    });
+
+    const Block = block("TestBlock", {
+        className: "dup",
+        elements: {
+            Foo: {
+                className: "dup",
+            },
+        },
+    });
+
+    const rtl = render(
+        <div>
+            <Block className="dup dup">block</Block>
+            <Block.Foo className="dup dup">element</Block.Foo>
+        </div>,
+    );
+
+    const blockEl = rtl.getByText("block");
+    expect(blockEl.className).toBe("ns-TestBlock dup");
+
+    const elEl = rtl.getByText("element");
+    expect(elEl.className).toBe("ns-TestBlock__Foo dup");
+});
