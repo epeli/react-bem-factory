@@ -34,11 +34,26 @@ function createReactBEMComponent<
         : ReactProps & ModProps<typeof knownMods>;
 
     const BEMComponent = forwardRef((props: FinalProps, ref) => {
-        const className = props.className;
-
         let componentProps: Record<string, any> = {};
+
+        /**
+         * Class names passed during rendering in JSX
+         */
+        const runtimeClassName = props.className;
+
         const usedMods: string[] = [];
-        const customMods: string[] = [];
+
+        /**
+         * Custom class names from string valued mod definitions
+         * Ex. from
+         *
+         * {
+         *      mods: {
+         *          foo: "my-custom-foo"
+         *      }
+         * }
+         */
+        const customModClassNames: string[] = [];
 
         if (knownMods) {
             for (const prop in props) {
@@ -47,7 +62,7 @@ function createReactBEMComponent<
                     const isActive = props[prop];
                     if (isActive) {
                         if (typeof modType === "string") {
-                            customMods.push(modType);
+                            customModClassNames.push(modType);
                         } else {
                             usedMods.push(prop);
                         }
@@ -60,21 +75,24 @@ function createReactBEMComponent<
             componentProps = props;
         }
 
-        const runtimeClassNames =
-            typeof className === "string" ? className.split(" ") : [];
+        /**
+         * BEM modifier class names
+         */
+        const modClassNames = generateBEMModClassNames(
+            blockName,
+            usedMods,
+            modifierSeparator,
+        );
 
+        /**
+         * Final class name to be passed to DOM
+         */
         const finalClassName = [blockName]
-            .concat(
-                generateBEMModClassNames(
-                    blockName,
-                    usedMods,
-                    modifierSeparator,
-                ),
-            )
-            .concat(customMods)
+            .concat(modClassNames)
+            .concat(customModClassNames)
             .concat(extraClassNames)
             .concat(globalClassNames)
-            .concat(runtimeClassNames)
+            .concat([runtimeClassName || ""])
             .map(cn => cn.trim())
             .filter(Boolean)
             .join(" ")

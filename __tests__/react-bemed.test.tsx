@@ -238,7 +238,7 @@ test("can pass custom runtime class names", () => {
     const rtl = render(
         <div>
             <Block className="my-class">block</Block>
-            <Block.Foo className="foo-custom">element</Block.Foo>
+            <Block.Foo className="foo-custom other">element</Block.Foo>
         </div>,
     );
 
@@ -246,7 +246,7 @@ test("can pass custom runtime class names", () => {
     expect(blockEl.className).toBe("TestBlock my-class");
 
     const elEl = rtl.getByText("element");
-    expect(elEl.className).toBe("TestBlock__Foo foo-custom");
+    expect(elEl.className).toBe("TestBlock__Foo foo-custom other");
 });
 
 test("forwards refs", () => {
