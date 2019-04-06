@@ -41,6 +41,7 @@ function createReactBEMComponent<
          */
         const runtimeClassNames = classNameToArray(props.className);
 
+        /** Array of used BEM mods */
         const usedMods: string[] = [];
 
         /**
