@@ -10,10 +10,10 @@ function classNameToArray(className: undefined | string | string[]) {
  * Add BEM class names to any given React Component that takes a className prop
  *
  * @param comp Any React Component that takes className
- * @param blockName The block or element name string
+ * @param blockClassName The block or element name string
  * @param knownMods Object of known modifiers
- * @param extraClassNames Extra static class names given in the BEM component definition
- * @param globalClassNames Extra static class names given by the bemed() factory
+ * @param staticClassNames Extra static class names given in the BEM component definition
+ * @param globalStaticClassNames Extra static class names given by the bemed() factory
  * @param modifierSeparator Extra static class names
  */
 function createReactBEMComponent<
@@ -21,10 +21,10 @@ function createReactBEMComponent<
     KnownMods extends Record<string, boolean | undefined>
 >(
     comp: Comp,
-    blockName: string,
+    blockClassName: string,
     knownMods: KnownMods,
-    extraClassNames: string[],
-    globalClassNames: string[],
+    staticClassNames: string[],
+    globalStaticClassNames: string[],
     modifierSeparator: string,
 ) {
     type ReactProps = JSX.IntrinsicElements[Comp];
@@ -39,7 +39,7 @@ function createReactBEMComponent<
         /**
          * Class names passed during rendering in JSX
          */
-        const runtimeClassNames = (props.className || "").split(" ");
+        const runtimeClassNames = classNameToArray(props.className);
 
         const usedMods: string[] = [];
 
@@ -79,7 +79,7 @@ function createReactBEMComponent<
          * BEM modifier class names
          */
         const modClassNames = generateBEMModClassNames(
-            blockName,
+            blockClassName,
             usedMods,
             modifierSeparator,
         );
@@ -87,11 +87,11 @@ function createReactBEMComponent<
         /**
          * Final class name to be passed to DOM
          */
-        const finalClassName = [blockName]
+        const finalClassName = [blockClassName]
             .concat(modClassNames)
             .concat(customModClassNames)
-            .concat(extraClassNames)
-            .concat(globalClassNames)
+            .concat(staticClassNames)
+            .concat(globalStaticClassNames)
             .concat(runtimeClassNames)
             .reduce(
                 (acc, className) => {
@@ -235,14 +235,14 @@ export function bemed(
         const blockClassName =
             (prefix ? prefix + separators.namespace : "") + blockName;
 
-        const globalClassNames = classNameToArray(bemedOptions.className);
+        const globalStaticClassNames = classNameToArray(bemedOptions.className);
 
         const Block = createReactBEMComponent(
             blockOptions.el || "div",
             blockClassName,
             blockOptions.mods as BEMBlockProps,
             classNameToArray(blockOptions.className),
-            globalClassNames,
+            globalStaticClassNames,
             separators.modifier,
         );
 
@@ -273,7 +273,7 @@ export function bemed(
                 fullElementName,
                 elementOptions.mods as BEMElementProps,
                 classNameToArray(elementOptions.className),
-                globalClassNames,
+                globalStaticClassNames,
                 separators.modifier,
             );
 
