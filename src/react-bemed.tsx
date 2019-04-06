@@ -261,5 +261,3 @@ export function bemed(
         return final as BEMBlock<typeof Block, Elements>;
     };
 }
-
-export const block = bemed();
