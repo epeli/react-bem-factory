@@ -49,11 +49,10 @@ export function createReactBEMComponent<
             componentProps = props;
         }
 
-        const parentClassNames =
+        const runtimeClassNames =
             typeof className === "string" ? className.split(" ") : [];
 
-        const finalClassName = parentClassNames
-            .concat(blockName)
+        const finalClassName = [blockName]
             .concat(
                 generateBEMModClassNames(
                     blockName,
@@ -63,6 +62,7 @@ export function createReactBEMComponent<
             )
             .concat(customMods)
             .concat(extraClassNames || [])
+            .concat(runtimeClassNames)
             .map(cn => cn.trim())
             .filter(Boolean)
             .join(" ")

@@ -226,7 +226,7 @@ test("can use custom elements", () => {
     expect((el as any).type).toBe("submit");
 });
 
-test("can pass custom class names", () => {
+test("can pass custom runtime class names", () => {
     const block = bemed();
 
     const Block = block("TestBlock", {
@@ -243,10 +243,10 @@ test("can pass custom class names", () => {
     );
 
     const blockEl = rtl.getByText("block");
-    expect(blockEl.className).toBe("my-class TestBlock");
+    expect(blockEl.className).toBe("TestBlock my-class");
 
     const elEl = rtl.getByText("element");
-    expect(elEl.className).toBe("foo-custom TestBlock__Foo");
+    expect(elEl.className).toBe("TestBlock__Foo foo-custom");
 });
 
 test("forwards refs", () => {
