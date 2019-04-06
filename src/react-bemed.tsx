@@ -78,11 +78,9 @@ function createReactBEMComponent<
         /**
          * BEM modifier class names
          */
-        const modClassNames = generateBEMModClassNames(
-            blockClassName,
-            usedMods,
-            modifierSeparator,
-        );
+        const modClassNames = usedMods
+            .map(mod => blockClassName.trim() + modifierSeparator + mod.trim())
+            .sort();
 
         /**
          * Final class name to be passed to DOM
@@ -138,14 +136,6 @@ function createReactBEMComponent<
  * Convert dict of mods to boolean react props
  */
 type ModProps<T> = { [P in keyof T]?: boolean };
-
-function generateBEMModClassNames(name: string, mods: string[], sep: string) {
-    return mods
-        .map(mod => {
-            return name.trim() + sep + mod.trim();
-        })
-        .sort();
-}
 
 export interface BemedOptions {
     className?: string | string[];
