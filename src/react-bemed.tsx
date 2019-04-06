@@ -6,7 +6,17 @@ function classNameToArray(className: undefined | string | string[]) {
     return Array.isArray(className) ? className : (className || "").split(" ");
 }
 
-export function createReactBEMComponent<
+/**
+ * Add BEM class names to any given React Component that takes a className prop
+ *
+ * @param comp Any React Component that takes className
+ * @param blockName The block or element name string
+ * @param knownMods Object of known modifiers
+ * @param extraClassNames Extra static class names given in the BEM component definition
+ * @param globalClassNames Extra static class names given by the bemed() factory
+ * @param modifierSeparator Extra static class names
+ */
+function createReactBEMComponent<
     Comp extends ElementNames,
     KnownMods extends Record<string, boolean | undefined>
 >(
@@ -14,6 +24,7 @@ export function createReactBEMComponent<
     blockName: string,
     knownMods: KnownMods,
     extraClassNames: string[],
+    globalClassNames: string[],
     modifierSeparator: string,
 ) {
     type ReactProps = JSX.IntrinsicElements[Comp];
@@ -61,7 +72,8 @@ export function createReactBEMComponent<
                 ),
             )
             .concat(customMods)
-            .concat(extraClassNames || [])
+            .concat(extraClassNames)
+            .concat(globalClassNames)
             .concat(runtimeClassNames)
             .map(cn => cn.trim())
             .filter(Boolean)
@@ -93,7 +105,7 @@ function generateBEMModClassNames(name: string, mods: string[], sep: string) {
         .sort();
 }
 
-interface BemedOptions {
+export interface BemedOptions {
     className?: string | string[];
     separators?: {
         namespace?: string;
@@ -102,7 +114,7 @@ interface BemedOptions {
     };
 }
 
-interface BEMComponentDefinition {
+export interface BEMComponentDefinition {
     el?: ElementNames;
     className?: string;
     mods?: {
@@ -146,7 +158,10 @@ export function bemed(
     prefix?: string,
     bemedOptions: BemedOptions | undefined = {},
 ) {
-    return function createBEMBlock<
+    /**
+     * Define BEM Block and Elements
+     */
+    return function defineBEMBlock<
         Elements extends {
             [key: string]: BEMComponentDefinition;
         },
@@ -184,7 +199,8 @@ export function bemed(
             blockOptions.el || "div",
             blockClassName,
             blockOptions.mods as BEMBlockProps,
-            classNameToArray(blockOptions.className).concat(globalClassNames),
+            classNameToArray(blockOptions.className),
+            globalClassNames,
             separators.modifier,
         );
 
@@ -214,9 +230,8 @@ export function bemed(
                 elementOptions.el || "div",
                 fullElementName,
                 elementOptions.mods as BEMElementProps,
-                classNameToArray(elementOptions.className).concat(
-                    globalClassNames,
-                ),
+                classNameToArray(elementOptions.className),
+                globalClassNames,
                 separators.modifier,
             );
 
