@@ -176,12 +176,11 @@ const Button = defineBlock("Button", {
 or with other non-BEM class systems
 
 ```tsx
-const createBSBlock = bemed("bs", {
-    className: "btn",
-});
+const createBSBlock = bemed("bs");
 
 const Button = createBSBlock("Button", {
     el: "button",
+    className: "btn",
     mods: {
         primary: "btn-primary",
         danger: "btn-danger",
