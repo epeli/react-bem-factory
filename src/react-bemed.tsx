@@ -163,7 +163,7 @@ export interface BEMComponentDefinition {
     css?: BEMCSS;
     className?: string;
     mods?: {
-        [mod: string]: true | string;
+        [mod: string]: true | string | BEMCSS;
     };
 }
 
@@ -171,7 +171,7 @@ interface BEMComponentDefinitionStrict {
     el: ElementNames;
     className?: string;
     mods?: {
-        [mod: string]: true | string;
+        [mod: string]: true | string | BEMCSS;
     };
 }
 
@@ -212,7 +212,7 @@ export function bemed(
         },
         BEMBlockDOMElement extends ElementNames = "div",
         BEMBlockMods extends
-            | Record<string, true | string>
+            | Record<string, true | string | BEMCSS>
             | undefined = undefined
     >(
         blockName: string,
@@ -245,6 +245,15 @@ export function bemed(
             blockOptions.css.inject(blockClassName);
         }
 
+        if (blockOptions.mods) {
+            for (const key in blockOptions.mods) {
+                const mod = blockOptions.mods[key] as any;
+                if (mod.inject) {
+                    mod.inject(blockClassName + separators.modifier + key);
+                }
+            }
+        }
+
         const Block = createReactBEMComponent(
             blockOptions.el || "div",
             blockClassName,
@@ -260,7 +269,7 @@ export function bemed(
         function createBEMElement<
             BEMElement extends ElementNames,
             BEMElementMods extends
-                | Record<string, true | string>
+                | Record<string, true | string | BEMCSS>
                 | undefined = undefined
         >(
             blockElementName: string,
