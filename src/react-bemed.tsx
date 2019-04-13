@@ -62,36 +62,46 @@ function createReactBEMComponent<
          */
         const customModClassNames: string[] = [];
 
+        const applyMods = (prop: string) => {
+            const modType = opts.knownMods[prop];
+
+            if (!modType) {
+                componentProps[prop] = props[prop];
+                return;
+            }
+
+            if (!props[prop]) {
+                return;
+            }
+
+            if (typeof modType === "string") {
+                customModClassNames.push(modType);
+                return;
+            }
+
+            usedMods.push(prop);
+
+            const modClassName =
+                opts.blockClassName.trim() +
+                opts.modifierSeparator +
+                prop.trim();
+
+            usedModClassNames.push(modClassName);
+
+            if (modType === true) {
+                return;
+            }
+
+            const cssMod = (modType as any) as BEMCSS;
+            usedCSS.push({
+                className: modClassName,
+                css: cssMod,
+            });
+        };
+
         if (opts.knownMods) {
             for (const prop in props) {
-                const modType = opts.knownMods[prop];
-                if (modType) {
-                    const isActive = props[prop];
-                    if (isActive) {
-                        if (typeof modType === "string") {
-                            customModClassNames.push(modType);
-                        } else {
-                            usedMods.push(prop);
-
-                            const modClassName =
-                                opts.blockClassName.trim() +
-                                opts.modifierSeparator +
-                                prop.trim();
-
-                            usedModClassNames.push(modClassName);
-
-                            if (modType !== true) {
-                                const cssMod = (modType as any) as BEMCSS;
-                                usedCSS.push({
-                                    className: modClassName,
-                                    css: cssMod,
-                                });
-                            }
-                        }
-                    }
-                } else {
-                    componentProps[prop] = props[prop];
-                }
+                applyMods(prop);
             }
         } else {
             componentProps = props;
