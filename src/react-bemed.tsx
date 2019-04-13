@@ -48,6 +48,13 @@ function createReactBEMComponent<
         /** Array of used BEM mods */
         const usedMods: string[] = [];
 
+        const usedCSS: {
+            className: string;
+            css: BEMCSS;
+        }[] = [];
+
+        const usedModClassNames: string[] = [];
+
         /**
          * Custom class names from string valued mod definitions
          * Ex. from
@@ -70,6 +77,21 @@ function createReactBEMComponent<
                             customModClassNames.push(modType);
                         } else {
                             usedMods.push(prop);
+
+                            const modClassName =
+                                blockClassName.trim() +
+                                modifierSeparator +
+                                prop.trim();
+
+                            usedModClassNames.push(modClassName);
+
+                            if (modType !== true) {
+                                const cssMod = (modType as any) as BEMCSS;
+                                usedCSS.push({
+                                    className: modClassName,
+                                    css: cssMod,
+                                });
+                            }
                         }
                     }
                 } else {
@@ -81,17 +103,10 @@ function createReactBEMComponent<
         }
 
         /**
-         * BEM modifier class names
-         */
-        const modClassNames = usedMods
-            .map(mod => blockClassName.trim() + modifierSeparator + mod.trim())
-            .sort();
-
-        /**
          * Final class name to be passed to DOM
          */
         const finalClassName = [blockClassName]
-            .concat(modClassNames)
+            .concat(usedModClassNames.sort())
             .concat(customModClassNames)
             .concat(staticClassNames)
             .concat(globalStaticClassNames)
@@ -135,7 +150,20 @@ function createReactBEMComponent<
             );
 
         if (css) {
-            return css.render(blockClassName, render);
+            usedCSS.push({
+                className: blockClassName,
+                css: css,
+            });
+        }
+
+        if (usedCSS.length > 0) {
+            return usedCSS[0].css.render(
+                render,
+                usedCSS.map(css => ({
+                    className: css.className,
+                    compile: css.css.compile,
+                })),
+            );
         }
 
         return render();

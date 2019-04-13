@@ -191,3 +191,31 @@ test("does not duplicate server-rendered styles within loop", () => {
     expect(styleTags.length).toBe(1);
     expect(styleTags[0].innerHTML).toContain("orange");
 });
+
+test("server renders block mods", () => {
+    process.env.TEST_ENV = "node";
+
+    const block = bemed();
+
+    const Block = block("TestBlock", {
+        css: css`
+            color: blue;
+        `,
+        mods: {
+            ding: css`
+                color: orange;
+            `,
+        },
+    });
+
+    const rtl = render(
+        <SSRProvider>
+            <Block ding>test</Block>
+        </SSRProvider>,
+    );
+
+    const styleTags = rtl.getAllByTestId("bemed-style");
+
+    expect(styleTags.length).toBe(1);
+    expect(styleTags[0].innerHTML).toContain("orange");
+});

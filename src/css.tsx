@@ -21,16 +21,24 @@ export function css(literals: TemplateStringsArray, ...placeholders: string[]) {
 
     result += literals[literals.length - 1];
 
-    const compileCSS = (className: string): string => {
+    const compileBlockCSS = (className: string): string => {
         return stylis("." + className, result);
     };
 
     return {
+        compile: compileBlockCSS,
+
         inject(className: string) {
-            injectGlobal(className, compileCSS(className));
+            injectGlobal(className, compileBlockCSS(className));
         },
 
-        render<T>(className: string, renderReactElement: () => T): T {
+        render<T>(
+            renderReactElement: () => T,
+            cssThings: {
+                className: string;
+                compile(className: string): string;
+            }[],
+        ): T {
             if (IS_BROWSER) {
                 return renderReactElement();
             }
@@ -38,31 +46,35 @@ export function css(literals: TemplateStringsArray, ...placeholders: string[]) {
             return React.createElement(
                 Context.Consumer,
                 null,
-                (record: StyleRenderRecord) => {
-                    if (!record) {
+                (compilingRecord: StyleRenderRecord) => {
+                    if (!compilingRecord) {
                         return renderReactElement();
                     }
 
-                    if (record[className]) {
-                        return renderReactElement();
-                    }
+                    let css = "";
 
-                    record[className] = true;
+                    for (const cssThing of cssThings) {
+                        if (compilingRecord[cssThing.className]) {
+                            continue;
+                        }
+
+                        compilingRecord[cssThing.className] = true;
+                        css += cssThing.compile(cssThing.className);
+                    }
 
                     let props: any = {};
-
                     if (process.env.NODE_ENV !== "production") {
                         props["data-testid"] = "bemed-style";
+                    }
+
+                    if (!css) {
+                        return renderReactElement();
                     }
 
                     return React.createElement(
                         React.Fragment,
                         null,
-                        React.createElement(
-                            "style",
-                            props,
-                            compileCSS(className),
-                        ),
+                        React.createElement("style", props, css),
                         renderReactElement(),
                     );
                 },
