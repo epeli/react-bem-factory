@@ -102,6 +102,7 @@ test("server renders style tags", () => {
     const styleTags = rtl.getAllByTestId("bemed-style");
 
     expect(styleTags.length).toBe(1);
+    expect(styleTags[0].innerHTML).toContain("orange");
 });
 
 test("does not duplicate server-rendered styles", () => {
@@ -124,6 +125,7 @@ test("does not duplicate server-rendered styles", () => {
     const styleTags = rtl.getAllByTestId("bemed-style");
 
     expect(styleTags.length).toBe(1);
+    expect(styleTags[0].innerHTML).toContain("orange");
 });
 
 test("does not duplicate server-rendered styles within loop", () => {
@@ -147,4 +149,5 @@ test("does not duplicate server-rendered styles within loop", () => {
     const styleTags = rtl.getAllByTestId("bemed-style");
 
     expect(styleTags.length).toBe(1);
+    expect(styleTags[0].innerHTML).toContain("orange");
 });
