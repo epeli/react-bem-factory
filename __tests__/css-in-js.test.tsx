@@ -219,3 +219,35 @@ test("server renders block mods", () => {
     expect(styleTags.length).toBe(1);
     expect(styleTags[0].innerHTML).toContain("orange");
 });
+
+test("incrementally renders used css", () => {
+    process.env.TEST_ENV = "node";
+
+    const block = bemed();
+
+    const Block = block("TestBlock", {
+        css: css`
+            color: blue;
+        `,
+        mods: {
+            ding: css`
+                color: orange;
+            `,
+        },
+    });
+
+    const rtl = render(
+        <SSRProvider>
+            <div data-testid="container">
+                <Block>normal</Block>
+                <Block>normal dup</Block>
+                <Block ding>ding</Block>
+                <Block ding>ding dup</Block>
+            </div>
+        </SSRProvider>,
+    );
+
+    const container = rtl.getByTestId("container");
+
+    expect(container).toMatchSnapshot();
+});
