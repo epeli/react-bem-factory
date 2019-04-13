@@ -43,6 +43,7 @@ function createReactBEMComponent<
         /** Array of used BEM mods */
         const usedMods: string[] = [];
 
+        /** css-in-js mods */
         const usedCSS: {
             className: string;
             css: BEMCSS;
@@ -65,22 +66,27 @@ function createReactBEMComponent<
         const applyMods = (prop: string) => {
             const modType = opts.knownMods[prop];
 
+            // Not a style mod. Just pass it as normal prop forward
             if (!modType) {
                 componentProps[prop] = props[prop];
                 return;
             }
 
+            // Inactive props. Eg. mymod={false} passed
             if (!props[prop]) {
                 return;
             }
 
+            // Custom class name mod
             if (typeof modType === "string") {
                 customModClassNames.push(modType);
                 return;
             }
 
+            // A BEM mod. We need to generate BEM modifier class name from this
             usedMods.push(prop);
 
+            // The generated mod class name
             const modClassName =
                 opts.blockClassName.trim() +
                 opts.modifierSeparator +
@@ -88,10 +94,12 @@ function createReactBEMComponent<
 
             usedModClassNames.push(modClassName);
 
+            // Class name only mod
             if (modType === true) {
                 return;
             }
 
+            // At the point it must be css-in-js mod
             const cssMod = (modType as any) as BEMCSS;
             usedCSS.push({
                 className: modClassName,
@@ -153,6 +161,7 @@ function createReactBEMComponent<
             }),
         );
 
+        // css-in-js css for the block
         if (opts.css) {
             usedCSS.push({
                 className: opts.blockClassName,
@@ -161,6 +170,10 @@ function createReactBEMComponent<
         }
 
         if (usedCSS.length > 0) {
+            // This is bit weird but we do it like this because this way the
+            // css-in-js does not get imported unless actually used
+
+            // Server renders with style tags
             return usedCSS[0].css.render(
                 reactElement,
                 usedCSS.map(css => ({
