@@ -287,6 +287,15 @@ export function bemed(
             const fullElementName =
                 blockClassName + separators.element + blockElementName;
 
+            if (elementOptions.mods) {
+                for (const key in elementOptions.mods) {
+                    const mod = elementOptions.mods[key] as any;
+                    if (mod.inject) {
+                        mod.inject(fullElementName + separators.modifier + key);
+                    }
+                }
+            }
+
             const BEMElement = createReactBEMComponent(
                 elementOptions.el || "div",
                 fullElementName,
