@@ -140,14 +140,13 @@ function createReactBEMComponent<
             .final.join(" ")
             .trim();
 
-        const render = () =>
-            createElement(
-                comp,
-                Object.assign({}, componentProps, {
-                    className: finalClassName,
-                    ref,
-                }),
-            );
+        const reactElement = createElement(
+            comp,
+            Object.assign({}, componentProps, {
+                className: finalClassName,
+                ref,
+            }),
+        );
 
         if (css) {
             usedCSS.push({
@@ -158,7 +157,7 @@ function createReactBEMComponent<
 
         if (usedCSS.length > 0) {
             return usedCSS[0].css.render(
-                render,
+                reactElement,
                 usedCSS.map(css => ({
                     className: css.className,
                     compile: css.css.compile,
@@ -166,7 +165,7 @@ function createReactBEMComponent<
             );
         }
 
-        return render();
+        return reactElement;
     });
 
     return (BEMComponent as any) as ((props: FinalProps) => any);

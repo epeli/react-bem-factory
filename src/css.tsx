@@ -33,14 +33,14 @@ export function css(literals: TemplateStringsArray, ...placeholders: string[]) {
         },
 
         render<T>(
-            renderReactElement: () => T,
+            reactElement: T,
             cssThings: {
                 className: string;
                 compile(className: string): string;
             }[],
         ): T {
             if (IS_BROWSER) {
-                return renderReactElement();
+                return reactElement;
             }
 
             return React.createElement(
@@ -48,7 +48,7 @@ export function css(literals: TemplateStringsArray, ...placeholders: string[]) {
                 null,
                 (compilingRecord: StyleRenderRecord) => {
                     if (!compilingRecord) {
-                        return renderReactElement();
+                        return reactElement;
                     }
 
                     let css = "";
@@ -68,14 +68,14 @@ export function css(literals: TemplateStringsArray, ...placeholders: string[]) {
                     }
 
                     if (!css) {
-                        return renderReactElement();
+                        return reactElement;
                     }
 
                     return React.createElement(
                         React.Fragment,
                         null,
                         React.createElement("style", props, css),
-                        renderReactElement(),
+                        reactElement,
                     );
                 },
             ) as any;
