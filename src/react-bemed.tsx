@@ -287,6 +287,10 @@ export function bemed(
             const fullElementName =
                 blockClassName + separators.element + blockElementName;
 
+            if (elementOptions.css) {
+                elementOptions.css.inject(fullElementName);
+            }
+
             if (elementOptions.mods) {
                 for (const key in elementOptions.mods) {
                     const mod = elementOptions.mods[key] as any;
@@ -317,16 +321,12 @@ export function bemed(
         if (blockOptions.elements) {
             for (const key in blockOptions.elements) {
                 const def = blockOptions.elements[key];
-                const element = (out[key] = createBEMElement(key, {
+                out[key] = createBEMElement(key, {
                     el: def.el,
                     mods: def.mods,
                     className: def.className,
                     css: def.css,
-                }));
-
-                if (def.css) {
-                    def.css.inject((element as any).className);
-                }
+                });
             }
         }
 
