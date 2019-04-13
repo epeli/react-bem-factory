@@ -30,6 +30,25 @@ test("injects style tag for blocks", () => {
     expect(mockInjectGlobal.mock.calls[0][1]).toContain(".TestBlock");
 });
 
+test("Autoprefixes during injection", () => {
+    const block = bemed();
+    const Block = block("TestBlock", {
+        css: css`
+            @keyframes slide {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+        `,
+    });
+
+    expect(injectGlobal).toBeCalledTimes(1);
+    expect(mockInjectGlobal.mock.calls[0][1]).toContain("@-webkit-");
+});
+
 test("injects style tag for elements", () => {
     const block = bemed();
 
@@ -316,4 +335,52 @@ test("incrementally renders used css", () => {
     const container = rtl.getByTestId("container");
 
     expect(container).toMatchSnapshot();
+});
+
+test("Autoprefixes during injection", () => {
+    const block = bemed();
+    const Block = block("TestBlock", {
+        css: css`
+            @keyframes slide {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+        `,
+    });
+
+    expect(injectGlobal).toBeCalledTimes(1);
+    expect(mockInjectGlobal.mock.calls[0][1]).toContain("@-webkit-");
+});
+
+test("server renders autoprefixed", () => {
+    process.env.TEST_ENV = "node";
+
+    const block = bemed();
+    const Block = block("TestBlock", {
+        css: css`
+            @keyframes slide {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+        `,
+    });
+
+    const rtl = render(
+        <SSRProvider>
+            <Block>test</Block>
+        </SSRProvider>,
+    );
+
+    const styleTags = rtl.getAllByTestId("bemed-style");
+
+    expect(styleTags.length).toBe(1);
+    expect(styleTags[0].innerHTML).toContain("@-webkit-");
 });
