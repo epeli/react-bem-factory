@@ -27,6 +27,7 @@ test("injects style tag for blocks", () => {
     expect(injectGlobal).toBeCalledTimes(1);
     expect(mockInjectGlobal.mock.calls[0][0]).toEqual("TestBlock");
     expect(mockInjectGlobal.mock.calls[0][1]).toContain("orange");
+    expect(mockInjectGlobal.mock.calls[0][1]).toContain(".TestBlock");
 });
 
 test("injects style tag for elements", () => {
@@ -45,6 +46,7 @@ test("injects style tag for elements", () => {
     expect(injectGlobal).toBeCalledTimes(1);
     expect(mockInjectGlobal.mock.calls[0][0]).toEqual("TestBlock__Foo");
     expect(mockInjectGlobal.mock.calls[0][1]).toContain("red");
+    expect(mockInjectGlobal.mock.calls[0][1]).toContain(".TestBlock__Foo");
 });
 
 test("injects style tag for block mods", () => {
@@ -61,6 +63,7 @@ test("injects style tag for block mods", () => {
     expect(injectGlobal).toBeCalledTimes(1);
     expect(mockInjectGlobal.mock.calls[0][0]).toEqual("TestBlock--ding");
     expect(mockInjectGlobal.mock.calls[0][1]).toContain("orange");
+    expect(mockInjectGlobal.mock.calls[0][1]).toContain(".TestBlock--ding");
 });
 
 test("also adds the BEM class for css block mods", () => {
@@ -121,6 +124,9 @@ test("injects style tag for element mods", () => {
     expect(injectGlobal).toBeCalledTimes(1);
     expect(mockInjectGlobal.mock.calls[0][0]).toEqual("TestBlock__Foo--ding");
     expect(mockInjectGlobal.mock.calls[0][1]).toContain("orange");
+    expect(mockInjectGlobal.mock.calls[0][1]).toContain(
+        ".TestBlock__Foo--ding",
+    );
 });
 
 test("server renders style tags for blocks", () => {
@@ -143,6 +149,7 @@ test("server renders style tags for blocks", () => {
 
     expect(styleTags.length).toBe(1);
     expect(styleTags[0].innerHTML).toContain("orange");
+    expect(styleTags[0].innerHTML).toContain(".TestBlock");
 });
 
 test("server renders style tags for elements", () => {
@@ -169,7 +176,7 @@ test("server renders style tags for elements", () => {
 
     expect(styleTags.length).toBe(1);
     expect(styleTags[0].innerHTML).toContain("orange");
-    expect(styleTags[0].innerHTML).toContain(Block.Foo.className);
+    expect(styleTags[0].innerHTML).toContain(".TestBlock__Foo");
 });
 
 test("does not duplicate server-rendered styles", () => {
@@ -192,7 +199,6 @@ test("does not duplicate server-rendered styles", () => {
     const styleTags = rtl.getAllByTestId("bemed-style");
 
     expect(styleTags.length).toBe(1);
-    expect(styleTags[0].innerHTML).toContain("orange");
 });
 
 test("does not duplicate server-rendered styles within loop", () => {
@@ -216,7 +222,6 @@ test("does not duplicate server-rendered styles within loop", () => {
     const styleTags = rtl.getAllByTestId("bemed-style");
 
     expect(styleTags.length).toBe(1);
-    expect(styleTags[0].innerHTML).toContain("orange");
 });
 
 test("server renders block mods", () => {
@@ -245,6 +250,7 @@ test("server renders block mods", () => {
 
     expect(styleTags.length).toBe(1);
     expect(styleTags[0].innerHTML).toContain("orange");
+    expect(styleTags[0].innerHTML).toContain(".TestBlock--ding");
 });
 
 test("server renders element mods", () => {
@@ -277,7 +283,7 @@ test("server renders element mods", () => {
 
     expect(styleTags.length).toBe(1);
     expect(styleTags[0].innerHTML).toContain("orange");
-    expect(styleTags[0].innerHTML).toContain(Block.Foo.className);
+    expect(styleTags[0].innerHTML).toContain(".TestBlock__Foo--ding");
 });
 
 test("incrementally renders used css", () => {
