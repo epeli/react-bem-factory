@@ -5,7 +5,9 @@ declare const process: any;
 
 export const IS_BROWSER: boolean = (() => {
     if (process.env.NODE_ENV !== "production") {
-        return process.env.TEST_ENV === "browser";
+        if (process.env.TEST_ENV) {
+            return process.env.TEST_ENV === "browser";
+        }
     }
 
     return typeof document !== "undefined";
