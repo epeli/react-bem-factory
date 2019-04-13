@@ -123,7 +123,7 @@ test("injects style tag for element mods", () => {
     expect(mockInjectGlobal.mock.calls[0][1]).toContain("orange");
 });
 
-test("server renders style tags", () => {
+test("server renders style tags for blocks", () => {
     process.env.TEST_ENV = "node";
 
     const block = bemed();
@@ -143,6 +143,33 @@ test("server renders style tags", () => {
 
     expect(styleTags.length).toBe(1);
     expect(styleTags[0].innerHTML).toContain("orange");
+});
+
+test("server renders style tags for elements", () => {
+    process.env.TEST_ENV = "node";
+
+    const block = bemed();
+    const Block = block("TestBlock", {
+        elements: {
+            Foo: {
+                css: css`
+                    color: orange;
+                `,
+            },
+        },
+    });
+
+    const rtl = render(
+        <SSRProvider>
+            <Block.Foo>test</Block.Foo>
+        </SSRProvider>,
+    );
+
+    const styleTags = rtl.getAllByTestId("bemed-style");
+
+    expect(styleTags.length).toBe(1);
+    expect(styleTags[0].innerHTML).toContain("orange");
+    expect(styleTags[0].innerHTML).toContain(Block.Foo.className);
 });
 
 test("does not duplicate server-rendered styles", () => {
