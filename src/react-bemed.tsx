@@ -1,5 +1,6 @@
 import { forwardRef, createElement } from "react";
 import React from "react";
+import { CSSCompiler } from "./css";
 
 type BEMCSS = import("./css").BEMCSS;
 
@@ -160,7 +161,7 @@ function createReactBEMComponent<
                 reactElement,
                 usedCSS.map(css => ({
                     className: css.className,
-                    compile: css.css.compile,
+                    cssString: css.css.cssString,
                 })),
             );
         }
@@ -178,6 +179,7 @@ type ModProps<T> = { [P in keyof T]?: boolean };
 
 export interface BemedOptions {
     className?: string | string[];
+    cssCompiler?: CSSCompiler;
     separators?: {
         namespace?: string;
         modifier?: string;
@@ -269,14 +271,17 @@ export function bemed(
         const globalStaticClassNames = classNameToArray(bemedOptions.className);
 
         if (blockOptions.css) {
-            blockOptions.css.inject(blockClassName);
+            blockOptions.css.inject(blockClassName, bemedOptions.cssCompiler);
         }
 
         if (blockOptions.mods) {
             for (const key in blockOptions.mods) {
                 const mod = blockOptions.mods[key] as any;
                 if (mod.inject) {
-                    mod.inject(blockClassName + separators.modifier + key);
+                    mod.inject(
+                        blockClassName + separators.modifier + key,
+                        bemedOptions.cssCompiler,
+                    );
                 }
             }
         }
@@ -315,14 +320,20 @@ export function bemed(
                 blockClassName + separators.element + blockElementName;
 
             if (elementOptions.css) {
-                elementOptions.css.inject(fullElementName);
+                elementOptions.css.inject(
+                    fullElementName,
+                    bemedOptions.cssCompiler,
+                );
             }
 
             if (elementOptions.mods) {
                 for (const key in elementOptions.mods) {
                     const mod = elementOptions.mods[key] as any;
                     if (mod.inject) {
-                        mod.inject(fullElementName + separators.modifier + key);
+                        mod.inject(
+                            fullElementName + separators.modifier + key,
+                            bemedOptions.cssCompiler,
+                        );
                     }
                 }
             }

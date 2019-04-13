@@ -1,4 +1,5 @@
 import { render, cleanup, fireEvent } from "react-testing-library";
+import Stylis from "stylis";
 import { bemed } from "../src/react-bemed";
 import React from "react";
 import { css, SSRProvider } from "../src/css";
@@ -341,19 +342,12 @@ test("Autoprefixes during injection", () => {
     const block = bemed();
     const Block = block("TestBlock", {
         css: css`
-            @keyframes slide {
-                from {
-                    opacity: 0;
-                }
-                to {
-                    opacity: 1;
-                }
-            }
+            flex: 1;
         `,
     });
 
     expect(injectGlobal).toBeCalledTimes(1);
-    expect(mockInjectGlobal.mock.calls[0][1]).toContain("@-webkit-");
+    expect(mockInjectGlobal.mock.calls[0][1]).toContain("-webkit-");
 });
 
 test("server renders autoprefixed", () => {
@@ -362,14 +356,7 @@ test("server renders autoprefixed", () => {
     const block = bemed();
     const Block = block("TestBlock", {
         css: css`
-            @keyframes slide {
-                from {
-                    opacity: 0;
-                }
-                to {
-                    opacity: 1;
-                }
-            }
+            flex: 1;
         `,
     });
 
@@ -382,5 +369,57 @@ test("server renders autoprefixed", () => {
     const styleTags = rtl.getAllByTestId("bemed-style");
 
     expect(styleTags.length).toBe(1);
-    expect(styleTags[0].innerHTML).toContain("@-webkit-");
+    expect(styleTags[0].innerHTML).toContain("-webkit-");
+});
+
+test("can use custom stylis", () => {
+    const block = bemed("", {
+        cssCompiler: new Stylis({
+            prefix: false,
+        }),
+    });
+
+    const Block = block("TestBlock", {
+        css: css`
+            flex: 1;
+        `,
+    });
+
+    expect(injectGlobal).toBeCalledTimes(1);
+    expect(mockInjectGlobal.mock.calls[0][1]).not.toContain("-webkit-");
+});
+
+test("can use custom css compiler for injection", () => {
+    const block = bemed("", {
+        cssCompiler: () => "custom",
+    });
+
+    const Block = block("TestBlock", {
+        css: css`
+            flex: 1;
+        `,
+        mods: {
+            blockMod: css`
+                flex: 1;
+            `,
+        },
+        elements: {
+            Foo: {
+                css: css`
+                    flex: 1;
+                `,
+                mods: {
+                    elementMod: css`
+                        flex: 1;
+                    `,
+                },
+            },
+        },
+    });
+
+    expect(injectGlobal).toBeCalledTimes(4);
+    expect(mockInjectGlobal.mock.calls[0][1]).toBe("custom");
+    expect(mockInjectGlobal.mock.calls[1][1]).toBe("custom");
+    expect(mockInjectGlobal.mock.calls[2][1]).toBe("custom");
+    expect(mockInjectGlobal.mock.calls[3][1]).toBe("custom");
 });

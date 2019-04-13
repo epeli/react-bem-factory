@@ -11,75 +11,83 @@ export function SSRProvider(props: { children: React.ReactNode }) {
     return <Context.Provider value={{}}>{props.children}</Context.Provider>;
 }
 
-export function css(literals: TemplateStringsArray, ...placeholders: string[]) {
-    let result = "";
+export type CSSCompiler = (className: string, css: string) => string;
 
-    for (let i = 0; i < placeholders.length; i++) {
-        result += literals[i];
-        result += placeholders[i];
+const defaultCompile = (className: string, css: string): string => {
+    return stylis("." + className, css);
+};
+
+function serverRender<T>(
+    reactElement: T,
+    cssChunks: {
+        className: string;
+        cssString: string;
+    }[],
+    compiler?: CSSCompiler,
+): T {
+    if (IS_BROWSER) {
+        return reactElement;
     }
 
-    result += literals[literals.length - 1];
+    const finalCompiler = compiler || defaultCompile;
 
-    const compileBlockCSS = (className: string): string => {
-        return stylis("." + className, result);
-    };
+    return React.createElement(
+        Context.Consumer,
+        null,
+        (compilingRecord: StyleRenderRecord) => {
+            if (!compilingRecord) {
+                return reactElement;
+            }
 
-    return {
-        compile: compileBlockCSS,
+            let css = "";
 
-        inject(className: string) {
-            injectGlobal(className, compileBlockCSS(className));
-        },
+            for (const chunk of cssChunks) {
+                if (compilingRecord[chunk.className]) {
+                    continue;
+                }
 
-        render<T>(
-            reactElement: T,
-            cssThings: {
-                className: string;
-                compile(className: string): string;
-            }[],
-        ): T {
-            if (IS_BROWSER) {
+                compilingRecord[chunk.className] = true;
+                css += finalCompiler(chunk.className, chunk.cssString);
+            }
+
+            let props: any = {};
+
+            if (process.env.NODE_ENV !== "production") {
+                props["data-testid"] = "bemed-style";
+            }
+
+            if (!css) {
                 return reactElement;
             }
 
             return React.createElement(
-                Context.Consumer,
+                React.Fragment,
                 null,
-                (compilingRecord: StyleRenderRecord) => {
-                    if (!compilingRecord) {
-                        return reactElement;
-                    }
-
-                    let css = "";
-
-                    for (const cssThing of cssThings) {
-                        if (compilingRecord[cssThing.className]) {
-                            continue;
-                        }
-
-                        compilingRecord[cssThing.className] = true;
-                        css += cssThing.compile(cssThing.className);
-                    }
-
-                    let props: any = {};
-                    if (process.env.NODE_ENV !== "production") {
-                        props["data-testid"] = "bemed-style";
-                    }
-
-                    if (!css) {
-                        return reactElement;
-                    }
-
-                    return React.createElement(
-                        React.Fragment,
-                        null,
-                        React.createElement("style", props, css),
-                        reactElement,
-                    );
-                },
-            ) as any;
+                React.createElement("style", props, css),
+                reactElement,
+            );
         },
+    ) as any;
+}
+
+export function css(literals: TemplateStringsArray, ...placeholders: string[]) {
+    let cssString = "";
+
+    for (let i = 0; i < placeholders.length; i++) {
+        cssString += literals[i];
+        cssString += placeholders[i];
+    }
+
+    cssString += literals[literals.length - 1];
+
+    return {
+        cssString,
+
+        inject(className: string, compiler: CSSCompiler = defaultCompile) {
+            injectGlobal(className, compiler(className, cssString));
+        },
+
+        render: serverRender,
     };
 }
 
