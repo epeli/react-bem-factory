@@ -423,3 +423,52 @@ test("can use custom css compiler for injection", () => {
     expect(mockInjectGlobal.mock.calls[2][1]).toBe("custom");
     expect(mockInjectGlobal.mock.calls[3][1]).toBe("custom");
 });
+
+test("can use custom css compiler in server render", () => {
+    process.env.TEST_ENV = "node";
+    const block = bemed("", {
+        cssCompiler: () => "custom",
+    });
+
+    const Block = block("TestBlock", {
+        css: css`
+            flex: 1;
+        `,
+        mods: {
+            blockMod: css`
+                flex: 1;
+            `,
+        },
+        elements: {
+            Foo: {
+                css: css`
+                    flex: 1;
+                `,
+                mods: {
+                    elementMod: css`
+                        flex: 1;
+                    `,
+                },
+            },
+        },
+    });
+
+    const rtl = render(
+        <SSRProvider>
+            <Block>test</Block>
+            <Block blockMod>test</Block>
+            <Block.Foo>test</Block.Foo>
+            <Block.Foo elementMod>test</Block.Foo>
+        </SSRProvider>,
+    );
+
+    const styleTags = rtl.getAllByTestId("bemed-style");
+
+    expect(styleTags.length).toBe(4);
+    expect(styleTags.map(tag => tag.innerHTML)).toEqual([
+        "custom",
+        "custom",
+        "custom",
+        "custom",
+    ]);
+});

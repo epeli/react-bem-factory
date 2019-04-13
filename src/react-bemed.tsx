@@ -31,6 +31,7 @@ function createReactBEMComponent<
     globalStaticClassNames: string[],
     modifierSeparator: string,
     css?: BEMCSS,
+    cssCompiler?: CSSCompiler,
 ) {
     type ReactProps = JSX.IntrinsicElements[Comp];
 
@@ -163,6 +164,7 @@ function createReactBEMComponent<
                     className: css.className,
                     cssString: css.css.cssString,
                 })),
+                cssCompiler,
             );
         }
 
@@ -294,6 +296,7 @@ export function bemed(
             globalStaticClassNames,
             separators.modifier,
             blockOptions.css,
+            bemedOptions.cssCompiler,
         );
 
         (Block as any).displayName = `BEMBlock(${blockClassName})`;
@@ -346,6 +349,7 @@ export function bemed(
                 globalStaticClassNames,
                 separators.modifier,
                 elementOptions.css,
+                bemedOptions.cssCompiler,
             );
 
             (BEMElement as any).displayName = `BEMElement(${fullElementName})`;
