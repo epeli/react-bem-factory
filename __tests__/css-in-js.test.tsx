@@ -63,6 +63,46 @@ test("injects style tag for block mods", () => {
     expect(mockInjectGlobal.mock.calls[0][1]).toContain("orange");
 });
 
+test("also adds the BEM class for css block mods", () => {
+    const block = bemed("prefix");
+
+    const Block = block("TestBlock", {
+        mods: {
+            ding: css`
+                color: orange;
+            `,
+        },
+    });
+
+    const rtl = render(<Block ding>test</Block>);
+    const el = rtl.getByText("test");
+
+    expect(el.className).toBe("prefix-TestBlock prefix-TestBlock--ding");
+});
+
+test("also adds the BEM class for css element mods", () => {
+    const block = bemed("prefix");
+
+    const Block = block("TestBlock", {
+        elements: {
+            Foo: {
+                mods: {
+                    ding: css`
+                        color: orange;
+                    `,
+                },
+            },
+        },
+    });
+
+    const rtl = render(<Block.Foo ding>test</Block.Foo>);
+    const el = rtl.getByText("test");
+
+    expect(el.className).toBe(
+        "prefix-TestBlock__Foo prefix-TestBlock__Foo--ding",
+    );
+});
+
 test("injects style tag for element mods", () => {
     const block = bemed();
 
