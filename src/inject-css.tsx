@@ -1,7 +1,15 @@
 const INJECTED: Record<string, true> = {};
 let STYLE_EL: HTMLStyleElement | null = null;
 
-export const IS_BROWSER = typeof document !== "undefined";
+declare const process: any;
+
+export const IS_BROWSER: boolean = (() => {
+    if (process.env.NODE_ENV !== "production") {
+        return process.env.TEST_ENV === "browser";
+    }
+
+    return typeof document !== "undefined";
+})();
 
 export function injectGlobal(id: string, css: string) {
     if (!IS_BROWSER) {

@@ -2,6 +2,8 @@ import React from "react";
 import stylis from "stylis";
 import { injectGlobal, IS_BROWSER } from "./inject-css";
 
+declare const process: any;
+
 type StyleRenderRecord = Record<string, true>;
 const Context = React.createContext<StyleRenderRecord | null>(null);
 
@@ -47,12 +49,18 @@ export function css(literals: TemplateStringsArray, ...placeholders: string[]) {
 
                     record[className] = true;
 
+                    let props: any = {};
+
+                    if (process.env.NODE_ENV !== "production") {
+                        props["data-testid"] = "bemed-style";
+                    }
+
                     return React.createElement(
                         React.Fragment,
                         null,
                         React.createElement(
                             "style",
-                            null,
+                            props,
                             compileCSS(className),
                         ),
                         renderReactElement(),
