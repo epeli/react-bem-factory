@@ -103,3 +103,48 @@ test("server renders style tags", () => {
 
     expect(styleTags.length).toBe(1);
 });
+
+test("does not duplicate server-rendered styles", () => {
+    process.env.TEST_ENV = "node";
+
+    const block = bemed();
+    const Block = block("TestBlock", {
+        css: css`
+            color: orange;
+        `,
+    });
+
+    const rtl = render(
+        <SSRProvider>
+            <Block>test</Block>
+            <Block>test</Block>
+        </SSRProvider>,
+    );
+
+    const styleTags = rtl.getAllByTestId("bemed-style");
+
+    expect(styleTags.length).toBe(1);
+});
+
+test("does not duplicate server-rendered styles within loop", () => {
+    process.env.TEST_ENV = "node";
+
+    const block = bemed();
+    const Block = block("TestBlock", {
+        css: css`
+            color: orange;
+        `,
+    });
+
+    const rtl = render(
+        <SSRProvider>
+            {[1, 2, 3].map(num => (
+                <Block key={num}>test</Block>
+            ))}
+        </SSRProvider>,
+    );
+
+    const styleTags = rtl.getAllByTestId("bemed-style");
+
+    expect(styleTags.length).toBe(1);
+});
