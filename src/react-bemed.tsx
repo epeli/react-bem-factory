@@ -1,4 +1,7 @@
 import { forwardRef, createElement } from "react";
+import React from "react";
+
+type BEMCSS = import("./css").BEMCSS;
 
 type ElementNames = keyof React.ReactHTML;
 
@@ -26,6 +29,7 @@ function createReactBEMComponent<
     staticClassNames: string[],
     globalStaticClassNames: string[],
     modifierSeparator: string,
+    css?: BEMCSS,
 ) {
     type ReactProps = JSX.IntrinsicElements[Comp];
 
@@ -121,13 +125,20 @@ function createReactBEMComponent<
             .final.join(" ")
             .trim();
 
-        return createElement(
-            comp,
-            Object.assign({}, componentProps, {
-                className: finalClassName,
-                ref,
-            }),
-        );
+        const render = () =>
+            createElement(
+                comp,
+                Object.assign({}, componentProps, {
+                    className: finalClassName,
+                    ref,
+                }),
+            );
+
+        if (css) {
+            return css.render(blockClassName, render);
+        }
+
+        return render();
     });
 
     return (BEMComponent as any) as ((props: FinalProps) => any);
@@ -208,6 +219,7 @@ export function bemed(
             | {
                   el?: BEMBlockDOMElement;
                   mods?: BEMBlockMods;
+                  css?: BEMCSS;
                   className?: string | string[];
                   elements?: Elements;
               }
@@ -228,6 +240,10 @@ export function bemed(
 
         const globalStaticClassNames = classNameToArray(bemedOptions.className);
 
+        if (blockOptions.css) {
+            blockOptions.css.inject(blockClassName);
+        }
+
         const Block = createReactBEMComponent(
             blockOptions.el || "div",
             blockClassName,
@@ -235,6 +251,7 @@ export function bemed(
             classNameToArray(blockOptions.className),
             globalStaticClassNames,
             separators.modifier,
+            blockOptions.css,
         );
 
         (Block as any).displayName = `BEMBlock(${blockClassName})`;
@@ -250,6 +267,7 @@ export function bemed(
                 | {
                       el?: BEMElement;
                       mods?: BEMElementMods;
+                      css?: BEMCSS;
                       className?: string | string[];
                   }
                 | undefined = {},
@@ -266,6 +284,7 @@ export function bemed(
                 classNameToArray(elementOptions.className),
                 globalStaticClassNames,
                 separators.modifier,
+                elementOptions.css,
             );
 
             (BEMElement as any).displayName = `BEMElement(${fullElementName})`;
