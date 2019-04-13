@@ -20,7 +20,9 @@
     "author": "",
     "license": "ISC",
     "files": [
-        "lib"
+        "lib",
+        "css.js",
+        "css.d.ts"
     ],
     "devDependencies": {
         "@types/jest": "^24.0.11",
