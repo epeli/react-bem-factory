@@ -160,6 +160,7 @@ export interface BemedOptions {
 
 export interface BEMComponentDefinition {
     el?: ElementNames;
+    css?: BEMCSS;
     className?: string;
     mods?: {
         [mod: string]: true | string;
@@ -298,11 +299,16 @@ export function bemed(
         if (blockOptions.elements) {
             for (const key in blockOptions.elements) {
                 const def = blockOptions.elements[key];
-                out[key] = createBEMElement(key, {
+                const element = (out[key] = createBEMElement(key, {
                     el: def.el,
                     mods: def.mods,
                     className: def.className,
-                });
+                    css: def.css,
+                }));
+
+                if (def.css) {
+                    def.css.inject((element as any).className);
+                }
             }
         }
 
