@@ -211,6 +211,8 @@ outputs
 <button class="bs-Button btn btn-danger">Danger</button>
 ```
 
+You could use even use CSS modules with this!
+
 ## 🚶 API Walkthrough
 
 This example uses every exposed API.
