@@ -109,6 +109,8 @@ For better developer experience in VSCode you should install the
 [vscode-styled-components][] extension to get syntax highlighting and
 auto-completion.
 
+Here's simple CodesandBox app using the CSS-in-JS API you can playaround with: https://codesandbox.io/s/4w74x13z04
+
 [stylis]: https://stylis.js.org/
 [vscode-styled-components]: https://marketplace.visualstudio.com/items?itemName=mf.vscode-styled-components
 
