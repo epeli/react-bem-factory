@@ -1,18 +1,10 @@
 # 🦖 BEMed Components
 
-Like BEM in your React? Me neither.
+Like BEM in your React?
 
-I wholeheartedly prefer the styled components API like [Emotion][] or
-[Linaria][] but sometimes one just has to move the CSS away from the
-components to separate CSS files and [BEM][] might be the best way to go
-about it.
-
-[emotion]: https://emotion.sh/docs/introduction
-[linaria]: https://linaria.now.sh/
-[bem]: http://getbem.com/
-
-This module gives you a simple declarative API for working with BEM classes
-in React.
+This module gives you a simple declarative API for working with BEM style
+classes in React and an unique CSS-in-JS API which uses the BEM class names
+in the generated CSS. No cryptic `css-16my406` class names here!
 
 ```tsx
 import { bemed } from "react-bemed";
@@ -75,6 +67,51 @@ You are now free to enhance it with your lovely BEM CSS ❤️
 
 Checkout this example on CodeSandbox https://codesandbox.io/s/k393yrj6p5
 
+## CSS-in-JS
+
+If you want co-locate your CSS code with your React component code you can
+import the `css` helper from `react-bemed/css` and write the above component
+definition like this:
+
+```ts
+import { css } from "react-bemed/css"
+
+const Button = defineBlock("Button", {
+    el: "button",
+    mods: {
+        add: css`
+            color: green;
+        `
+        delete: css`
+            color: red;
+        `
+    },
+    elements: {
+        Icon: {
+            el: "span",
+            mods: {
+                danger: css`
+                    background-color: red;
+                `
+            },
+        },
+    },
+});
+```
+
+and the generated DOM will look excatly same as in the vanilla CSS version!
+
+The CSS is passed through [Stylis][] so media queries, animations and
+autoprefixing are supported out of the box. The experience should be pretty
+similiar to styled-components and Emotion as they use Stylis too.
+
+For better developer experiencen VSCode you should install the
+[vscode-styled-components][] extension to get syntax highlighting and
+auto-completion.
+
+[stylis]: https://stylis.js.org/
+[vscode-styled-components]: https://marketplace.visualstudio.com/items?itemName=mf.vscode-styled-components
+
 ## 📦 Install
 
     npm install react-bemed
@@ -92,15 +129,26 @@ Wonder why this better than manually writing the above HTML?
     -   vs. typing the class name strings
 -   No need to manually concatenate class name strings when doing dymamic styling
     -   `<Button add={props.isAdding}>` just works
+-   CSS-in-JS awesome! (but optional)
+    -   That's why it has custom entry point so it won't get included into your
+        bundle if you don't use it.
+
+## 🧐 Noteworthy features
+
+-   You can mix CSS-in-JS and normal CSS
+    -   For example you could write the structural CSS with the CSS-in-JS API
+        but apply theming via normal CSS
+    -   The generated class names are a public API and not some compiler output
+-   The components are lightweight
+    -   Just plain function components with class names
+    -   No context reading with every component
+    -   Dynamic styling is made only by toggling class names
+        -   More advanced dynamic styles must be made using the `style` prop
+        -   It's not as flexible as styled-components but it's a lot simpler and probably faster <sup>(not benchmarked yet)</sup>
 -   Typed when using TypeScript
     -   The created components respect the `el` option so `video` elements
         have their special attributes as props etc.
     -   The BEM modifiers are typed as optional boolean props
-
-## 🧐 Noteworthy features
-
--   [It's tiny!][tiny] 743B (min+gzip)
--   Zero deps
 -   Forwards refs correctly
 -   You can still pass custom class names to the BEMed Components `<Button className="custom">`
 -   Nice names in React Devtools
@@ -108,6 +156,58 @@ Wonder why this better than manually writing the above HTML?
     -   `<BEMElement(app-Button__Icon)>`
 
 [tiny]: https://bundlephobia.com/result?p=react-bemed@0.3.3
+
+## Server-rendering with CSS-in-JS
+
+It's almost zero config. You just need to wrap your app with the `SSRProvider`
+
+```ts
+import { SSRProvider } from "react-bemed/css";
+
+export default () => (
+    <SSRProvider>
+        <App />
+    </SSRProvider>
+);
+```
+
+Server rendering automatically renders only the critical CSS incrementally
+within the components as they are being used providing very good first
+meaningful paint experience.
+
+## 🧟 Usage with Bootstrap
+
+This module can also work with basically any CSS framework when using custom
+static class names. Here's an example with Bootstrap:
+
+```tsx
+const createBSBlock = bemed("bs");
+
+const Button = createBSBlock("Button", {
+    el: "button",
+    className: "btn",
+    mods: {
+        primary: "btn-primary",
+        danger: "btn-danger",
+    },
+});
+
+export function BootstrapExample() {
+    return (
+        <>
+            <Button primary>Primary</Button>
+            <Button danger>Danger</Button>
+        </>
+    );
+}
+```
+
+outputs
+
+```html
+<button class="bs-Button btn btn-primary">Primary</button>
+<button class="bs-Button btn btn-danger">Danger</button>
+```
 
 ## 🚶 API Walkthrough
 
@@ -131,6 +231,12 @@ const defineBlock = bemed("app", {
         modifier: "--",
         element: "__",
     },
+
+    // Pass in custom CSS compiler when using the CSS-in-JS API. You can for
+    // example pass in custom Stylis instance with autoprefixing disabled
+    cssCompiler: new Stylis({
+        prefix: false,
+    }),
 });
 
 // The string "Button" is the BEM block name
@@ -171,38 +277,16 @@ const Button = defineBlock("Button", {
 });
 ```
 
-## 🧟 Usage with Bootstrap
+## Babel Plugin?
 
-or with other non-BEM class systems
+It's not needed and there is no such thing yet but I'm planning to create one
+that optimizes the production bundles and developer experience.
 
-```tsx
-const createBSBlock = bemed("bs");
-
-const Button = createBSBlock("Button", {
-    el: "button",
-    className: "btn",
-    mods: {
-        primary: "btn-primary",
-        danger: "btn-danger",
-    },
-});
-
-export function BootstrapExample() {
-    return (
-        <>
-            <Button primary>Primary</Button>
-            <Button danger>Danger</Button>
-        </>
-    );
-}
-```
-
-outputs
-
-```html
-<button class="bs-Button btn btn-primary">Primary</button>
-<button class="bs-Button btn btn-danger">Danger</button>
-```
+-   Precompile the CSS with Stylis and remove Stylis from the bundle
+    -   Stylis is pretty small (5kb) but there's a small startup penalty when the styles are injected
+-   Add CSS source maps pointing to the JavaScript source
+-   Extract separate CSS bundle like Linaria does
+    -   Not 100% sure this is the best idea as it does not work well code splitting frameworks like Gatsby or Nextjs
 
 ## Prior Art
 
