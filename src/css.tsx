@@ -1,14 +1,28 @@
 import React from "react";
 import stylis from "stylis";
-import { injectGlobal, IS_BROWSER } from "./inject-css";
+import { injectGlobal } from "./inject-css";
+import { isBrowser } from "./is-browser";
 
 declare const process: any;
 
 type StyleRenderRecord = Record<string, true>;
+
+let BROWSER_RECORD: StyleRenderRecord | null = {};
+
 const Context = React.createContext<StyleRenderRecord | null>(null);
 
-export function SSRProvider(props: { children: React.ReactNode }) {
-    return <Context.Provider value={{}}>{props.children}</Context.Provider>;
+export class SSRProvider extends React.Component {
+    componentDidMount() {
+        BROWSER_RECORD = null;
+    }
+
+    render() {
+        return (
+            <Context.Provider value={{}}>
+                {this.props.children}
+            </Context.Provider>
+        );
+    }
 }
 
 export type CSSCompiler = (className: string, css: string) => string;
@@ -25,49 +39,51 @@ function serverRender<T>(
     }[],
     compiler?: CSSCompiler,
 ): T {
-    if (IS_BROWSER) {
-        return reactElement;
-    }
-
     const finalCompiler = compiler || defaultCompile;
 
-    return React.createElement(
-        Context.Consumer,
-        null,
-        (compilingRecord: StyleRenderRecord) => {
-            if (!compilingRecord) {
-                return reactElement;
+    function renderStyleTags(renderRecord: StyleRenderRecord | null) {
+        if (!renderRecord) {
+            return reactElement;
+        }
+
+        let css = "";
+
+        for (const chunk of cssChunks) {
+            if (renderRecord[chunk.className]) {
+                continue;
             }
 
-            let css = "";
+            renderRecord[chunk.className] = true;
+            css += finalCompiler(chunk.className, chunk.cssString);
+        }
 
-            for (const chunk of cssChunks) {
-                if (compilingRecord[chunk.className]) {
-                    continue;
-                }
+        let props: any = {};
 
-                compilingRecord[chunk.className] = true;
-                css += finalCompiler(chunk.className, chunk.cssString);
-            }
+        if (process.env.NODE_ENV !== "production") {
+            props["data-testid"] = "bemed-style";
+        }
 
-            let props: any = {};
+        if (!css) {
+            return reactElement;
+        }
 
-            if (process.env.NODE_ENV !== "production") {
-                props["data-testid"] = "bemed-style";
-            }
+        return (React.createElement(
+            React.Fragment,
+            null,
+            React.createElement("style", props, css),
+            reactElement,
+        ) as any) as T;
+    }
 
-            if (!css) {
-                return reactElement;
-            }
+    if (isBrowser()) {
+        if (BROWSER_RECORD) {
+            return renderStyleTags(BROWSER_RECORD);
+        } else {
+            return reactElement;
+        }
+    }
 
-            return React.createElement(
-                React.Fragment,
-                null,
-                React.createElement("style", props, css),
-                reactElement,
-            );
-        },
-    ) as any;
+    return React.createElement(Context.Consumer, null, renderStyleTags) as any;
 }
 
 export function css(literals: TemplateStringsArray, ...placeholders: string[]) {
