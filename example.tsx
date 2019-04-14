@@ -1,11 +1,15 @@
 import { bemed } from "./src/react-bemed";
 import React from "react";
+import { css } from "./src/css";
 
 const createAppBlock = bemed("app");
 
 // Create a "BEMed Block Component"
 const Button = createAppBlock("Button", {
     el: "button",
+    css: css`
+        color: red;
+    `,
     mods: {
         add: true,
         delete: true,
