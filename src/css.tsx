@@ -5,8 +5,6 @@ import { isBrowser } from "./is-browser";
 
 declare const process: any;
 
-export const Stylis = stylis;
-
 type StyleRenderRecord = Record<string, true>;
 
 /**
