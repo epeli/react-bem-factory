@@ -46,7 +46,7 @@ function createReactBEMComponent<
         /** css-in-js mods */
         const usedCSS: {
             className: string;
-            css: BEMCSS;
+            bemCSS: BEMCSS;
         }[] = [];
 
         const usedModClassNames: string[] = [];
@@ -99,11 +99,11 @@ function createReactBEMComponent<
                 return;
             }
 
-            // At the point it must be css-in-js mod
+            // At the point it must be a css-in-js mod
             const cssMod = (modType as any) as BEMCSS;
             usedCSS.push({
                 className: modClassName,
-                css: cssMod,
+                bemCSS: cssMod,
             });
         };
 
@@ -165,20 +165,18 @@ function createReactBEMComponent<
         if (opts.css) {
             usedCSS.push({
                 className: opts.blockClassName,
-                css: opts.css,
+                bemCSS: opts.css,
             });
         }
 
         if (usedCSS.length > 0) {
             // This is bit weird but we do it like this because this way the
-            // css-in-js does not get imported unless actually used
-
-            // Server renders with style tags
-            return usedCSS[0].css.render(
+            // css-in-js does not get imported unless it isactually used
+            return usedCSS[0].bemCSS.renderWithStyleTags(
                 reactElement,
                 usedCSS.map(css => ({
                     className: css.className,
-                    cssString: css.css.cssString,
+                    cssString: css.bemCSS.cssString,
                 })),
                 opts.cssCompiler,
             );

@@ -7,12 +7,16 @@ declare const process: any;
 
 type StyleRenderRecord = Record<string, true>;
 
+/**
+ * Record CSS strings that are rendered to DOM
+ */
 let BROWSER_RECORD: StyleRenderRecord | null = {};
 
 const Context = React.createContext<StyleRenderRecord | null>(null);
 
 export class SSRProvider extends React.Component {
     componentDidMount() {
+        // Remove record after the fist browser render
         BROWSER_RECORD = null;
     }
 
@@ -27,21 +31,25 @@ export class SSRProvider extends React.Component {
 
 export type CSSCompiler = (className: string, css: string) => string;
 
-const defaultCompile = (className: string, css: string): string => {
+const defaultCompiler = (className: string, css: string): string => {
     return stylis("." + className, css);
 };
 
-function serverRender<T>(
+/**
+ * Render given React Element in a Fragment with a style tag
+ * if the given CSS chunks are not rendered before
+ */
+function renderWithStyleTags<T>(
     reactElement: T,
     cssChunks: {
         className: string;
         cssString: string;
     }[],
-    compiler?: CSSCompiler,
+    customCompiler?: CSSCompiler,
 ): T {
-    const finalCompiler = compiler || defaultCompile;
+    const cssCompiler = customCompiler || defaultCompiler;
 
-    function renderStyleTags(renderRecord: StyleRenderRecord | null) {
+    function render(renderRecord: StyleRenderRecord | null) {
         if (!renderRecord) {
             return reactElement;
         }
@@ -50,40 +58,52 @@ function serverRender<T>(
 
         for (const chunk of cssChunks) {
             if (renderRecord[chunk.className]) {
+                // Already rendered to DOM/HTML.
                 continue;
             }
 
             renderRecord[chunk.className] = true;
-            css += finalCompiler(chunk.className, chunk.cssString);
+            css += cssCompiler(chunk.className, chunk.cssString);
         }
 
-        let props: any = {};
+        /**
+         * Props for the style tag
+         */
+        let styleProps: any = {};
 
         if (process.env.NODE_ENV !== "production") {
-            props["data-testid"] = "bemed-style";
+            // For react-testing-library
+            styleProps["data-testid"] = "bemed-style";
         }
 
+        // No unrendered CSS - just return the react element
         if (!css) {
             return reactElement;
         }
 
-        return (React.createElement(
+        // If we have unrendered CSS render the element with a style tag
+        return React.createElement(
             React.Fragment,
             null,
-            React.createElement("style", props, css),
+            React.createElement("style", styleProps, css),
             reactElement,
-        ) as any) as T;
+        ) as any;
     }
 
+    // In browser use only a global record on the first render
     if (isBrowser()) {
         if (BROWSER_RECORD) {
-            return renderStyleTags(BROWSER_RECORD);
+            return render(BROWSER_RECORD);
         } else {
+            // For subsequent render there's no need to render style tags as
+            // they are injected to the HEAD
             return reactElement;
         }
     }
 
-    return React.createElement(Context.Consumer, null, renderStyleTags) as any;
+    // During server render get the style render record from the context so it
+    // won't get mixed when multiple requests are rendered at once.
+    return React.createElement(Context.Consumer, null, render) as any;
 }
 
 export function css(literals: TemplateStringsArray, ...placeholders: string[]) {
@@ -99,11 +119,11 @@ export function css(literals: TemplateStringsArray, ...placeholders: string[]) {
     return {
         cssString,
 
-        inject(className: string, compiler: CSSCompiler = defaultCompile) {
+        inject(className: string, compiler: CSSCompiler = defaultCompiler) {
             injectGlobal(className, compiler(className, cssString));
         },
 
-        render: serverRender,
+        renderWithStyleTags,
     };
 }
 
