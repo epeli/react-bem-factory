@@ -105,7 +105,7 @@ The CSS is passed through [Stylis][] so media queries, animations and
 autoprefixing are supported out of the box. The experience should be pretty
 similiar to styled-components and Emotion as they use Stylis too.
 
-For better developer experiencen VSCode you should install the
+For better developer experience in VSCode you should install the
 [vscode-styled-components][] extension to get syntax highlighting and
 auto-completion.
 
