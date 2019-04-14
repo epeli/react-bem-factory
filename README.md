@@ -146,7 +146,7 @@ Wonder why this better than manually writing the above HTML?
     -   No context reading with every component
     -   Dynamic styling is made only by toggling class names
         -   More advanced dynamic styles must be made using the `style` prop
-        -   It's not as flexible as styled-components but it's a lot simpler and probably faster <sup>(not benchmarked yet)</sup>
+        -   It's not as flexible as styled-components but it's a lot simpler and probably faster <sup>(not actually benchmarked)</sup>
 -   Typed when using TypeScript
     -   The created components respect the `el` option so `video` elements
         have their special attributes as props etc.
