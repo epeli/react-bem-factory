@@ -3,7 +3,7 @@ let STYLE_EL: HTMLStyleElement | null = null;
 
 declare const process: any;
 
-export const IS_BROWSER: boolean = (() => {
+export const IS_BROWSER = () => {
     if (process.env.NODE_ENV !== "production") {
         if (process.env.TEST_ENV) {
             return process.env.TEST_ENV === "browser";
@@ -11,7 +11,7 @@ export const IS_BROWSER: boolean = (() => {
     }
 
     return typeof document !== "undefined";
-})();
+};
 
 export function injectGlobal(id: string, css: string) {
     if (!IS_BROWSER) {

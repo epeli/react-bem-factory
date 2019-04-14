@@ -5,10 +5,14 @@ import { injectGlobal, IS_BROWSER } from "./inject-css";
 declare const process: any;
 
 type StyleRenderRecord = Record<string, true>;
-const Context = React.createContext<StyleRenderRecord | null>(null);
 
-export function SSRProvider(props: { children: React.ReactNode }) {
-    return <Context.Provider value={{}}>{props.children}</Context.Provider>;
+let DING: Record<string, true> | null = null;
+
+export function serverRenderContext<T>(fn: () => T): T {
+    DING = {};
+    const ret = fn();
+    DING = null;
+    return ret;
 }
 
 export type CSSCompiler = (className: string, css: string) => string;
@@ -25,49 +29,48 @@ function serverRender<T>(
     }[],
     compiler?: CSSCompiler,
 ): T {
-    if (IS_BROWSER) {
+    if (IS_BROWSER()) {
+        console.log("is browser skip");
         return reactElement;
     }
 
     const finalCompiler = compiler || defaultCompile;
 
-    return React.createElement(
-        Context.Consumer,
+    if (!DING) {
+        console.log("no ding");
+
+        return reactElement;
+    }
+
+    let css = "";
+
+    for (const chunk of cssChunks) {
+        if (DING[chunk.className]) {
+            continue;
+        }
+
+        DING[chunk.className] = true;
+        css += finalCompiler(chunk.className, chunk.cssString);
+    }
+
+    let props: any = {};
+
+    if (process.env.NODE_ENV !== "production") {
+        props["data-testid"] = "bemed-style";
+    }
+
+    if (!css) {
+        console.log("no css");
+
+        return reactElement;
+    }
+
+    return (React.createElement(
+        React.Fragment,
         null,
-        (compilingRecord: StyleRenderRecord) => {
-            if (!compilingRecord) {
-                return reactElement;
-            }
-
-            let css = "";
-
-            for (const chunk of cssChunks) {
-                if (compilingRecord[chunk.className]) {
-                    continue;
-                }
-
-                compilingRecord[chunk.className] = true;
-                css += finalCompiler(chunk.className, chunk.cssString);
-            }
-
-            let props: any = {};
-
-            if (process.env.NODE_ENV !== "production") {
-                props["data-testid"] = "bemed-style";
-            }
-
-            if (!css) {
-                return reactElement;
-            }
-
-            return React.createElement(
-                React.Fragment,
-                null,
-                React.createElement("style", props, css),
-                reactElement,
-            );
-        },
-    ) as any;
+        React.createElement("style", props, css),
+        reactElement,
+    ) as any) as T;
 }
 
 export function css(literals: TemplateStringsArray, ...placeholders: string[]) {
