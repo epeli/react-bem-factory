@@ -171,12 +171,13 @@ function createReactBEMComponent<
 
         if (usedCSS.length > 0) {
             // This is bit weird but we do it like this because this way the
-            // css-in-js does not get imported unless it isactually used
+            // css-in-js does not get imported unless it is actually used
             return usedCSS[0].bemCSS.renderWithStyleTags(
                 reactElement,
                 usedCSS.map(css => ({
                     className: css.className,
                     cssString: css.bemCSS.cssString,
+                    sourceMap: css.bemCSS.sourceMap,
                 })),
                 opts.cssCompiler,
             );
@@ -286,22 +287,6 @@ export function bemed(
 
         const globalStaticClassNames = classNameToArray(bemedOptions.className);
 
-        if (blockOptions.css) {
-            blockOptions.css.inject(blockClassName, bemedOptions.cssCompiler);
-        }
-
-        if (blockOptions.mods) {
-            for (const key in blockOptions.mods) {
-                const mod = blockOptions.mods[key] as any;
-                if (mod.inject) {
-                    mod.inject(
-                        blockClassName + separators.modifier + key,
-                        bemedOptions.cssCompiler,
-                    );
-                }
-            }
-        }
-
         const Block = createReactBEMComponent({
             component: blockOptions.el || "div",
             blockClassName,
@@ -335,25 +320,6 @@ export function bemed(
 
             const fullElementName =
                 blockClassName + separators.element + blockElementName;
-
-            if (elementOptions.css) {
-                elementOptions.css.inject(
-                    fullElementName,
-                    bemedOptions.cssCompiler,
-                );
-            }
-
-            if (elementOptions.mods) {
-                for (const key in elementOptions.mods) {
-                    const mod = elementOptions.mods[key] as any;
-                    if (mod.inject) {
-                        mod.inject(
-                            fullElementName + separators.modifier + key,
-                            bemedOptions.cssCompiler,
-                        );
-                    }
-                }
-            }
 
             const BEMElement = createReactBEMComponent({
                 component: elementOptions.el || "div",

@@ -10,16 +10,11 @@ type StyleRenderRecord = Record<string, true>;
 /**
  * Record CSS strings that are rendered to DOM
  */
-let BROWSER_RECORD: StyleRenderRecord | null = {};
+let BROWSER_RECORD: StyleRenderRecord = {};
 
 const Context = React.createContext<StyleRenderRecord | null>(null);
 
 export class SSRProvider extends React.Component {
-    componentDidMount() {
-        // Remove record after the fist browser render
-        BROWSER_RECORD = null;
-    }
-
     render() {
         return (
             <Context.Provider value={{}}>
@@ -35,11 +30,16 @@ const defaultCompiler = (className: string, css: string): string => {
     return stylis("." + className, css);
 };
 
-class DisappearingStyle extends React.Component<{ children: string }> {
+let INITIAL_BROWSER_RENDER_DONE = false;
+
+class DisappearingStyle extends React.Component<{
+    children: string;
+}> {
     state = { remove: false };
 
     componentDidMount() {
-        this.setState({ remove: false });
+        INITIAL_BROWSER_RENDER_DONE = true;
+        this.setState({ remove: true });
     }
 
     render() {
@@ -70,17 +70,14 @@ function renderWithStyleTags<T>(
     cssChunks: {
         className: string;
         cssString: string;
+        sourceMap: string;
     }[],
     customCompiler?: CSSCompiler,
 ): T {
     const cssCompiler = customCompiler || defaultCompiler;
 
-    function render(renderRecord: StyleRenderRecord | null) {
-        if (!renderRecord) {
-            return reactElement;
-        }
-
-        let css = "";
+    function render(renderRecord: StyleRenderRecord) {
+        let compiledChunks: { className: string; css: string }[] = [];
 
         for (const chunk of cssChunks) {
             if (renderRecord[chunk.className]) {
@@ -88,12 +85,25 @@ function renderWithStyleTags<T>(
                 continue;
             }
 
+            const compiled = cssCompiler(chunk.className, chunk.cssString);
             renderRecord[chunk.className] = true;
-            css += cssCompiler(chunk.className, chunk.cssString);
+
+            if (isBrowser()) {
+                injectGlobal(chunk.className, compiled, chunk.sourceMap);
+            }
+
+            compiledChunks.push({
+                className: chunk.className,
+                css: compiled,
+            });
         }
 
         // No unrendered CSS - just return the react element
-        if (!css) {
+        if (compiledChunks.length === 0) {
+            return reactElement;
+        }
+
+        if (INITIAL_BROWSER_RENDER_DONE) {
             return reactElement;
         }
 
@@ -101,22 +111,19 @@ function renderWithStyleTags<T>(
         return React.createElement(
             React.Fragment,
             null,
-            React.createElement(DisappearingStyle, {
-                children: css,
-            }),
+            compiledChunks.map(chunk =>
+                React.createElement(DisappearingStyle, {
+                    key: chunk.className,
+                    children: chunk.css,
+                }),
+            ),
             reactElement,
         ) as any;
     }
 
     // In browser use only a global record on the first render
     if (isBrowser()) {
-        if (BROWSER_RECORD) {
-            return render(BROWSER_RECORD);
-        } else {
-            // For subsequent render there's no need to render style tags as
-            // they are injected to the HEAD
-            return reactElement;
-        }
+        return render(BROWSER_RECORD);
     }
 
     // During server render get the style render record from the context so it
@@ -131,7 +138,7 @@ export function css(
     sourceMap: string,
 ): {
     cssString: string;
-    inject(className: string, compiler?: CSSCompiler): void;
+    sourceMap: string;
     renderWithStyleTags: typeof renderWithStyleTags;
 };
 
@@ -140,7 +147,7 @@ export function css(
     ...placeholders: Placeholders[]
 ): {
     cssString: string;
-    inject(className: string, compiler?: CSSCompiler): void;
+    sourceMap: string;
     renderWithStyleTags: typeof renderWithStyleTags;
 };
 
@@ -168,11 +175,7 @@ export function css(...args: any[]) {
 
     return {
         cssString,
-
-        inject(className: string, compiler: CSSCompiler = defaultCompiler) {
-            injectGlobal(className, compiler(className, cssString), sourceMap);
-        },
-
+        sourceMap,
         renderWithStyleTags,
     };
 }

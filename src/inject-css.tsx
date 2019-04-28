@@ -1,8 +1,6 @@
 import { isBrowser } from "./is-browser";
 import { StyleSheet } from "@emotion/sheet";
 
-const INJECTED: Record<string, true> = {};
-
 let sheet: StyleSheet | null = null;
 
 if (isBrowser()) {
@@ -14,12 +12,7 @@ export function injectGlobal(id: string, css: string, sourceMap: string) {
         return;
     }
 
-    if (INJECTED[id]) {
-        return;
-    }
-
     if (sheet) {
         sheet.insert(css + sourceMap);
     }
-    INJECTED[id] = true;
 }
