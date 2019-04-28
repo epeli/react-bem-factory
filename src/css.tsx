@@ -44,7 +44,6 @@ class DisappearingStyle extends React.Component<{ children: string }> {
 
     render() {
         if (this.state.remove) {
-            return <div>fuu</div>;
             return null;
         }
 
@@ -132,7 +131,7 @@ export function css(
     sourceMap: string,
 ): {
     cssString: string;
-    inject: Function;
+    inject(className: string, compiler?: CSSCompiler): void;
     renderWithStyleTags: typeof renderWithStyleTags;
 };
 
@@ -141,7 +140,7 @@ export function css(
     ...placeholders: Placeholders[]
 ): {
     cssString: string;
-    inject: Function;
+    inject(className: string, compiler?: CSSCompiler): void;
     renderWithStyleTags: typeof renderWithStyleTags;
 };
 
