@@ -72,10 +72,6 @@ export default function bemedBabelPlugin(
 ): { visitor: Visitor<PluginOptions> } {
     const t = babel.types;
 
-    if (process.env.NODE_ENV === "production") {
-        return { visitor: {} };
-    }
-
     /**
      * Local name of the css import from react-bemed/css if any
      */
@@ -120,7 +116,10 @@ export default function bemedBabelPlugin(
                     return;
                 }
 
-                const sourceMap = getSourceMap(path.node.loc.start, state.file);
+                const sourceMap =
+                    process.env.NODE_ENV === "production"
+                        ? ""
+                        : getSourceMap(path.node.loc.start, state.file);
 
                 const styleString = path.node.quasi.quasis
                     .map(q => {
