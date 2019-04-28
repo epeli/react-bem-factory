@@ -70,7 +70,7 @@ export default function bemedBabelPlugin(
     const t = babel.types;
 
     /**
-     * Local name of the oc import from ts-optchain if any
+     * Local name of the css import from react-bemed/css if any
      */
     let name: string | null = null;
 
@@ -82,33 +82,45 @@ export default function bemedBabelPlugin(
             },
 
             ImportDeclaration(path, state) {
-                // const opts = state.opts || {};
-                // const target = opts.target || "ts-optchain";
-                // if (path.node.source.value !== target) {
-                //     return;
-                // }
-                // path.node.source.value = opts.runtime || RUNTIME_IMPORT;
-                // for (const s of path.node.specifiers) {
-                //     if (!t.isImportSpecifier(s)) {
-                //         continue;
-                //     }
-                //     if (s.imported.name === "oc") {
-                //         name = s.local.name;
-                //     }
-                // }
+                const opts = state.opts || {};
+
+                const target = opts.target || "react-bemed/css";
+
+                if (path.node.source.value !== target) {
+                    return;
+                }
+
+                for (const s of path.node.specifiers) {
+                    if (!t.isImportSpecifier(s)) {
+                        continue;
+                    }
+                    if (s.imported.name === "css") {
+                        name = s.local.name;
+                    }
+                }
             },
 
             TaggedTemplateExpression(path, state) {
-                if (t.isIdentifier(path.node.tag, { name })) {
-                    console.log("tagged", path.node.tag.name, state.file);
-                    if (path.node.loc) {
-                        const sm = getSourceMap(
-                            path.node.loc.start,
-                            state.file,
-                        );
-                        console.log("SM", sm);
-                    }
+                if (!name) {
+                    return;
                 }
+
+                if (!t.isIdentifier(path.node.tag, { name })) {
+                    return;
+                }
+
+                if (!path.node.loc) {
+                    return;
+                }
+
+                const sourceMap = getSourceMap(path.node.loc.start, state.file);
+
+                path.replaceWith(
+                    t.callExpression(t.identifier(name), [
+                        path.node.quasi,
+                        t.stringLiteral(sourceMap),
+                    ]),
+                );
             },
         },
     };

@@ -3,6 +3,13 @@ import { transform } from "@babel/core";
 
 declare const __dirname: string;
 
+function cleanSourceMapComment(s: string | undefined | null) {
+    return (s || "").replace(
+        /sourceMappingURL=[^ ]+/g,
+        "sourceMappingURL=SOURCEMAP",
+    );
+}
+
 function runPlugin(code: string) {
     const res = transform(code, {
         babelrc: false,
@@ -24,8 +31,21 @@ test("adds source maps", () => {
     `;
 
     const res = runPlugin(code);
-    expect(res.code).toEqual(dedent`
+    expect(cleanSourceMapComment(res.code)).toEqual(dedent`
     import { css } from "react-bemed/css";
-    const foo = css\`color: red\`;
+    const foo = css(\`color: red\`, "/*# sourceMappingURL=SOURCEMAP */");
+    `);
+});
+
+test("adds source maps with placeholders", () => {
+    const code = dedent`
+    import { css } from "react-bemed/css";
+    const foo = css\`color: $\{123\}\`;
+    `;
+
+    const res = runPlugin(code);
+    expect(cleanSourceMapComment(res.code)).toEqual(dedent`
+    import { css } from "react-bemed/css";
+    const foo = css(\`color: $\{123\}\`, "/*# sourceMappingURL=SOURCEMAP */");
     `);
 });
