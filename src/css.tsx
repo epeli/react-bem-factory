@@ -111,12 +111,10 @@ function renderWithStyleTags<T>(
         return React.createElement(
             React.Fragment,
             null,
-            compiledChunks.map(chunk =>
-                React.createElement(DisappearingStyle, {
-                    key: chunk.className,
-                    children: chunk.css,
-                }),
-            ),
+            React.createElement(DisappearingStyle, {
+                key: compiledChunks.map(chunk => chunk.className).join(","),
+                children: compiledChunks.map(chunk => chunk.css).join("\n"),
+            }),
             reactElement,
         ) as any;
     }
