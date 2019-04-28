@@ -102,7 +102,7 @@ function createReactBEMComponent<
             // At the point it must be a css-in-js mod
             const cssMod = (modType as any) as BEMCSS;
             usedCSS.push({
-                className: modClassName,
+                className: opts.blockClassName.trim() + "." + modClassName,
                 bemCSS: cssMod,
             });
         };
