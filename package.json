@@ -22,6 +22,7 @@
     "license": "ISC",
     "files": [
         "lib",
+        "babel.js",
         "css.js",
         "css.d.ts"
     ],
