@@ -18,6 +18,7 @@ export interface PluginOptions {
     opts?: {
         target?: string;
         runtime?: string;
+        stylis?: typeof stylis;
     };
     file: BabelFile;
 }
@@ -127,7 +128,9 @@ export default function bemedBabelPlugin(
                     })
                     .join("__BEMED_VAR__");
 
-                const compiled: string[] = stylis(
+                const finalStylis = (state.opts && state.opts.stylis) || stylis;
+
+                const compiled: string[] = finalStylis(
                     "__BEMED__",
                     styleString,
                 ).split("__BEMED_VAR__");
