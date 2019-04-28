@@ -47,6 +47,7 @@
         "react": "^16.3.0"
     },
     "dependencies": {
+        "@emotion/sheet": "^0.9.2",
         "babel-plugin-emotion": "^10.0.9",
         "convert-source-map": "^1.6.0",
         "source-map": "^0.7.3",
