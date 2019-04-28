@@ -106,7 +106,12 @@ function renderWithStyleTags<T>(
     return React.createElement(Context.Consumer, null, render) as any;
 }
 
-export function css(literals: TemplateStringsArray, ...placeholders: string[]) {
+type Placeholders = string | number;
+
+export function css(
+    literals: TemplateStringsArray,
+    ...placeholders: Placeholders[]
+) {
     let cssString = "";
 
     for (let i = 0; i < placeholders.length; i++) {

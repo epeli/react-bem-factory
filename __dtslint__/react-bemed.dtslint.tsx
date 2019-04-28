@@ -1,5 +1,6 @@
 import { bemed } from "../src/react-bemed";
 import React from "react";
+import { css } from "../src/css";
 
 function assertNotAny(a: number) {}
 function render(jsx: any) {}
@@ -228,6 +229,19 @@ test("some other default attributes work too", () => {
         },
     });
 
-    render(<Block.Foo role="sdaf"  />);
+    render(<Block.Foo role="sdaf" />);
     render(<Block.Foo title="sdaf" />);
+});
+
+test("template tag types", () => {
+    const stringOK = css`
+        color: ${"string"};
+    `;
+
+    const numberOK = css`
+        color: ${1234};
+    `;
+
+    // prettier-ignore
+    const functionError = css`color: ${props => "bad"};`; // $ExpectError
 });
