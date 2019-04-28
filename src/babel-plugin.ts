@@ -25,7 +25,9 @@ export interface Babel {
     types: typeof BabelTypes;
 }
 
-function getGeneratorOpts(file: BabelFile) {
+function getGeneratorOpts(
+    file: BabelFile,
+): { sourceFileName: string; sourceRoot: string } {
     return file.opts.generatorOpts ? file.opts.generatorOpts : file.opts;
 }
 
