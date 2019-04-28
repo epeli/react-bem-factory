@@ -79,7 +79,7 @@ function renderWithStyleTags<T>(
     reactElement: T,
     cssChunks: {
         className: string;
-        cssString: string;
+        cssString: { compiled: boolean; string: string };
         sourceMap: string;
     }[],
     customCompiler?: CSSCompiler,
@@ -95,7 +95,13 @@ function renderWithStyleTags<T>(
                 continue;
             }
 
-            const compiled = cssCompiler(chunk.className, chunk.cssString);
+            const compiled = chunk.cssString.compiled
+                ? chunk.cssString.string.replace(
+                      /__BEMED__/g,
+                      "." + chunk.className,
+                  )
+                : cssCompiler(chunk.className, chunk.cssString.string);
+
             renderRecord[chunk.className] = true;
 
             if (isBrowser()) {
@@ -145,7 +151,7 @@ export function css(
     style: string,
     sourceMap: string,
 ): {
-    cssString: string;
+    cssString: { compiled: boolean; string: string };
     sourceMap: string;
     renderWithStyleTags: typeof renderWithStyleTags;
 };
@@ -154,7 +160,7 @@ export function css(
     literals: TemplateStringsArray,
     ...placeholders: Placeholders[]
 ): {
-    cssString: string;
+    cssString: { compiled: boolean; string: string };
     sourceMap: string;
     renderWithStyleTags: typeof renderWithStyleTags;
 };
@@ -162,11 +168,13 @@ export function css(
 export function css(...args: any[]) {
     let cssString = "";
     let sourceMap = "";
+    let compiled = false;
 
     if (typeof args[0] === "string") {
         const [style, _sourceMap] = args as [string, string];
         cssString = style;
         sourceMap = _sourceMap;
+        compiled = true;
     } else {
         const [literals, ...placeholders] = args as [
             TemplateStringsArray,
@@ -182,7 +190,10 @@ export function css(...args: any[]) {
     }
 
     return {
-        cssString,
+        cssString: {
+            compiled,
+            string: cssString,
+        },
         sourceMap,
         renderWithStyleTags,
     };

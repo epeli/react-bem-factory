@@ -2,6 +2,7 @@ import * as BabelTypes from "@babel/types";
 import { Visitor, NodePath } from "@babel/traverse";
 import { SourceMapGenerator } from "source-map";
 import convert from "convert-source-map";
+import stylis from "stylis";
 
 declare const process: any;
 
@@ -121,9 +122,25 @@ export default function bemedBabelPlugin(
 
                 const sourceMap = getSourceMap(path.node.loc.start, state.file);
 
+                const styleString = path.node.quasi.quasis
+                    .map(q => {
+                        return q.value.raw;
+                    })
+                    .join("__BEMED_VAR__");
+
+                const compiled: string[] = stylis(
+                    "__BEMED__",
+                    styleString,
+                ).split("__BEMED_VAR__");
+
                 path.replaceWith(
                     t.callExpression(t.identifier(name), [
-                        path.node.quasi,
+                        t.templateLiteral(
+                            compiled.map(qua =>
+                                t.templateElement({ raw: qua }),
+                            ),
+                            path.node.quasi.expressions,
+                        ),
                         t.stringLiteral(sourceMap),
                     ]),
                 );

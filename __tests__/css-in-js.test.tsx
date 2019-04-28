@@ -16,6 +16,7 @@ afterEach(() => {
     _resetModuleState();
     jest.resetAllMocks();
     process.env.TEST_ENV = "browser";
+    process.env.NODE_ENV = "test";
 });
 
 test("injects style tag for blocks", () => {
@@ -516,13 +517,14 @@ test("can use custom css compiler in server render", () => {
 test("css can work as normal function call", () => {
     const block = bemed();
     const Block = block("TestBlock", {
-        css: css(`color: orange;`, ""),
+        css: css(`__BEMED__{color: orange;}`, ""),
     });
 
     render(<Block>test</Block>);
 
     expect(injectGlobal).toBeCalledTimes(1);
     expect(mockInjectGlobal.mock.calls[0][0]).toEqual("TestBlock");
-    expect(mockInjectGlobal.mock.calls[0][1]).toContain("orange");
-    expect(mockInjectGlobal.mock.calls[0][1]).toContain(".TestBlock");
+    expect(mockInjectGlobal.mock.calls[0][1]).toEqual(
+        ".TestBlock{color: orange;}",
+    );
 });
