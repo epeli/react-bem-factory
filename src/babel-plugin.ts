@@ -80,7 +80,7 @@ export default function bemedBabelPlugin(
         visitor: {
             Program() {
                 // Reset import name state when entering a new file
-                name = "css";
+                name = null;
             },
 
             ImportDeclaration(path, state) {
