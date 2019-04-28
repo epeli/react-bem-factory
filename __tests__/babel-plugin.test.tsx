@@ -82,3 +82,21 @@ test("precompiles css", () => {
         ),
     );
 });
+
+test("precompiles autoprefixing by default", () => {
+    const code = dedent`
+    import { css } from "react-bemed/css";
+    const foo = css\`
+        transition: all 4s ease; 
+    }
+    \`;
+    `;
+
+    const res = runPlugin(code);
+    expect(cleanSourceMapComment(res.code)).toEqual(
+        lines(
+            'import { css } from "react-bemed/css";',
+            'const foo = css(`__BEMED__{-webkit-transition:all 4s ease;transition:all 4s ease;}`, "/*# sourceMappingURL=SOURCEMAP */");',
+        ),
+    );
+});
