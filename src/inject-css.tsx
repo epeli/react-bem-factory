@@ -3,7 +3,7 @@ import { isBrowser } from "./is-browser";
 const INJECTED: Record<string, true> = {};
 let STYLE_EL: HTMLStyleElement | null = null;
 
-export function injectGlobal(id: string, css: string) {
+export function injectGlobal(id: string, css: string, sourceMap: string) {
     if (!isBrowser()) {
         return;
     }
@@ -19,6 +19,6 @@ export function injectGlobal(id: string, css: string) {
         STYLE_EL.id = "react-bemed";
     }
 
-    STYLE_EL.appendChild(document.createTextNode(css));
+    STYLE_EL.appendChild(document.createTextNode(css + "\n" + sourceMap));
     INJECTED[id] = true;
 }

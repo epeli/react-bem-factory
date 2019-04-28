@@ -109,23 +109,50 @@ function renderWithStyleTags<T>(
 type Placeholders = string | number;
 
 export function css(
+    style: string,
+    sourceMap: string,
+): {
+    cssString: string;
+    inject: Function;
+    renderWithStyleTags: typeof renderWithStyleTags;
+};
+
+export function css(
     literals: TemplateStringsArray,
     ...placeholders: Placeholders[]
-) {
+): {
+    cssString: string;
+    inject: Function;
+    renderWithStyleTags: typeof renderWithStyleTags;
+};
+
+export function css(...args: any[]) {
     let cssString = "";
+    let sourceMap = "";
 
-    for (let i = 0; i < placeholders.length; i++) {
-        cssString += literals[i];
-        cssString += placeholders[i];
+    if (typeof args[0] === "string") {
+        const [style, _sourceMap] = args as [string, string];
+        cssString = style;
+        sourceMap = _sourceMap;
+    } else {
+        const [literals, ...placeholders] = args as [
+            TemplateStringsArray,
+            Placeholders[]
+        ];
+
+        for (let i = 0; i < placeholders.length; i++) {
+            cssString += literals[i];
+            cssString += placeholders[i];
+        }
+
+        cssString += literals[literals.length - 1];
     }
-
-    cssString += literals[literals.length - 1];
 
     return {
         cssString,
 
         inject(className: string, compiler: CSSCompiler = defaultCompiler) {
-            injectGlobal(className, compiler(className, cssString));
+            injectGlobal(className, compiler(className, cssString), sourceMap);
         },
 
         renderWithStyleTags,

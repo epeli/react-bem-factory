@@ -486,3 +486,15 @@ test("can use custom css compiler in server render", () => {
         "custom",
     ]);
 });
+
+test("css can work as normal function call", () => {
+    const block = bemed();
+    const Block = block("TestBlock", {
+        css: css(`color: orange;`, ""),
+    });
+
+    expect(injectGlobal).toBeCalledTimes(1);
+    expect(mockInjectGlobal.mock.calls[0][0]).toEqual("TestBlock");
+    expect(mockInjectGlobal.mock.calls[0][1]).toContain("orange");
+    expect(mockInjectGlobal.mock.calls[0][1]).toContain(".TestBlock");
+});
