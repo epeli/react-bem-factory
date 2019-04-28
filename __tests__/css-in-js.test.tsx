@@ -31,6 +31,20 @@ test("injects style tag for blocks", () => {
     expect(mockInjectGlobal.mock.calls[0][1]).toContain(".TestBlock");
 });
 
+test("can use variables in template literals", () => {
+    const block = bemed();
+    const color = "orange";
+
+    const Block = block("TestBlock", {
+        css: css`
+            color: ${color};
+        `,
+    });
+
+    expect(injectGlobal).toBeCalledTimes(1);
+    expect(mockInjectGlobal.mock.calls[0][1]).toContain("orange");
+});
+
 test("Autoprefixes during injection", () => {
     const block = bemed();
     const Block = block("TestBlock", {
