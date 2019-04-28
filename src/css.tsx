@@ -46,8 +46,10 @@ class DisappearingStyle extends React.Component<{
     state = { remove: false };
 
     componentDidMount() {
-        INITIAL_BROWSER_RENDER_DONE = true;
-        this.setState({ remove: true });
+        if (isBrowser()) {
+            INITIAL_BROWSER_RENDER_DONE = true;
+            this.setState({ remove: true });
+        }
     }
 
     render() {
