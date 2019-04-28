@@ -90,7 +90,11 @@ function renderWithStyleTags<T>(
         let compiledChunks: { className: string; css: string }[] = [];
 
         for (const chunk of cssChunks) {
-            if (renderRecord[chunk.className]) {
+            if (
+                renderRecord[chunk.className] &&
+                // Skip only in prod to enable hot reloading in dev
+                (process.env.NODE_ENV === "production" || process.env.TEST_ENV)
+            ) {
                 // Already rendered to DOM/HTML.
                 continue;
             }
