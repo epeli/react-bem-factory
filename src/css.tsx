@@ -12,6 +12,16 @@ type StyleRenderRecord = Record<string, true>;
  */
 let BROWSER_RECORD: StyleRenderRecord = {};
 
+let INITIAL_BROWSER_RENDER_DONE = false;
+
+/**
+ * Only for tests
+ */
+export function _resetModuleState() {
+    BROWSER_RECORD = {};
+    INITIAL_BROWSER_RENDER_DONE = false;
+}
+
 const Context = React.createContext<StyleRenderRecord | null>(null);
 
 export class SSRProvider extends React.Component {
@@ -29,8 +39,6 @@ export type CSSCompiler = (className: string, css: string) => string;
 const defaultCompiler = (className: string, css: string): string => {
     return stylis("." + className, css);
 };
-
-let INITIAL_BROWSER_RENDER_DONE = false;
 
 class DisappearingStyle extends React.Component<{
     children: string;

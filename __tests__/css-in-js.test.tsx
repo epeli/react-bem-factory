@@ -2,7 +2,7 @@ import { render, cleanup, fireEvent } from "react-testing-library";
 import Stylis from "stylis";
 import { bemed } from "../src/react-bemed";
 import React from "react";
-import { css, SSRProvider } from "../src/css";
+import { css, SSRProvider, _resetModuleState } from "../src/css";
 import { injectGlobal } from "../src/inject-css";
 
 jest.mock("../src/inject-css");
@@ -13,6 +13,7 @@ const mockInjectGlobal = injectGlobal as jest.Mock<typeof injectGlobal>;
 
 afterEach(() => {
     cleanup();
+    _resetModuleState();
     jest.resetAllMocks();
     process.env.TEST_ENV = "browser";
 });
@@ -24,6 +25,8 @@ test("injects style tag for blocks", () => {
             color: orange;
         `,
     });
+
+    render(<Block>test</Block>);
 
     expect(injectGlobal).toBeCalledTimes(1);
     expect(mockInjectGlobal.mock.calls[0][0]).toEqual("TestBlock");
@@ -40,6 +43,8 @@ test("can use variables in template literals", () => {
             color: ${color};
         `,
     });
+
+    render(<Block>test</Block>);
 
     expect(injectGlobal).toBeCalledTimes(1);
     expect(mockInjectGlobal.mock.calls[0][1]).toContain("orange");
@@ -60,6 +65,8 @@ test("Autoprefixes during injection", () => {
         `,
     });
 
+    render(<Block>test</Block>);
+
     expect(injectGlobal).toBeCalledTimes(1);
     expect(mockInjectGlobal.mock.calls[0][1]).toContain("@-webkit-");
 });
@@ -76,6 +83,8 @@ test("injects style tag for elements", () => {
             },
         },
     });
+
+    render(<Block.Foo>test</Block.Foo>);
 
     expect(injectGlobal).toBeCalledTimes(1);
     expect(mockInjectGlobal.mock.calls[0][0]).toEqual("TestBlock__Foo");
@@ -94,8 +103,12 @@ test("injects style tag for block mods", () => {
         },
     });
 
+    render(<Block ding>test</Block>);
+
     expect(injectGlobal).toBeCalledTimes(1);
-    expect(mockInjectGlobal.mock.calls[0][0]).toEqual("TestBlock--ding");
+    expect(mockInjectGlobal.mock.calls[0][0]).toEqual(
+        "TestBlock.TestBlock--ding",
+    );
     expect(mockInjectGlobal.mock.calls[0][1]).toContain("orange");
     expect(mockInjectGlobal.mock.calls[0][1]).toContain(".TestBlock--ding");
 });
@@ -155,8 +168,12 @@ test("injects style tag for element mods", () => {
         },
     });
 
+    render(<Block.Foo ding>test</Block.Foo>);
+
     expect(injectGlobal).toBeCalledTimes(1);
-    expect(mockInjectGlobal.mock.calls[0][0]).toEqual("TestBlock__Foo--ding");
+    expect(mockInjectGlobal.mock.calls[0][0]).toEqual(
+        "TestBlock__Foo.TestBlock__Foo--ding",
+    );
     expect(mockInjectGlobal.mock.calls[0][1]).toContain("orange");
     expect(mockInjectGlobal.mock.calls[0][1]).toContain(
         ".TestBlock__Foo--ding",
@@ -360,6 +377,8 @@ test("Autoprefixes during injection", () => {
         `,
     });
 
+    render(<Block>test</Block>);
+
     expect(injectGlobal).toBeCalledTimes(1);
     expect(mockInjectGlobal.mock.calls[0][1]).toContain("-webkit-");
 });
@@ -399,6 +418,8 @@ test("can use custom stylis", () => {
         `,
     });
 
+    render(<Block>test</Block>);
+
     expect(injectGlobal).toBeCalledTimes(1);
     expect(mockInjectGlobal.mock.calls[0][1]).not.toContain("-webkit-");
 });
@@ -430,6 +451,15 @@ test("can use custom css compiler for injection", () => {
             },
         },
     });
+
+    render(
+        <div>
+            <Block>test</Block>
+            <Block blockMod>test</Block>
+            <Block.Foo>test</Block.Foo>
+            <Block.Foo elementMod>test</Block.Foo>
+        </div>,
+    );
 
     expect(injectGlobal).toBeCalledTimes(4);
     expect(mockInjectGlobal.mock.calls[0][1]).toBe("custom");
@@ -492,6 +522,8 @@ test("css can work as normal function call", () => {
     const Block = block("TestBlock", {
         css: css(`color: orange;`, ""),
     });
+
+    render(<Block>test</Block>);
 
     expect(injectGlobal).toBeCalledTimes(1);
     expect(mockInjectGlobal.mock.calls[0][0]).toEqual("TestBlock");
