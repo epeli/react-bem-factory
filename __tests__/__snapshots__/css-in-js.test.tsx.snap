@@ -22,7 +22,7 @@ exports[`incrementally renders used css 1`] = `
   <style
     data-testid="bemed-style"
   >
-    .TestBlock.TestBlock--ding{color:orange;}
+    .TestBlock--ding{color:orange;}
   </style>
   <div
     class="TestBlock TestBlock--ding"

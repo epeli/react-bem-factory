@@ -106,9 +106,7 @@ test("injects style tag for block mods", () => {
     render(<Block ding>test</Block>);
 
     expect(injectGlobal).toBeCalledTimes(1);
-    expect(mockInjectGlobal.mock.calls[0][0]).toEqual(
-        "TestBlock.TestBlock--ding",
-    );
+    expect(mockInjectGlobal.mock.calls[0][0]).toEqual("TestBlock--ding");
     expect(mockInjectGlobal.mock.calls[0][1]).toContain("orange");
     expect(mockInjectGlobal.mock.calls[0][1]).toContain(".TestBlock--ding");
 });
@@ -171,9 +169,7 @@ test("injects style tag for element mods", () => {
     render(<Block.Foo ding>test</Block.Foo>);
 
     expect(injectGlobal).toBeCalledTimes(1);
-    expect(mockInjectGlobal.mock.calls[0][0]).toEqual(
-        "TestBlock__Foo.TestBlock__Foo--ding",
-    );
+    expect(mockInjectGlobal.mock.calls[0][0]).toEqual("TestBlock__Foo--ding");
     expect(mockInjectGlobal.mock.calls[0][1]).toContain("orange");
     expect(mockInjectGlobal.mock.calls[0][1]).toContain(
         ".TestBlock__Foo--ding",
