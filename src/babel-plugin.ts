@@ -3,7 +3,7 @@ import { Visitor, NodePath } from "@babel/traverse";
 import { SourceMapGenerator } from "source-map";
 import convert from "convert-source-map";
 
-type CallValue = BabelTypes.CallExpression["arguments"][0];
+declare const process: any;
 
 interface BabelFile {
     opts: {
@@ -70,6 +70,10 @@ export default function bemedBabelPlugin(
     babel: Babel,
 ): { visitor: Visitor<PluginOptions> } {
     const t = babel.types;
+
+    if (process.env.NODE_ENV === "production") {
+        return { visitor: {} };
+    }
 
     /**
      * Local name of the css import from react-bemed/css if any
