@@ -43,12 +43,27 @@ test("adds source maps", () => {
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
             'import { css } from "react-bemed/css";',
-            'const foo = css(`__BEMED__{color:red;}`, "/*# sourceMappingURL=SOURCEMAP */");',
+            'const foo = css(["__BEMED__{color:red;}"].join(""), "/*# sourceMappingURL=SOURCEMAP */");',
         ),
     );
 });
 
-test("adds source maps with placeholders", () => {
+test("can handle single placeholder", () => {
+    const code = lines(
+        'import { css } from "react-bemed/css";',
+        "const foo = css`color: ${123}; border: 1px solid black;`;",
+    );
+
+    const res = runPlugin(code);
+    expect(cleanSourceMapComment(res.code)).toEqual(
+        lines(
+            'import { css } from "react-bemed/css";',
+            'const foo = css(["__BEMED__{color:", 123, ";border:1px solid black;}"].join(""), "/*# sourceMappingURL=SOURCEMAP */");',
+        ),
+    );
+});
+
+test("can handle two placeholders", () => {
     const code = lines(
         'import { css } from "react-bemed/css";',
         "const foo = css`color: ${123}; border: 1px ${321} red;`;",
@@ -58,7 +73,22 @@ test("adds source maps with placeholders", () => {
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
             'import { css } from "react-bemed/css";',
-            'const foo = css(`__BEMED__{color:${123};border:1px ${321} red;}`, "/*# sourceMappingURL=SOURCEMAP */");',
+            'const foo = css(["__BEMED__{color:", 123, ";border:1px ", 321, " red;}"].join(""), "/*# sourceMappingURL=SOURCEMAP */");',
+        ),
+    );
+});
+
+test("can handle three placeholders", () => {
+    const code = lines(
+        'import { css } from "react-bemed/css";',
+        'const foo = css`color: ${123}; border: 1px ${321} red; backgroud-color: ${"orange"}`;',
+    );
+
+    const res = runPlugin(code);
+    expect(cleanSourceMapComment(res.code)).toEqual(
+        lines(
+            'import { css } from "react-bemed/css";',
+            'const foo = css(["__BEMED__{color:", 123, ";border:1px ", 321, " red;backgroud-color:", "orange", ";}"].join(""), "/*# sourceMappingURL=SOURCEMAP */");',
         ),
     );
 });
@@ -78,7 +108,7 @@ test("precompiles css", () => {
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
             'import { css } from "react-bemed/css";',
-            'const foo = css(`__BEMED__ a{color:red;}`, "/*# sourceMappingURL=SOURCEMAP */");',
+            'const foo = css(["__BEMED__ a{color:red;}"].join(""), "/*# sourceMappingURL=SOURCEMAP */");',
         ),
     );
 });
@@ -96,7 +126,7 @@ test("precompiles autoprefixing by default", () => {
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
             'import { css } from "react-bemed/css";',
-            'const foo = css(`__BEMED__{-webkit-transition:all 4s ease;transition:all 4s ease;}`, "/*# sourceMappingURL=SOURCEMAP */");',
+            'const foo = css(["__BEMED__{-webkit-transition:all 4s ease;transition:all 4s ease;}"].join(""), "/*# sourceMappingURL=SOURCEMAP */");',
         ),
     );
 });

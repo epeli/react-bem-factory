@@ -517,7 +517,7 @@ test("can use custom css compiler in server render", () => {
 test("css can work as normal function call", () => {
     const block = bemed();
     const Block = block("TestBlock", {
-        css: css(`__BEMED__{color: orange;}`, ""),
+        css: css("__BEMED__{color: orange;}", ""),
     });
 
     render(<Block>test</Block>);

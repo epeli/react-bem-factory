@@ -68,6 +68,34 @@ export function getSourceMap(
     return "";
 }
 
+function createArrayExpression(
+    t: typeof BabelTypes,
+    strings: string[],
+    expressions: BabelTypes.Expression[],
+    out: BabelTypes.Expression[],
+): BabelTypes.ArrayExpression {
+    if (strings.length > 1 && expressions.length >= 1) {
+        if (strings[0]) {
+            out.push(t.stringLiteral(strings[0]));
+        }
+        out.push(expressions[0]);
+        return createArrayExpression(
+            t,
+            strings.slice(1),
+            expressions.slice(1),
+            out,
+        );
+    }
+
+    if (strings.length === 1) {
+        if (strings[0]) {
+            out.push(t.stringLiteral(strings[0]));
+        }
+    }
+
+    return t.arrayExpression(out);
+}
+
 export default function bemedBabelPlugin(
     babel: Babel,
 ): { visitor: Visitor<PluginOptions> } {
@@ -137,11 +165,17 @@ export default function bemedBabelPlugin(
 
                 path.replaceWith(
                     t.callExpression(t.identifier(name), [
-                        t.templateLiteral(
-                            compiled.map(qua =>
-                                t.templateElement({ raw: qua }),
+                        t.callExpression(
+                            t.memberExpression(
+                                createArrayExpression(
+                                    t,
+                                    compiled,
+                                    path.node.quasi.expressions,
+                                    [],
+                                ),
+                                t.identifier("join"),
                             ),
-                            path.node.quasi.expressions,
+                            [t.stringLiteral("")],
                         ),
                         t.stringLiteral(sourceMap),
                     ]),
