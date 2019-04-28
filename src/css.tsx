@@ -35,6 +35,33 @@ const defaultCompiler = (className: string, css: string): string => {
     return stylis("." + className, css);
 };
 
+class DisappearingStyle extends React.Component<{ children: string }> {
+    state = { remove: false };
+
+    componentDidMount() {
+        this.setState({ remove: false });
+    }
+
+    render() {
+        if (this.state.remove) {
+            return <div>fuu</div>;
+            return null;
+        }
+
+        /**
+         * Props for the style tag
+         */
+        let styleProps: any = {};
+
+        if (process.env.NODE_ENV !== "production") {
+            // For react-testing-library
+            styleProps["data-testid"] = "bemed-style";
+        }
+
+        return React.createElement("style", styleProps, this.props.children);
+    }
+}
+
 /**
  * Render given React Element in a Fragment with a style tag
  * if the given CSS chunks are not rendered before
@@ -66,16 +93,6 @@ function renderWithStyleTags<T>(
             css += cssCompiler(chunk.className, chunk.cssString);
         }
 
-        /**
-         * Props for the style tag
-         */
-        let styleProps: any = {};
-
-        if (process.env.NODE_ENV !== "production") {
-            // For react-testing-library
-            styleProps["data-testid"] = "bemed-style";
-        }
-
         // No unrendered CSS - just return the react element
         if (!css) {
             return reactElement;
@@ -85,7 +102,9 @@ function renderWithStyleTags<T>(
         return React.createElement(
             React.Fragment,
             null,
-            React.createElement("style", styleProps, css),
+            React.createElement(DisappearingStyle, {
+                children: css,
+            }),
             reactElement,
         ) as any;
     }
