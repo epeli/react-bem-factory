@@ -1,8 +1,7 @@
 import { forwardRef, createElement } from "react";
 import React from "react";
-import { CSSCompiler } from "./css";
 
-type BEMCSS = import("./css").BEMCSS;
+type BEMCSS = import("./css-core").BEMCSS;
 
 type ElementNames = keyof React.ReactHTML;
 
@@ -24,7 +23,6 @@ function createReactBEMComponent<
     globalStaticClassNames: string[];
     modifierSeparator: string;
     css?: BEMCSS;
-    cssCompiler?: CSSCompiler;
 }) {
     type ReactProps = JSX.IntrinsicElements[Comp];
 
@@ -172,14 +170,13 @@ function createReactBEMComponent<
         if (usedCSS.length > 0) {
             // This is bit weird but we do it like this because this way the
             // css-in-js does not get imported unless it is actually used
-            return usedCSS[0].bemCSS.renderWithStyleTags(
+            return usedCSS[0].bemCSS.render(
                 reactElement,
                 usedCSS.map(css => ({
                     className: css.className,
                     cssString: css.bemCSS.cssString,
                     sourceMap: css.bemCSS.sourceMap,
                 })),
-                opts.cssCompiler,
             );
         }
 
@@ -196,7 +193,6 @@ type ModProps<T> = { [P in keyof T]?: boolean };
 
 export interface BemedOptions {
     className?: string | string[];
-    cssCompiler?: CSSCompiler;
     separators?: {
         namespace?: string;
         modifier?: string;
@@ -295,7 +291,6 @@ export function bemed(
             globalStaticClassNames,
             modifierSeparator: separators.modifier,
             css: blockOptions.css,
-            cssCompiler: bemedOptions.cssCompiler,
         });
 
         (Block as any).displayName = `BEMBlock(${blockClassName})`;
@@ -329,7 +324,6 @@ export function bemed(
                 globalStaticClassNames,
                 modifierSeparator: separators.modifier,
                 css: elementOptions.css,
-                cssCompiler: bemedOptions.cssCompiler,
             });
 
             (BEMElement as any).displayName = `BEMElement(${fullElementName})`;

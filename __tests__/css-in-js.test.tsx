@@ -2,8 +2,10 @@ import { render, cleanup, fireEvent } from "react-testing-library";
 import Stylis from "stylis";
 import { bemed } from "../src/react-bemed";
 import React from "react";
-import { css, SSRProvider, _resetModuleState } from "../src/css";
+import { css } from "../src/css";
+import { css as precompiledCSS } from "../src/css-precompiled";
 import { injectGlobal } from "../src/inject-css";
+import { SSRProvider, _resetModuleState } from "../src/css-core";
 
 jest.mock("../src/inject-css");
 
@@ -11,12 +13,17 @@ declare const process: any;
 
 const mockInjectGlobal = injectGlobal as jest.Mock<typeof injectGlobal>;
 
+const origCSSCompiler = css.compiler;
+const origCSSPreCompiler = precompiledCSS.compiler;
+
 afterEach(() => {
     cleanup();
     _resetModuleState();
     jest.resetAllMocks();
     process.env.TEST_ENV = "browser";
     process.env.NODE_ENV = "test";
+    css.compiler = origCSSCompiler;
+    precompiledCSS.compiler = origCSSPreCompiler;
 });
 
 test("injects style tag for blocks", () => {
@@ -403,10 +410,10 @@ test("server renders autoprefixed", () => {
 });
 
 test("can use custom stylis", () => {
-    const block = bemed("", {
-        cssCompiler: new Stylis({
-            prefix: false,
-        }),
+    const block = bemed("");
+
+    css.compiler = new Stylis({
+        prefix: false,
     });
 
     const Block = block("TestBlock", {
@@ -422,9 +429,9 @@ test("can use custom stylis", () => {
 });
 
 test("can use custom css compiler for injection", () => {
-    const block = bemed("", {
-        cssCompiler: () => "custom",
-    });
+    const block = bemed("");
+
+    css.compiler = () => "custom";
 
     const Block = block("TestBlock", {
         css: css`
@@ -467,9 +474,9 @@ test("can use custom css compiler for injection", () => {
 
 test("can use custom css compiler in server render", () => {
     process.env.TEST_ENV = "node";
-    const block = bemed("", {
-        cssCompiler: () => "custom",
-    });
+    const block = bemed("");
+
+    css.compiler = () => "custom";
 
     const Block = block("TestBlock", {
         css: css`
@@ -517,7 +524,7 @@ test("can use custom css compiler in server render", () => {
 test("css can work as normal function call", () => {
     const block = bemed();
     const Block = block("TestBlock", {
-        css: css("color: orange;", false, ""),
+        css: css("color: orange;", ""),
     });
 
     render(<Block>test</Block>);
@@ -532,7 +539,7 @@ test("css can work as normal function call", () => {
 test("css can work as normal function call with precompiled css", () => {
     const block = bemed();
     const Block = block("TestBlock", {
-        css: css("__BEMED__{color: orange;}", true, ""),
+        css: precompiledCSS("__BEMED__{color: orange;}", ""),
     });
 
     render(<Block>test</Block>);
