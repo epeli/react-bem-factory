@@ -134,6 +134,10 @@ export default function bemedBabelPlugin(
                         name = s.local.name;
                     }
                 }
+
+                if (opts.precompile) {
+                    path.node.source.value = "react-bemed/css-precompiled";
+                }
             },
 
             TaggedTemplateExpression(path, state) {

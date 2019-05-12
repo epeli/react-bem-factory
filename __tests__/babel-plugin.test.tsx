@@ -69,7 +69,7 @@ test("adds source maps", () => {
     });
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
-            'import { css } from "react-bemed/css";',
+            'import { css } from "react-bemed/css-precompiled";',
             'const foo = css(["__BEMED__{color:red;}"].join(""), true, "/*# sourceMappingURL=SOURCEMAP */");',
         ),
     );
@@ -95,7 +95,7 @@ test("adds source maps without precompiling", () => {
 
 test("source map points to correct line", () => {
     const code = dedent`
-    // some space 
+    // some space
     // here
     import { css } from "react-bemed/css";
     const foo = css\`color: red\`;
@@ -125,7 +125,7 @@ test("can handle single placeholder", () => {
     });
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
-            'import { css } from "react-bemed/css";',
+            'import { css } from "react-bemed/css-precompiled";',
             'const foo = css(["__BEMED__{color:", 123, ";border:1px solid black;}"].join(""), true, "/*# sourceMappingURL=SOURCEMAP */");',
         ),
     );
@@ -161,7 +161,7 @@ test("can handle two placeholders", () => {
     });
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
-            'import { css } from "react-bemed/css";',
+            'import { css } from "react-bemed/css-precompiled";',
             'const foo = css(["__BEMED__{color:", 123, ";border:1px ", 321, " red;}"].join(""), true, "/*# sourceMappingURL=SOURCEMAP */");',
         ),
     );
@@ -179,7 +179,7 @@ test("can handle three placeholders", () => {
     });
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
-            'import { css } from "react-bemed/css";',
+            'import { css } from "react-bemed/css-precompiled";',
             'const foo = css(["__BEMED__{color:", 123, ";border:1px ", 321, " red;backgroud-color:", "orange", ";}"].join(""), true, "/*# sourceMappingURL=SOURCEMAP */");',
         ),
     );
@@ -202,7 +202,7 @@ test("precompiles css", () => {
     });
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
-            'import { css } from "react-bemed/css";',
+            'import { css } from "react-bemed/css-precompiled";',
             'const foo = css(["__BEMED__ a{color:red;}"].join(""), true, "/*# sourceMappingURL=SOURCEMAP */");',
         ),
     );
@@ -212,7 +212,7 @@ test("precompiles autoprefixing by default", () => {
     const code = dedent`
     import { css } from "react-bemed/css";
     const foo = css\`
-        transition: all 4s ease; 
+        transition: all 4s ease;
     }
     \`;
     `;
@@ -223,7 +223,7 @@ test("precompiles autoprefixing by default", () => {
     });
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
-            'import { css } from "react-bemed/css";',
+            'import { css } from "react-bemed/css-precompiled";',
             'const foo = css(["__BEMED__{-webkit-transition:all 4s ease;transition:all 4s ease;}"].join(""), true, "/*# sourceMappingURL=SOURCEMAP */");',
         ),
     );
