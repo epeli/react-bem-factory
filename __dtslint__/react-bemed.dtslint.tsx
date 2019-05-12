@@ -1,4 +1,4 @@
-import { bemed } from "../src/react-bemed";
+import { createBemed } from "../src/react-bemed";
 import React from "react";
 import { css } from "../src/css";
 
@@ -6,7 +6,7 @@ function assertNotAny(a: number) {}
 function render(jsx: any) {}
 
 test("does not allow bad types on block components", () => {
-    const createBlock = bemed("prefix-");
+    const createBlock = createBemed("prefix-");
     // $ExpectError
     assertNotAny(createBlock);
 
@@ -24,7 +24,7 @@ test("does not allow bad types on block components", () => {
 });
 
 test("does not allow bad types on block components", () => {
-    const createBlock = bemed("prefix-");
+    const createBlock = createBemed("prefix-");
 
     const Block = createBlock("test-block", {
         el: "div",
@@ -40,7 +40,7 @@ test("does not allow bad types on block components", () => {
 });
 
 test("can use custom els", () => {
-    const createBlock = bemed("prefix-");
+    const createBlock = createBemed("prefix-");
 
     const Block = createBlock("test-block", {
         el: "video",
@@ -53,7 +53,7 @@ test("can use custom els", () => {
 });
 
 test("defaults to div", () => {
-    const createBlock = bemed("prefix-");
+    const createBlock = createBemed("prefix-");
 
     const Block = createBlock("test-block", {
         mods: {
@@ -68,7 +68,7 @@ test("defaults to div", () => {
 });
 
 test("mods are true", () => {
-    const createBlock = bemed("prefix-");
+    const createBlock = createBemed("prefix-");
 
     const Block = createBlock(
         "test-block",
@@ -82,7 +82,7 @@ test("mods are true", () => {
 });
 
 test("can create inline elements", () => {
-    const block = bemed();
+    const block = createBemed();
 
     const Block = block("test-block", {
         mods: {
@@ -128,7 +128,7 @@ test("can create inline elements", () => {
 });
 
 test("inline elements default to divs", () => {
-    const block = bemed();
+    const block = createBemed();
 
     const Block = block("test-block", {
         mods: {
@@ -153,7 +153,7 @@ test("inline elements default to divs", () => {
 });
 
 test("do not allow extra props", () => {
-    const block = bemed();
+    const block = createBemed();
 
     const Block = block("test-block", {
         // $ExpectError
@@ -173,7 +173,7 @@ test("do not allow extra props", () => {
 });
 
 test("can use other components as children", () => {
-    const block = bemed();
+    const block = createBemed();
 
     const Block = block("test-block", {
         elements: {
@@ -204,7 +204,7 @@ test("can use other components as children", () => {
 });
 
 test("can use style attribute", () => {
-    const block = bemed();
+    const block = createBemed();
 
     const Block = block("Block", {
         elements: {
@@ -221,7 +221,7 @@ test("can use style attribute", () => {
 });
 
 test("some other default attributes work too", () => {
-    const block = bemed();
+    const block = createBemed();
 
     const Block = block("Block", {
         elements: {

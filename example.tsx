@@ -1,8 +1,8 @@
-import { bemed } from "./src/react-bemed";
+import { createBemed } from "./src/react-bemed";
 import React from "react";
 import { css } from "./src/css";
 
-const createAppBlock = bemed("app");
+const createAppBlock = createBemed("app");
 
 // Create a "BEMed Block Component"
 const Button = createAppBlock("Button", {

@@ -1,10 +1,10 @@
 import ReactDOM from "react-dom";
 import React from "react";
-import { bemed } from "../../src/react-bemed";
+import { createBemed } from "../../src/react-bemed";
 import { css } from "../../src/css";
 // import { css } from "emotion";
 
-const defineBlock = bemed("ex");
+const defineBlock = createBemed("ex");
 
 const Block = defineBlock("Hellolol", {
     css: css`

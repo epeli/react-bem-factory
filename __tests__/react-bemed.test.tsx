@@ -1,11 +1,11 @@
 import { render, cleanup, fireEvent } from "react-testing-library";
-import { bemed } from "../src/react-bemed";
+import { createBemed } from "../src/react-bemed";
 import React from "react";
 
 afterEach(cleanup);
 
 test("single class name", () => {
-    const block = bemed();
+    const block = createBemed();
 
     const Block = block("test-block");
 
@@ -16,7 +16,7 @@ test("single class name", () => {
 });
 
 test("has class property", () => {
-    const block = bemed("ns");
+    const block = createBemed("ns");
 
     const Block = block("TestBlock", {
         elements: {
@@ -29,7 +29,7 @@ test("has class property", () => {
 });
 
 test("single class name with prefix", () => {
-    const block = bemed("prefix");
+    const block = createBemed("prefix");
 
     const Block = block("test-block");
 
@@ -40,7 +40,7 @@ test("single class name with prefix", () => {
 });
 
 test("can use block mods", () => {
-    const block = bemed("prefix");
+    const block = createBemed("prefix");
 
     const Block = block("test-block", {
         mods: {
@@ -55,7 +55,7 @@ test("can use block mods", () => {
 });
 
 test("block mods can change", () => {
-    const block = bemed("prefix");
+    const block = createBemed("prefix");
 
     const Block = block("test-block", {
         mods: {
@@ -91,7 +91,7 @@ test("block mods can change", () => {
 });
 
 test("mods are optional", () => {
-    const block = bemed("prefix");
+    const block = createBemed("prefix");
 
     const Block = block("test-block", {
         mods: {
@@ -106,7 +106,7 @@ test("mods are optional", () => {
 });
 
 test("can create block elements", () => {
-    const block = bemed("prefix");
+    const block = createBemed("prefix");
 
     const Block = block("TestBlock", {
         mods: {
@@ -126,7 +126,7 @@ test("can create block elements", () => {
 });
 
 test("block elements can have mods too", () => {
-    const block = bemed("prefix");
+    const block = createBemed("prefix");
 
     const Block = block("TestBlock", {
         mods: {
@@ -151,7 +151,7 @@ test("block elements can have mods too", () => {
 });
 
 test("block elements can have multiple mods", () => {
-    const block = bemed("prefix");
+    const block = createBemed("prefix");
 
     const Block = block("TestBlock", {
         mods: {
@@ -181,7 +181,7 @@ test("block elements can have multiple mods", () => {
 });
 
 test("passes other props through", () => {
-    const block = bemed();
+    const block = createBemed();
 
     const Block = block("test-block");
 
@@ -192,7 +192,7 @@ test("passes other props through", () => {
 });
 
 test("passes other props through when using mods", () => {
-    const block = bemed();
+    const block = createBemed();
 
     const Block = block("test-block", {
         mods: {
@@ -213,7 +213,7 @@ test("passes other props through when using mods", () => {
 });
 
 test("can use custom elements", () => {
-    const block = bemed();
+    const block = createBemed();
 
     const Block = block("test-block", {
         el: "input",
@@ -227,7 +227,7 @@ test("can use custom elements", () => {
 });
 
 test("can pass custom runtime class names", () => {
-    const block = bemed();
+    const block = createBemed();
 
     const Block = block("TestBlock", {
         elements: {
@@ -251,7 +251,7 @@ test("can pass custom runtime class names", () => {
 
 test("forwards refs", () => {
     expect.assertions(1);
-    const block = bemed();
+    const block = createBemed();
 
     const Block = block("test-block");
 
@@ -269,7 +269,7 @@ test("forwards refs", () => {
 });
 
 test("can use extra class names from the factory", () => {
-    const block = bemed("foo", {
+    const block = createBemed("foo", {
         className: "bar",
     });
 
@@ -282,7 +282,7 @@ test("can use extra class names from the factory", () => {
 });
 
 test("can use multiple extra class names from the factory", () => {
-    const block = bemed("foo", {
+    const block = createBemed("foo", {
         className: "ding dong",
     });
 
@@ -295,7 +295,7 @@ test("can use multiple extra class names from the factory", () => {
 });
 
 test("can use custom mod class names with block", () => {
-    const block = bemed("prefix");
+    const block = createBemed("prefix");
 
     const Block = block("TestBlock", {
         mods: {
@@ -317,7 +317,7 @@ test("can use custom mod class names with block", () => {
 });
 
 test("can use custom mod class names with element", () => {
-    const block = bemed("prefix");
+    const block = createBemed("prefix");
 
     const Block = block("TestBlock", {
         elements: {
@@ -337,7 +337,7 @@ test("can use custom mod class names with element", () => {
 });
 
 test("blocks can add custom class names", () => {
-    const block = bemed("ns");
+    const block = createBemed("ns");
 
     const Block = block("TestBlock", {
         className: " custom",
@@ -350,7 +350,7 @@ test("blocks can add custom class names", () => {
 });
 
 test("custom class name in a block don't leak to elements", () => {
-    const block = bemed("ns");
+    const block = createBemed("ns");
 
     const Block = block("test-block", {
         className: "custom",
@@ -368,7 +368,7 @@ test("custom class name in a block don't leak to elements", () => {
 });
 
 test("elements can add custom class names too", () => {
-    const block = bemed("ns");
+    const block = createBemed("ns");
 
     const Block = block("TestBlock", {
         className: "block-custom",
@@ -387,7 +387,7 @@ test("elements can add custom class names too", () => {
 });
 
 test("can use custom separators", () => {
-    const block = bemed("ns", {
+    const block = createBemed("ns", {
         separators: {
             namespace: "__NS__",
             modifier: "__M__",
@@ -426,7 +426,7 @@ test("can use custom separators", () => {
 });
 
 test("duplicate classnames are removed", () => {
-    const block = bemed("ns", {
+    const block = createBemed("ns", {
         className: "dup",
     });
 

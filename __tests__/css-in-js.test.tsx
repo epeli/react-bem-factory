@@ -1,6 +1,6 @@
 import { render, cleanup, fireEvent } from "react-testing-library";
 import Stylis from "stylis";
-import { bemed } from "../src/react-bemed";
+import { createBemed } from "../src/react-bemed";
 import React from "react";
 import { css } from "../src/css";
 import { css as precompiledCSS } from "../src/css-precompiled";
@@ -27,7 +27,7 @@ afterEach(() => {
 });
 
 test("injects style tag for blocks", () => {
-    const block = bemed();
+    const block = createBemed();
     const Block = block("TestBlock", {
         css: css`
             color: orange;
@@ -43,7 +43,7 @@ test("injects style tag for blocks", () => {
 });
 
 test("can use variables in template literals", () => {
-    const block = bemed();
+    const block = createBemed();
     const color = "orange";
 
     const Block = block("TestBlock", {
@@ -59,7 +59,7 @@ test("can use variables in template literals", () => {
 });
 
 test("Autoprefixes during injection", () => {
-    const block = bemed();
+    const block = createBemed();
     const Block = block("TestBlock", {
         css: css`
             @keyframes slide {
@@ -80,7 +80,7 @@ test("Autoprefixes during injection", () => {
 });
 
 test("injects style tag for elements", () => {
-    const block = bemed();
+    const block = createBemed();
 
     const Block = block("TestBlock", {
         elements: {
@@ -101,7 +101,7 @@ test("injects style tag for elements", () => {
 });
 
 test("injects style tag for block mods", () => {
-    const block = bemed();
+    const block = createBemed();
 
     const Block = block("TestBlock", {
         mods: {
@@ -120,7 +120,7 @@ test("injects style tag for block mods", () => {
 });
 
 test("also adds the BEM class for css block mods", () => {
-    const block = bemed("prefix");
+    const block = createBemed("prefix");
 
     const Block = block("TestBlock", {
         mods: {
@@ -137,7 +137,7 @@ test("also adds the BEM class for css block mods", () => {
 });
 
 test("also adds the BEM class for css element mods", () => {
-    const block = bemed("prefix");
+    const block = createBemed("prefix");
 
     const Block = block("TestBlock", {
         elements: {
@@ -160,7 +160,7 @@ test("also adds the BEM class for css element mods", () => {
 });
 
 test("injects style tag for element mods", () => {
-    const block = bemed();
+    const block = createBemed();
 
     const Block = block("TestBlock", {
         elements: {
@@ -187,7 +187,7 @@ test("injects style tag for element mods", () => {
 test("server renders style tags for blocks", () => {
     process.env.TEST_ENV = "node";
 
-    const block = bemed();
+    const block = createBemed();
     const Block = block("TestBlock", {
         css: css`
             color: orange;
@@ -210,7 +210,7 @@ test("server renders style tags for blocks", () => {
 test("server renders style tags for elements", () => {
     process.env.TEST_ENV = "node";
 
-    const block = bemed();
+    const block = createBemed();
     const Block = block("TestBlock", {
         elements: {
             Foo: {
@@ -237,7 +237,7 @@ test("server renders style tags for elements", () => {
 test("does not duplicate server-rendered styles", () => {
     process.env.TEST_ENV = "node";
 
-    const block = bemed();
+    const block = createBemed();
     const Block = block("TestBlock", {
         css: css`
             color: orange;
@@ -259,7 +259,7 @@ test("does not duplicate server-rendered styles", () => {
 test("does not duplicate server-rendered styles within loop", () => {
     process.env.TEST_ENV = "node";
 
-    const block = bemed();
+    const block = createBemed();
     const Block = block("TestBlock", {
         css: css`
             color: orange;
@@ -282,7 +282,7 @@ test("does not duplicate server-rendered styles within loop", () => {
 test("server renders block mods", () => {
     process.env.TEST_ENV = "node";
 
-    const block = bemed();
+    const block = createBemed();
 
     const Block = block("TestBlock", {
         css: css`
@@ -311,7 +311,7 @@ test("server renders block mods", () => {
 test("server renders element mods", () => {
     process.env.TEST_ENV = "node";
 
-    const block = bemed();
+    const block = createBemed();
 
     const Block = block("TestBlock", {
         elements: {
@@ -344,7 +344,7 @@ test("server renders element mods", () => {
 test("incrementally renders used css", () => {
     process.env.TEST_ENV = "node";
 
-    const block = bemed();
+    const block = createBemed();
 
     const Block = block("TestBlock", {
         css: css`
@@ -374,7 +374,7 @@ test("incrementally renders used css", () => {
 });
 
 test("Autoprefixes during injection", () => {
-    const block = bemed();
+    const block = createBemed();
     const Block = block("TestBlock", {
         css: css`
             flex: 1;
@@ -390,7 +390,7 @@ test("Autoprefixes during injection", () => {
 test("server renders autoprefixed", () => {
     process.env.TEST_ENV = "node";
 
-    const block = bemed();
+    const block = createBemed();
     const Block = block("TestBlock", {
         css: css`
             flex: 1;
@@ -410,7 +410,7 @@ test("server renders autoprefixed", () => {
 });
 
 test("can use custom stylis", () => {
-    const block = bemed("");
+    const block = createBemed("");
 
     css.compiler = new Stylis({
         prefix: false,
@@ -429,7 +429,7 @@ test("can use custom stylis", () => {
 });
 
 test("can use custom css compiler for injection", () => {
-    const block = bemed("");
+    const block = createBemed("");
 
     css.compiler = () => "custom";
 
@@ -474,7 +474,7 @@ test("can use custom css compiler for injection", () => {
 
 test("can use custom css compiler in server render", () => {
     process.env.TEST_ENV = "node";
-    const block = bemed("");
+    const block = createBemed("");
 
     css.compiler = () => "custom";
 
@@ -522,7 +522,7 @@ test("can use custom css compiler in server render", () => {
 });
 
 test("css can work as normal function call", () => {
-    const block = bemed();
+    const block = createBemed();
     const Block = block("TestBlock", {
         css: css("color: orange;", ""),
     });
@@ -537,7 +537,7 @@ test("css can work as normal function call", () => {
 });
 
 test("css can work as normal function call with precompiled css", () => {
-    const block = bemed();
+    const block = createBemed();
     const Block = block("TestBlock", {
         css: precompiledCSS("__BEMED__{color: orange;}", ""),
     });

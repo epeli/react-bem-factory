@@ -241,7 +241,7 @@ type BEMBlock<
     displayName: string;
 } & BEMElements<Elements>;
 
-export function bemed(
+export function createBemed(
     prefix?: string,
     bemedOptions: BemedOptions | undefined = {},
 ) {
