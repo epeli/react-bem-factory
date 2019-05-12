@@ -14,12 +14,16 @@ interface BabelFile {
     path: NodePath;
 }
 
-export interface PluginOptions {
-    opts?: {
-        target?: string;
-        runtime?: string;
-        stylis?: typeof stylis;
-    };
+export interface BemedBabelPluginOptions {
+    target?: string;
+    runtime?: string;
+    stylis?: typeof stylis;
+    precompile?: boolean;
+    sourceMap?: boolean;
+}
+
+interface VisitorState {
+    opts?: BemedBabelPluginOptions;
     file: BabelFile;
 }
 
@@ -98,7 +102,7 @@ function createArrayExpression(
 
 export default function bemedBabelPlugin(
     babel: Babel,
-): { visitor: Visitor<PluginOptions> } {
+): { visitor: Visitor<VisitorState> } {
     const t = babel.types;
 
     /**
@@ -145,29 +149,34 @@ export default function bemedBabelPlugin(
                     return;
                 }
 
-                const sourceMap =
-                    process.env.NODE_ENV === "production"
-                        ? ""
-                        : getSourceMap(path.node.loc.start, state.file);
+                const opts = state.opts || {};
 
-                const styleString = path.node.quasi.quasis
-                    .map(q => {
-                        return q.value.raw;
-                    })
-                    .join("__BEMED_VAR__");
+                const addSourceMap =
+                    typeof opts.sourceMap === "boolean"
+                        ? opts.sourceMap
+                        : process.env.NODE_ENV !== "production";
 
-                const finalStylis = (state.opts && state.opts.stylis) || stylis;
+                const sourceMap = addSourceMap
+                    ? getSourceMap(path.node.loc.start, state.file)
+                    : "";
 
-                const compiled: string[] = finalStylis(
-                    "__BEMED__",
-                    styleString,
-                ).split("__BEMED_VAR__");
+                let cssArray = path.node.quasi.quasis.map(q => {
+                    return q.value.raw;
+                });
+
+                if (opts.precompile) {
+                    const finalStylis = opts.stylis || stylis;
+                    const styleString = cssArray.join("__BEMED_VAR__");
+                    cssArray = finalStylis("__BEMED__", styleString).split(
+                        "__BEMED_VAR__",
+                    );
+                }
 
                 const arrayJoin = t.callExpression(
                     t.memberExpression(
                         createArrayExpression(
                             t,
-                            compiled,
+                            cssArray,
                             path.node.quasi.expressions,
                             [],
                         ),
@@ -181,7 +190,7 @@ export default function bemedBabelPlugin(
                 path.replaceWith(
                     t.callExpression(t.identifier(name), [
                         arrayJoin,
-                        t.booleanLiteral(true),
+                        t.booleanLiteral(Boolean(opts.precompile)),
                         sourceMapStringLiteral,
                     ]),
                 );

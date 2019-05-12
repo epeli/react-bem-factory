@@ -1,6 +1,7 @@
 import dedent from "dedent";
 import { transform } from "@babel/core";
 import * as vlq from "vlq";
+import { BemedBabelPluginOptions } from "../src/babel-plugin";
 
 declare const __dirname: string;
 declare const process: any;
@@ -42,11 +43,11 @@ beforeEach(() => {
     process.env.NODE_ENV = "test";
 });
 
-function runPlugin(code: string) {
+function runPlugin(code: string, options?: BemedBabelPluginOptions) {
     const res = transform(code, {
         babelrc: false,
         filename: "test.ts",
-        plugins: [__dirname + "/../src/babel-plugin.ts"],
+        plugins: [[__dirname + "/../src/babel-plugin.ts", options]],
     });
 
     if (!res) {
@@ -62,11 +63,32 @@ test("adds source maps", () => {
     const foo = css\`color: red\`;
     `;
 
-    const res = runPlugin(code);
+    const res = runPlugin(code, {
+        precompile: true,
+        sourceMap: true,
+    });
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
             'import { css } from "react-bemed/css";',
             'const foo = css(["__BEMED__{color:red;}"].join(""), true, "/*# sourceMappingURL=SOURCEMAP */");',
+        ),
+    );
+});
+
+test("adds source maps without precompiling", () => {
+    const code = dedent`
+    import { css } from "react-bemed/css";
+    const foo = css\`color: red\`;
+    `;
+
+    const res = runPlugin(code, {
+        precompile: false,
+        sourceMap: true,
+    });
+    expect(cleanSourceMapComment(res.code)).toEqual(
+        lines(
+            'import { css } from "react-bemed/css";',
+            'const foo = css(["color: red"].join(""), false, "/*# sourceMappingURL=SOURCEMAP */");',
         ),
     );
 });
@@ -80,7 +102,10 @@ test("source map points to correct line", () => {
     // and a footer
     `;
 
-    const res = runPlugin(code);
+    const res = runPlugin(code, {
+        precompile: true,
+        sourceMap: true,
+    });
     const map = decodeSourceMap(res.code);
 
     expect(map.sources).toEqual(["test.ts"]);
@@ -94,11 +119,32 @@ test("can handle single placeholder", () => {
         "const foo = css`color: ${123}; border: 1px solid black;`;",
     );
 
-    const res = runPlugin(code);
+    const res = runPlugin(code, {
+        precompile: true,
+        sourceMap: true,
+    });
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
             'import { css } from "react-bemed/css";',
             'const foo = css(["__BEMED__{color:", 123, ";border:1px solid black;}"].join(""), true, "/*# sourceMappingURL=SOURCEMAP */");',
+        ),
+    );
+});
+
+test("can handle single placeholder without precompiling", () => {
+    const code = lines(
+        'import { css } from "react-bemed/css";',
+        "const foo = css`color: ${123}; border: 1px solid black;`;",
+    );
+
+    const res = runPlugin(code, {
+        precompile: false,
+        sourceMap: true,
+    });
+    expect(cleanSourceMapComment(res.code)).toEqual(
+        lines(
+            'import { css } from "react-bemed/css";',
+            'const foo = css(["color: ", 123, "; border: 1px solid black;"].join(""), false, "/*# sourceMappingURL=SOURCEMAP */");',
         ),
     );
 });
@@ -109,7 +155,10 @@ test("can handle two placeholders", () => {
         "const foo = css`color: ${123}; border: 1px ${321} red;`;",
     );
 
-    const res = runPlugin(code);
+    const res = runPlugin(code, {
+        precompile: true,
+        sourceMap: true,
+    });
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
             'import { css } from "react-bemed/css";',
@@ -124,7 +173,10 @@ test("can handle three placeholders", () => {
         'const foo = css`color: ${123}; border: 1px ${321} red; backgroud-color: ${"orange"}`;',
     );
 
-    const res = runPlugin(code);
+    const res = runPlugin(code, {
+        precompile: true,
+        sourceMap: true,
+    });
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
             'import { css } from "react-bemed/css";',
@@ -144,7 +196,10 @@ test("precompiles css", () => {
     \`;
     `;
 
-    const res = runPlugin(code);
+    const res = runPlugin(code, {
+        precompile: true,
+        sourceMap: true,
+    });
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
             'import { css } from "react-bemed/css";',
@@ -162,7 +217,10 @@ test("precompiles autoprefixing by default", () => {
     \`;
     `;
 
-    const res = runPlugin(code);
+    const res = runPlugin(code, {
+        precompile: true,
+        sourceMap: true,
+    });
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
             'import { css } from "react-bemed/css";',
