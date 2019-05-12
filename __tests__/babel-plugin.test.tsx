@@ -1,14 +1,37 @@
 import dedent from "dedent";
 import { transform } from "@babel/core";
+import * as vlq from "vlq";
 
 declare const __dirname: string;
 declare const process: any;
 
+const SOUREMAP_RE = /sourceMappingURL=([^ ]+)/g;
+
+interface SourceMap {
+    version: number;
+    names: string[];
+    mappings: string;
+    file: string;
+    sources: string[];
+    sourcesContent: string[];
+}
+
 function cleanSourceMapComment(s: string | undefined | null) {
-    return (s || "").replace(
-        /sourceMappingURL=[^ ]+/g,
-        "sourceMappingURL=SOURCEMAP",
-    );
+    return (s || "").replace(SOUREMAP_RE, "sourceMappingURL=SOURCEMAP");
+}
+
+function decodeSourceMap(source: string | undefined | null): SourceMap {
+    if (!source) {
+        throw new Error("Empty source");
+    }
+
+    const match = SOUREMAP_RE.exec(source);
+
+    if (!match) {
+        throw new Error("Cannot find source map from: " + source);
+    }
+
+    return JSON.parse(new Buffer(match[1].split(",")[1], "base64").toString());
 }
 
 function lines(...args: string[]) {
@@ -46,6 +69,23 @@ test("adds source maps", () => {
             'const foo = css(["__BEMED__{color:red;}"].join(""), "/*# sourceMappingURL=SOURCEMAP */");',
         ),
     );
+});
+
+test("source map points to correct line", () => {
+    const code = dedent`
+    // some space 
+    // here
+    import { css } from "react-bemed/css";
+    const foo = css\`color: red\`;
+    // and a footer
+    `;
+
+    const res = runPlugin(code);
+    const map = decodeSourceMap(res.code);
+
+    expect(map.sources).toEqual(["test.ts"]);
+    const mappings = vlq.decode(map.mappings);
+    expect(mappings).toEqual([0, 0, 3, 12]);
 });
 
 test("can handle single placeholder", () => {
