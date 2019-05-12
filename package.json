@@ -23,6 +23,7 @@
     "files": [
         "lib",
         "babel.js",
+        "css-precompiled.js",
         "css.js",
         "css.d.ts"
     ],
