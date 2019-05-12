@@ -10,11 +10,11 @@ test("does not allow bad types on block components", () => {
     // $ExpectError
     assertNotAny(createBlock);
 
-    const Block = createBlock("test-block", {
+    const Block = createBlock({
         mods: {
             ding: true,
         },
-    });
+    })("test-block");
 
     // $ExpectError
     assertNotAny(Block);
@@ -26,12 +26,12 @@ test("does not allow bad types on block components", () => {
 test("does not allow bad types on block components", () => {
     const createBlock = createBemed("prefix-");
 
-    const Block = createBlock("test-block", {
+    const Block = createBlock({
         el: "div",
         mods: {
             ding: true,
         },
-    });
+    })("test-block");
 
     console.log(
         // $ExpectError
@@ -42,12 +42,12 @@ test("does not allow bad types on block components", () => {
 test("can use custom els", () => {
     const createBlock = createBemed("prefix-");
 
-    const Block = createBlock("test-block", {
+    const Block = createBlock({
         el: "video",
         mods: {
             ding: true,
         },
-    });
+    })("test-block");
 
     render(<Block playsInline>test</Block>);
 });
@@ -55,11 +55,11 @@ test("can use custom els", () => {
 test("defaults to div", () => {
     const createBlock = createBemed("prefix-");
 
-    const Block = createBlock("test-block", {
+    const Block = createBlock({
         mods: {
             ding: true,
         },
-    });
+    })("test-block");
 
     console.log(
         // $ExpectError
@@ -71,39 +71,38 @@ test("mods are true", () => {
     const createBlock = createBemed("prefix-");
 
     const Block = createBlock(
-        "test-block",
         // $ExpectError
         {
             mods: {
                 foo: false,
             },
         },
-    );
+    )("test-block");
 });
 
 test("can create inline elements", () => {
-    const block = createBemed();
+    const bemed = createBemed();
 
-    const Block = block("test-block", {
+    const Block = bemed({
         mods: {
             bar: true,
         },
         elements: {
-            FooDiv: {
+            FooDiv: bemed({
                 className: "sdf",
                 el: "div",
                 mods: {
                     ding: "sdf",
                 },
-            },
-            BarVideo: {
+            }),
+            BarVideo: bemed({
                 el: "video",
                 mods: {
                     ding: true,
                 },
-            },
+            }),
         },
-    });
+    })("test-block");
 
     // $ExpectError
     render(<Block bar playsInline />);
@@ -128,20 +127,20 @@ test("can create inline elements", () => {
 });
 
 test("inline elements default to divs", () => {
-    const block = createBemed();
+    const bemed = createBemed();
 
-    const Block = block("test-block", {
+    const Block = bemed({
         mods: {
             bar: true,
         },
         elements: {
-            FooDiv: {
+            FooDiv: bemed({
                 mods: {
                     ding: true,
                 },
-            },
+            }),
         },
-    });
+    })("test-block");
 
     render(<Block.FooDiv ding />);
 
@@ -153,34 +152,41 @@ test("inline elements default to divs", () => {
 });
 
 test("do not allow extra props", () => {
-    const block = createBemed();
+    const bemed = createBemed();
 
-    const Block = block("test-block", {
+    bemed({
         // $ExpectError
         bad: 1,
         mods: {
             bar: true,
         },
+    })("test-block");
+
+    bemed({
+        mods: {
+            bar: true,
+        },
         elements: {
             FooDiv: {
-                bad: 2, // XXX should fail!
+                // $ExpectError
+                bad: 2,
                 mods: {
                     ding: true,
                 },
             },
         },
-    });
+    })("test-block");
 });
 
 test("can use other components as children", () => {
-    const block = createBemed();
+    const bemed = createBemed();
 
-    const Block = block("test-block", {
+    const Block = bemed({
         elements: {
-            Foo: { mods: { right: true } },
-            Bar: {},
+            Foo: bemed({ mods: { right: true } }),
+            Bar: bemed(),
         },
-    });
+    })("test-block");
 
     render(
         <Block>
@@ -204,13 +210,13 @@ test("can use other components as children", () => {
 });
 
 test("can use style attribute", () => {
-    const block = createBemed();
+    const bemed = createBemed();
 
-    const Block = block("Block", {
+    const Block = bemed({
         elements: {
-            Foo: {},
+            Foo: bemed(),
         },
-    });
+    })("Block");
 
     render(<Block style={{ color: "red" }} />);
 
@@ -221,13 +227,13 @@ test("can use style attribute", () => {
 });
 
 test("some other default attributes work too", () => {
-    const block = createBemed();
+    const bemed = createBemed();
 
-    const Block = block("Block", {
+    const Block = bemed({
         elements: {
-            Foo: {},
+            Foo: bemed(),
         },
-    });
+    })("Block");
 
     render(<Block.Foo role="sdaf" />);
     render(<Block.Foo title="sdaf" />);

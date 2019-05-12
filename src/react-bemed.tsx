@@ -191,6 +191,13 @@ function createReactBEMComponent<
  */
 type ModProps<T> = { [P in keyof T]?: boolean };
 
+type MethodObject = { [key: string]: (...args: any[]) => any };
+
+/** flatten functions in an object to their return values */
+type FlattenToReturnTypes<T extends MethodObject> = {
+    [K in keyof T]: ReturnType<T[K]>
+};
+
 export interface BemedOptions {
     className?: string | string[];
     separators?: {
@@ -209,37 +216,34 @@ export interface BEMComponentDefinition {
     };
 }
 
-interface BEMComponentDefinitionStrict {
-    el: ElementNames;
-    className?: string;
-    mods?: {
-        [mod: string]: true | string | BEMCSS;
-    };
-}
-
-/**
- * Convert BEMComponentDefinition to BEMElement component type
- */
-type BEMElement<Def extends BEMComponentDefinitionStrict> = ((
-    props: JSX.IntrinsicElements[Def["el"]] & ModProps<Def["mods"]>,
-) => any) & { className: string };
-
-type BEMElements<T extends { [key: string]: BEMComponentDefinition }> = {
-    [P in keyof T]: T[P] extends { el: ElementNames }
-        ? BEMElement<T[P]>
-        : BEMElement<T[P] & { el: "div" }>
-};
-
 /**
  * Create BEMBlock component type
  */
 type BEMBlock<
     Block,
-    Elements extends { [key: string]: BEMComponentDefinition }
+    Elements extends { [key: string]: (props: any) => React.ReactNode }
 > = Block & {
     className: string;
     displayName: string;
-} & BEMElements<Elements>;
+} & FlattenToReturnTypes<Elements>;
+
+/*
+type BEM<
+    BEMBlockDOMElement extends ElementNames,
+    BEMBlockMods extends Record<string, true | string | BEMCSS> | undefined,
+    Elements extends {
+        [key: string]: (
+            className: string,
+            isElement?: boolean,
+        ) => (props: any) => React.ReactNode;
+    }
+> = ((
+    props: BEMBlockMods extends undefined
+        ? JSX.IntrinsicElements[BEMBlockDOMElement]
+        : JSX.IntrinsicElements[BEMBlockDOMElement] & ModProps<BEMBlockMods>,
+) => any) &
+    FlattenToReturnTypes<Elements>;
+*/
 
 export function createBemed(
     prefix?: string,
@@ -248,16 +252,18 @@ export function createBemed(
     /**
      * Define BEM Block and Elements
      */
-    return function defineBEMBlock<
+    function defineBEMBlock<
         Elements extends {
-            [key: string]: BEMComponentDefinition;
+            [key: string]: (
+                className: string,
+                isElement?: boolean,
+            ) => (props: any) => React.ReactNode;
         },
         BEMBlockDOMElement extends ElementNames = "div",
         BEMBlockMods extends
             | Record<string, true | string | BEMCSS>
             | undefined = undefined
     >(
-        blockName: string,
         blockOptions:
             | {
                   el?: BEMBlockDOMElement;
@@ -268,88 +274,64 @@ export function createBemed(
               }
             | undefined = {},
     ) {
-        const separators = Object.assign(
-            {
-                namespace: "-",
-                modifier: "--",
-                element: "__",
-            },
-            bemedOptions ? bemedOptions.separators : {},
-        );
+        return (blockName: string, isElement?: boolean) => {
+            const separators = Object.assign(
+                {
+                    namespace: "-",
+                    modifier: "--",
+                    element: "__",
+                },
+                bemedOptions ? bemedOptions.separators : {},
+            );
 
-        type BEMBlockProps = ModProps<BEMBlockMods>;
-        const blockClassName =
-            (prefix ? prefix + separators.namespace : "") + blockName;
+            type BEMBlockProps = ModProps<BEMBlockMods>;
 
-        const globalStaticClassNames = classNameToArray(bemedOptions.className);
+            let blockClassName = "";
 
-        const Block = createReactBEMComponent({
-            component: blockOptions.el || "div",
-            blockClassName,
-            knownMods: blockOptions.mods as BEMBlockProps,
-            staticClassNames: classNameToArray(blockOptions.className),
-            globalStaticClassNames,
-            modifierSeparator: separators.modifier,
-            css: blockOptions.css,
-        });
+            if (isElement) {
+                blockClassName = blockName;
+            } else {
+                blockClassName =
+                    (prefix ? prefix + separators.namespace : "") + blockName;
+            }
 
-        (Block as any).displayName = `BEMBlock(${blockClassName})`;
+            const globalStaticClassNames = classNameToArray(
+                bemedOptions.className,
+            );
 
-        function createBEMElement<
-            BEMElement extends ElementNames,
-            BEMElementMods extends
-                | Record<string, true | string | BEMCSS>
-                | undefined = undefined
-        >(
-            blockElementName: string,
-            elementOptions:
-                | {
-                      el?: BEMElement;
-                      mods?: BEMElementMods;
-                      css?: BEMCSS;
-                      className?: string | string[];
-                  }
-                | undefined = {},
-        ) {
-            type BEMElementProps = ModProps<BEMElementMods>;
-
-            const fullElementName =
-                blockClassName + separators.element + blockElementName;
-
-            const BEMElement = createReactBEMComponent({
-                component: elementOptions.el || "div",
-                blockClassName: fullElementName,
-                knownMods: elementOptions.mods as BEMElementProps,
-                staticClassNames: classNameToArray(elementOptions.className),
+            const Block = createReactBEMComponent({
+                component: blockOptions.el || "div",
+                blockClassName,
+                knownMods: blockOptions.mods as BEMBlockProps,
+                staticClassNames: classNameToArray(blockOptions.className),
                 globalStaticClassNames,
                 modifierSeparator: separators.modifier,
-                css: elementOptions.css,
+                css: blockOptions.css,
             });
 
-            (BEMElement as any).displayName = `BEMElement(${fullElementName})`;
-            (BEMElement as any).className = fullElementName;
+            (Block as any).displayName = `BEM(${blockClassName})`;
 
-            return BEMElement;
-        }
+            const out: any = {};
 
-        const out: any = {};
-
-        if (blockOptions.elements) {
-            for (const key in blockOptions.elements) {
-                const def = blockOptions.elements[key];
-                out[key] = createBEMElement(key, {
-                    el: def.el,
-                    mods: def.mods,
-                    className: def.className,
-                    css: def.css,
-                });
+            if (blockOptions.elements) {
+                for (const key in blockOptions.elements) {
+                    const def = blockOptions.elements[key];
+                    out[key] = def(
+                        blockClassName + separators.element + key,
+                        true,
+                    );
+                }
             }
-        }
 
-        const final = Object.assign(Block, out, {
-            className: blockClassName,
-        });
+            const final = Object.assign(Block, out, {
+                className: blockClassName,
+            });
 
-        return final as BEMBlock<typeof Block, Elements>;
-    };
+            return final as BEMBlock<typeof Block, Elements>;
+        };
+    }
+
+    return defineBEMBlock;
 }
+
+export const bemed = createBemed();

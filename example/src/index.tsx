@@ -2,15 +2,14 @@ import ReactDOM from "react-dom";
 import React from "react";
 import { createBemed } from "../../src/react-bemed";
 import { css } from "../../src/css";
-// import { css } from "emotion";
 
-const defineBlock = createBemed("ex");
+const bemed = createBemed("ex");
 
-const Block = defineBlock("Hellolol", {
+const Block = bemed({
     css: css`
         color: green;
     `,
-});
+})("Hellolol");
 
 function App() {
     return <Block>hello</Block>;

@@ -27,12 +27,12 @@ afterEach(() => {
 });
 
 test("injects style tag for blocks", () => {
-    const block = createBemed();
-    const Block = block("TestBlock", {
+    const bemed = createBemed();
+    const Block = bemed({
         css: css`
             color: orange;
         `,
-    });
+    })("TestBlock");
 
     render(<Block>test</Block>);
 
@@ -43,14 +43,14 @@ test("injects style tag for blocks", () => {
 });
 
 test("can use variables in template literals", () => {
-    const block = createBemed();
+    const bemed = createBemed();
     const color = "orange";
 
-    const Block = block("TestBlock", {
+    const Block = bemed({
         css: css`
             color: ${color};
         `,
-    });
+    })("TestBlock");
 
     render(<Block>test</Block>);
 
@@ -59,8 +59,8 @@ test("can use variables in template literals", () => {
 });
 
 test("Autoprefixes during injection", () => {
-    const block = createBemed();
-    const Block = block("TestBlock", {
+    const bemed = createBemed();
+    const Block = bemed({
         css: css`
             @keyframes slide {
                 from {
@@ -71,7 +71,7 @@ test("Autoprefixes during injection", () => {
                 }
             }
         `,
-    });
+    })("TestBlock");
 
     render(<Block>test</Block>);
 
@@ -80,17 +80,17 @@ test("Autoprefixes during injection", () => {
 });
 
 test("injects style tag for elements", () => {
-    const block = createBemed();
+    const bemed = createBemed();
 
-    const Block = block("TestBlock", {
+    const Block = bemed({
         elements: {
-            Foo: {
+            Foo: bemed({
                 css: css`
                     color: red;
                 `,
-            },
+            }),
         },
-    });
+    })("TestBlock");
 
     render(<Block.Foo>test</Block.Foo>);
 
@@ -101,15 +101,15 @@ test("injects style tag for elements", () => {
 });
 
 test("injects style tag for block mods", () => {
-    const block = createBemed();
+    const bemed = createBemed();
 
-    const Block = block("TestBlock", {
+    const Block = bemed({
         mods: {
             ding: css`
                 color: orange;
             `,
         },
-    });
+    })("TestBlock");
 
     render(<Block ding>test</Block>);
 
@@ -120,15 +120,15 @@ test("injects style tag for block mods", () => {
 });
 
 test("also adds the BEM class for css block mods", () => {
-    const block = createBemed("prefix");
+    const bemed = createBemed("prefix");
 
-    const Block = block("TestBlock", {
+    const Block = bemed({
         mods: {
             ding: css`
                 color: orange;
             `,
         },
-    });
+    })("TestBlock");
 
     const rtl = render(<Block ding>test</Block>);
     const el = rtl.getByText("test");
@@ -137,19 +137,19 @@ test("also adds the BEM class for css block mods", () => {
 });
 
 test("also adds the BEM class for css element mods", () => {
-    const block = createBemed("prefix");
+    const bemed = createBemed("prefix");
 
-    const Block = block("TestBlock", {
+    const Block = bemed({
         elements: {
-            Foo: {
+            Foo: bemed({
                 mods: {
                     ding: css`
                         color: orange;
                     `,
                 },
-            },
+            }),
         },
-    });
+    })("TestBlock");
 
     const rtl = render(<Block.Foo ding>test</Block.Foo>);
     const el = rtl.getByText("test");
@@ -160,19 +160,19 @@ test("also adds the BEM class for css element mods", () => {
 });
 
 test("injects style tag for element mods", () => {
-    const block = createBemed();
+    const bemed = createBemed();
 
-    const Block = block("TestBlock", {
+    const Block = bemed({
         elements: {
-            Foo: {
+            Foo: bemed({
                 mods: {
                     ding: css`
                         color: orange;
                     `,
                 },
-            },
+            }),
         },
-    });
+    })("TestBlock");
 
     render(<Block.Foo ding>test</Block.Foo>);
 
@@ -187,12 +187,12 @@ test("injects style tag for element mods", () => {
 test("server renders style tags for blocks", () => {
     process.env.TEST_ENV = "node";
 
-    const block = createBemed();
-    const Block = block("TestBlock", {
+    const bemed = createBemed();
+    const Block = bemed({
         css: css`
             color: orange;
         `,
-    });
+    })("TestBlock");
 
     const rtl = render(
         <SSRProvider>
@@ -210,16 +210,16 @@ test("server renders style tags for blocks", () => {
 test("server renders style tags for elements", () => {
     process.env.TEST_ENV = "node";
 
-    const block = createBemed();
-    const Block = block("TestBlock", {
+    const bemed = createBemed();
+    const Block = bemed({
         elements: {
-            Foo: {
+            Foo: bemed({
                 css: css`
                     color: orange;
                 `,
-            },
+            }),
         },
-    });
+    })("TestBlock");
 
     const rtl = render(
         <SSRProvider>
@@ -237,12 +237,12 @@ test("server renders style tags for elements", () => {
 test("does not duplicate server-rendered styles", () => {
     process.env.TEST_ENV = "node";
 
-    const block = createBemed();
-    const Block = block("TestBlock", {
+    const bemed = createBemed();
+    const Block = bemed({
         css: css`
             color: orange;
         `,
-    });
+    })("TestBlock");
 
     const rtl = render(
         <SSRProvider>
@@ -259,12 +259,12 @@ test("does not duplicate server-rendered styles", () => {
 test("does not duplicate server-rendered styles within loop", () => {
     process.env.TEST_ENV = "node";
 
-    const block = createBemed();
-    const Block = block("TestBlock", {
+    const bemed = createBemed();
+    const Block = bemed({
         css: css`
             color: orange;
         `,
-    });
+    })("TestBlock");
 
     const rtl = render(
         <SSRProvider>
@@ -282,9 +282,9 @@ test("does not duplicate server-rendered styles within loop", () => {
 test("server renders block mods", () => {
     process.env.TEST_ENV = "node";
 
-    const block = createBemed();
+    const bemed = createBemed();
 
-    const Block = block("TestBlock", {
+    const Block = bemed({
         css: css`
             color: blue;
         `,
@@ -293,7 +293,7 @@ test("server renders block mods", () => {
                 color: orange;
             `,
         },
-    });
+    })("TestBlock");
 
     const rtl = render(
         <SSRProvider>
@@ -311,11 +311,11 @@ test("server renders block mods", () => {
 test("server renders element mods", () => {
     process.env.TEST_ENV = "node";
 
-    const block = createBemed();
+    const bemed = createBemed();
 
-    const Block = block("TestBlock", {
+    const Block = bemed({
         elements: {
-            Foo: {
+            Foo: bemed({
                 css: css`
                     color: blue;
                 `,
@@ -324,9 +324,9 @@ test("server renders element mods", () => {
                         color: orange;
                     `,
                 },
-            },
+            }),
         },
-    });
+    })("TestBlock");
 
     const rtl = render(
         <SSRProvider>
@@ -344,9 +344,9 @@ test("server renders element mods", () => {
 test("incrementally renders used css", () => {
     process.env.TEST_ENV = "node";
 
-    const block = createBemed();
+    const bemed = createBemed();
 
-    const Block = block("TestBlock", {
+    const Block = bemed({
         css: css`
             color: blue;
         `,
@@ -355,7 +355,7 @@ test("incrementally renders used css", () => {
                 color: orange;
             `,
         },
-    });
+    })("TestBlock");
 
     const rtl = render(
         <SSRProvider>
@@ -374,12 +374,12 @@ test("incrementally renders used css", () => {
 });
 
 test("Autoprefixes during injection", () => {
-    const block = createBemed();
-    const Block = block("TestBlock", {
+    const bemed = createBemed();
+    const Block = bemed({
         css: css`
             flex: 1;
         `,
-    });
+    })("TestBlock");
 
     render(<Block>test</Block>);
 
@@ -390,12 +390,12 @@ test("Autoprefixes during injection", () => {
 test("server renders autoprefixed", () => {
     process.env.TEST_ENV = "node";
 
-    const block = createBemed();
-    const Block = block("TestBlock", {
+    const bemed = createBemed();
+    const Block = bemed({
         css: css`
             flex: 1;
         `,
-    });
+    })("TestBlock");
 
     const rtl = render(
         <SSRProvider>
@@ -410,17 +410,17 @@ test("server renders autoprefixed", () => {
 });
 
 test("can use custom stylis", () => {
-    const block = createBemed("");
+    const bemed = createBemed("");
 
     css.compiler = new Stylis({
         prefix: false,
     });
 
-    const Block = block("TestBlock", {
+    const Block = bemed({
         css: css`
             flex: 1;
         `,
-    });
+    })("TestBlock");
 
     render(<Block>test</Block>);
 
@@ -429,11 +429,11 @@ test("can use custom stylis", () => {
 });
 
 test("can use custom css compiler for injection", () => {
-    const block = createBemed("");
+    const bemed = createBemed("");
 
     css.compiler = () => "custom";
 
-    const Block = block("TestBlock", {
+    const Block = bemed({
         css: css`
             flex: 1;
         `,
@@ -443,7 +443,7 @@ test("can use custom css compiler for injection", () => {
             `,
         },
         elements: {
-            Foo: {
+            Foo: bemed({
                 css: css`
                     flex: 1;
                 `,
@@ -452,9 +452,9 @@ test("can use custom css compiler for injection", () => {
                         flex: 1;
                     `,
                 },
-            },
+            }),
         },
-    });
+    })("TestBlock");
 
     render(
         <div>
@@ -474,11 +474,11 @@ test("can use custom css compiler for injection", () => {
 
 test("can use custom css compiler in server render", () => {
     process.env.TEST_ENV = "node";
-    const block = createBemed("");
+    const bemed = createBemed("");
 
     css.compiler = () => "custom";
 
-    const Block = block("TestBlock", {
+    const Block = bemed({
         css: css`
             flex: 1;
         `,
@@ -488,7 +488,7 @@ test("can use custom css compiler in server render", () => {
             `,
         },
         elements: {
-            Foo: {
+            Foo: bemed({
                 css: css`
                     flex: 1;
                 `,
@@ -497,9 +497,9 @@ test("can use custom css compiler in server render", () => {
                         flex: 1;
                     `,
                 },
-            },
+            }),
         },
-    });
+    })("TestBlock");
 
     const rtl = render(
         <SSRProvider>
@@ -522,10 +522,10 @@ test("can use custom css compiler in server render", () => {
 });
 
 test("css can work as normal function call", () => {
-    const block = createBemed();
-    const Block = block("TestBlock", {
+    const bemed = createBemed();
+    const Block = bemed({
         css: css("color: orange;", ""),
-    });
+    })("TestBlock");
 
     render(<Block>test</Block>);
 
@@ -537,10 +537,10 @@ test("css can work as normal function call", () => {
 });
 
 test("css can work as normal function call with precompiled css", () => {
-    const block = createBemed();
-    const Block = block("TestBlock", {
+    const bemed = createBemed();
+    const Block = bemed({
         css: precompiledCSS("__BEMED__{color: orange;}", ""),
-    });
+    })("TestBlock");
 
     render(<Block>test</Block>);
 
