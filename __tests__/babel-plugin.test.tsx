@@ -32,7 +32,7 @@ function decodeSourceMap(source: string | undefined | null): SourceMap {
         throw new Error("Cannot find source map from: " + source);
     }
 
-    return JSON.parse(new Buffer(match[1].split(",")[1], "base64").toString());
+    return JSON.parse(Buffer.from(match[1].split(",")[1], "base64").toString());
 }
 
 function lines(...args: string[]) {
