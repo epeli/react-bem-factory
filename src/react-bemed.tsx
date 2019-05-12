@@ -3,7 +3,9 @@ import React from "react";
 
 type BEMCSS = import("./css-core").BEMCSS;
 
-type ElementNames = keyof React.ReactHTML;
+type AnyReactComponent =
+    | keyof JSX.IntrinsicElements
+    | React.JSXElementConstructor<any>;
 
 function classNameToArray(className: undefined | string | string[]) {
     return Array.isArray(className) ? className : (className || "").split(" ");
@@ -13,7 +15,7 @@ function classNameToArray(className: undefined | string | string[]) {
  * Add BEM class names to any given React Component that takes a className prop
  */
 function createReactBEMComponent<
-    Comp extends ElementNames,
+    Comp extends AnyReactComponent,
     KnownMods extends Record<string, boolean | undefined>
 >(opts: {
     component: Comp;
@@ -24,11 +26,11 @@ function createReactBEMComponent<
     modifierSeparator: string;
     css?: BEMCSS;
 }) {
-    type ReactProps = JSX.IntrinsicElements[Comp];
+    type ReactProps = React.ComponentProps<Comp>;
 
     type FinalProps = typeof opts.knownMods extends undefined
         ? ReactProps
-        : ReactProps & ModProps<typeof opts.knownMods>;
+        : ReactProps & ModProps<KnownMods>;
 
     const BEMComponent = forwardRef((props: FinalProps, ref) => {
         let componentProps: Record<string, any> = {};
@@ -207,15 +209,6 @@ export interface BemedOptions {
     };
 }
 
-export interface BEMComponentDefinition {
-    el?: ElementNames;
-    css?: BEMCSS;
-    className?: string;
-    mods?: {
-        [mod: string]: true | string | BEMCSS;
-    };
-}
-
 /**
  * Create BEMBlock component type
  */
@@ -259,7 +252,7 @@ export function createBemed(
                 isElement?: boolean,
             ) => (props: any) => React.ReactNode;
         },
-        BEMBlockDOMElement extends ElementNames = "div",
+        BEMBlockDOMElement extends AnyReactComponent = "div",
         BEMBlockMods extends
             | Record<string, true | string | BEMCSS>
             | undefined = undefined
@@ -299,8 +292,11 @@ export function createBemed(
                 bemedOptions.className,
             );
 
+            // Ensure the type is BEMBlockDOMElement and not union with "div"
+            const comp: BEMBlockDOMElement = (blockOptions.el || "div") as any;
+
             const Block = createReactBEMComponent({
-                component: blockOptions.el || "div",
+                component: comp,
                 blockClassName,
                 knownMods: blockOptions.mods as BEMBlockProps,
                 staticClassNames: classNameToArray(blockOptions.className),

@@ -1,6 +1,6 @@
 import { render, cleanup, fireEvent } from "react-testing-library";
 import { createBemed } from "../src/react-bemed";
-import React from "react";
+import React, { Children } from "react";
 
 afterEach(cleanup);
 
@@ -449,4 +449,41 @@ test("duplicate classnames are removed", () => {
 
     const elEl = rtl.getByText("element");
     expect(elEl.className).toBe("ns-TestBlock__Foo dup");
+});
+
+test("can use function components as the elements", () => {
+    const bemed = createBemed();
+
+    function MyComp(props: {
+        className?: string;
+        foo: string;
+        children: React.ReactNode;
+    }) {
+        return (
+            <span data-testid="test" className={props.className}>
+                {props.foo}
+            </span>
+        );
+    }
+
+    const Block = bemed({
+        el: MyComp,
+        mods: {
+            bar: true,
+        },
+    })("Block");
+
+    const rtl = render(
+        <div>
+            <Block foo="FOO" bar>
+                block
+            </Block>
+        </div>,
+    );
+
+    const el = rtl.getByTestId("test");
+
+    expect(el.tagName).toBe("SPAN");
+    expect(el.className).toBe("Block Block--bar");
+    expect(el.innerHTML).toBe("FOO");
 });

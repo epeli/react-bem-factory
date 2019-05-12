@@ -251,3 +251,26 @@ test("template tag types", () => {
     // prettier-ignore
     const functionError = css`color: ${props => "bad"};`; // $ExpectError
 });
+
+test("can use function components as the elements", () => {
+    const bemed = createBemed();
+
+    function MyComp(props: { foo: string }) {
+        return <div>{props.foo}</div>;
+    }
+
+    const Block = bemed({
+        el: MyComp,
+        mods: {
+            bar: true,
+        },
+    })("Block");
+
+    render(<Block foo="sdf" bar />);
+
+    // $ExpectError
+    render(<Block />);
+
+    // $ExpectError
+    render(<Block foo={324} />);
+});
