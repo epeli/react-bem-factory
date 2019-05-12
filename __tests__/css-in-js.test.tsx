@@ -517,7 +517,22 @@ test("can use custom css compiler in server render", () => {
 test("css can work as normal function call", () => {
     const block = bemed();
     const Block = block("TestBlock", {
-        css: css("__BEMED__{color: orange;}", ""),
+        css: css("color: orange;", false, ""),
+    });
+
+    render(<Block>test</Block>);
+
+    expect(injectGlobal).toBeCalledTimes(1);
+    expect(mockInjectGlobal.mock.calls[0][0]).toEqual("TestBlock");
+    expect(mockInjectGlobal.mock.calls[0][1]).toEqual(
+        ".TestBlock{color:orange;}",
+    );
+});
+
+test("css can work as normal function call with precompiled css", () => {
+    const block = bemed();
+    const Block = block("TestBlock", {
+        css: css("__BEMED__{color: orange;}", true, ""),
     });
 
     render(<Block>test</Block>);

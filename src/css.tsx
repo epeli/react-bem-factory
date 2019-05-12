@@ -153,7 +153,8 @@ type Placeholders = string | number;
 
 export function css(
     style: string,
-    sourceMap: string,
+    precompiled: boolean,
+    sourceMap?: string,
 ): {
     cssString: { compiled: boolean; string: string };
     sourceMap: string;
@@ -175,10 +176,14 @@ export function css(...args: any[]) {
     let compiled = false;
 
     if (typeof args[0] === "string") {
-        const [style, _sourceMap] = args as [string, string];
+        const [style, precompiled, _sourceMap] = args as [
+            string,
+            boolean,
+            string | undefined
+        ];
         cssString = style;
-        sourceMap = _sourceMap;
-        compiled = true;
+        sourceMap = _sourceMap || "";
+        compiled = precompiled;
     } else {
         const [literals, ...placeholders] = args as [
             TemplateStringsArray,

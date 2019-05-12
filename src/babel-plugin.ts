@@ -163,21 +163,26 @@ export default function bemedBabelPlugin(
                     styleString,
                 ).split("__BEMED_VAR__");
 
+                const arrayJoin = t.callExpression(
+                    t.memberExpression(
+                        createArrayExpression(
+                            t,
+                            compiled,
+                            path.node.quasi.expressions,
+                            [],
+                        ),
+                        t.identifier("join"),
+                    ),
+                    [t.stringLiteral("")],
+                );
+
+                const sourceMapStringLiteral = t.stringLiteral(sourceMap);
+
                 path.replaceWith(
                     t.callExpression(t.identifier(name), [
-                        t.callExpression(
-                            t.memberExpression(
-                                createArrayExpression(
-                                    t,
-                                    compiled,
-                                    path.node.quasi.expressions,
-                                    [],
-                                ),
-                                t.identifier("join"),
-                            ),
-                            [t.stringLiteral("")],
-                        ),
-                        t.stringLiteral(sourceMap),
+                        arrayJoin,
+                        t.booleanLiteral(true),
+                        sourceMapStringLiteral,
                     ]),
                 );
             },
