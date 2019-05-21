@@ -70,7 +70,7 @@ test("adds source maps", () => {
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
             'import { css } from "react-bemed/css-precompiled";',
-            'const foo = css(["__BEMED__{color:red;}"].join(""), true, "/*# sourceMappingURL=SOURCEMAP */");',
+            'const foo = css(["__BEMED__{color:red;}"].join(""), "/*# sourceMappingURL=SOURCEMAP */");',
         ),
     );
 });
@@ -88,7 +88,7 @@ test("adds source maps without precompiling", () => {
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
             'import { css } from "react-bemed/css";',
-            'const foo = css(["color: red"].join(""), false, "/*# sourceMappingURL=SOURCEMAP */");',
+            'const foo = css(["color: red"].join(""), "/*# sourceMappingURL=SOURCEMAP */");',
         ),
     );
 });
@@ -126,7 +126,7 @@ test("can handle single placeholder", () => {
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
             'import { css } from "react-bemed/css-precompiled";',
-            'const foo = css(["__BEMED__{color:", 123, ";border:1px solid black;}"].join(""), true, "/*# sourceMappingURL=SOURCEMAP */");',
+            'const foo = css(["__BEMED__{color:", 123, ";border:1px solid black;}"].join(""), "/*# sourceMappingURL=SOURCEMAP */");',
         ),
     );
 });
@@ -144,7 +144,7 @@ test("can handle single placeholder without precompiling", () => {
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
             'import { css } from "react-bemed/css";',
-            'const foo = css(["color: ", 123, "; border: 1px solid black;"].join(""), false, "/*# sourceMappingURL=SOURCEMAP */");',
+            'const foo = css(["color: ", 123, "; border: 1px solid black;"].join(""), "/*# sourceMappingURL=SOURCEMAP */");',
         ),
     );
 });
@@ -162,7 +162,7 @@ test("can handle two placeholders", () => {
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
             'import { css } from "react-bemed/css-precompiled";',
-            'const foo = css(["__BEMED__{color:", 123, ";border:1px ", 321, " red;}"].join(""), true, "/*# sourceMappingURL=SOURCEMAP */");',
+            'const foo = css(["__BEMED__{color:", 123, ";border:1px ", 321, " red;}"].join(""), "/*# sourceMappingURL=SOURCEMAP */");',
         ),
     );
 });
@@ -180,7 +180,7 @@ test("can handle three placeholders", () => {
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
             'import { css } from "react-bemed/css-precompiled";',
-            'const foo = css(["__BEMED__{color:", 123, ";border:1px ", 321, " red;backgroud-color:", "orange", ";}"].join(""), true, "/*# sourceMappingURL=SOURCEMAP */");',
+            'const foo = css(["__BEMED__{color:", 123, ";border:1px ", 321, " red;backgroud-color:", "orange", ";}"].join(""), "/*# sourceMappingURL=SOURCEMAP */");',
         ),
     );
 });
@@ -203,7 +203,7 @@ test("precompiles css", () => {
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
             'import { css } from "react-bemed/css-precompiled";',
-            'const foo = css(["__BEMED__ a{color:red;}"].join(""), true, "/*# sourceMappingURL=SOURCEMAP */");',
+            'const foo = css(["__BEMED__ a{color:red;}"].join(""), "/*# sourceMappingURL=SOURCEMAP */");',
         ),
     );
 });
@@ -224,7 +224,7 @@ test("precompiles autoprefixing by default", () => {
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
             'import { css } from "react-bemed/css-precompiled";',
-            'const foo = css(["__BEMED__{-webkit-transition:all 4s ease;transition:all 4s ease;}"].join(""), true, "/*# sourceMappingURL=SOURCEMAP */");',
+            'const foo = css(["__BEMED__{-webkit-transition:all 4s ease;transition:all 4s ease;}"].join(""), "/*# sourceMappingURL=SOURCEMAP */");',
         ),
     );
 });

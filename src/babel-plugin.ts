@@ -194,7 +194,6 @@ export default function bemedBabelPlugin(
                 path.replaceWith(
                     t.callExpression(t.identifier(name), [
                         arrayJoin,
-                        t.booleanLiteral(Boolean(opts.precompile)),
                         sourceMapStringLiteral,
                     ]),
                 );
