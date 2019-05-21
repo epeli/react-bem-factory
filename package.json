@@ -1,6 +1,6 @@
 {
     "name": "react-bemed",
-    "version": "0.3.4",
+    "version": "0.4.0",
     "description": "",
     "main": "lib/react-bemed.js",
     "types": "lib/react-bemed.d.ts",
@@ -9,10 +9,11 @@
     },
     "scripts": {
         "test": "npm run dtslint && jest",
-        "build": "tsc --project tsconfig.build.json && rm -rf lib && mv build/src lib && rm -rf build",
+        "build": "rm -rf build && tsc --project tsconfig.build.json && rm -rf lib && mv build/src lib && rm -rf build",
         "clean": "rm -rf lib build",
         "dtslint": "tslint --project tsconfig.dtslint.json",
-        "prepublishOnly": "npm run test && npm run build"
+        "prepublishOnly": "npm run test && npm run build",
+        "example": "cd example && webpack-dev-server --mode development"
     },
     "keywords": [
         "typescript"
@@ -20,19 +21,39 @@
     "author": "",
     "license": "ISC",
     "files": [
-        "lib"
+        "lib",
+        "babel.js",
+        "css-precompiled.js",
+        "css.js",
+        "css.d.ts"
     ],
     "devDependencies": {
-        "@types/jest": "^24.0.11",
-        "@types/react": "^16.8.12",
-        "@types/react-dom": "^16.8.3",
-        "dtslint": "^0.6.0",
-        "jest": "^24.7.1",
-        "prettier": "^1.16.4",
+        "@babel/core": "^7.4.4",
+        "@epeli/webpack-config": "^0.10.1",
+        "@types/convert-source-map": "^1.5.1",
+        "@types/dedent": "^0.7.0",
+        "@types/jest": "^24.0.12",
+        "@types/node": "^12.0.0",
+        "@types/react": "^16.8.17",
+        "@types/react-dom": "^16.8.4",
+        "dedent": "^0.7.0",
+        "dtslint": "^0.7.1",
+        "jest": "^24.8.0",
+        "prettier": "^1.17.0",
         "react": "^16.8.6",
         "react-dom": "^16.8.6",
-        "react-testing-library": "^6.0.4",
-        "ts-jest": "^24.0.1",
-        "typescript": "~3.4.1"
+        "react-testing-library": "^7.0.0",
+        "ts-jest": "^24.0.2",
+        "typescript": "~3.4.5",
+        "vlq": "^1.0.0"
+    },
+    "peerDependencies": {
+        "react": "^16.8.6"
+    },
+    "dependencies": {
+        "@emotion/sheet": "^0.9.2",
+        "convert-source-map": "^1.6.0",
+        "source-map": "^0.7.3",
+        "stylis": "^3.5.4"
     }
 }

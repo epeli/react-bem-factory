@@ -1,24 +1,28 @@
-import { bemed } from "./src/react-bemed";
+import { createBemed } from "./src/react-bemed";
 import React from "react";
+import { css } from "./src/css";
 
-const createAppBlock = bemed("app");
+const bemed = createBemed("app");
 
 // Create a "BEMed Block Component"
-const Button = createAppBlock("Button", {
-    el: "button",
+const Button = bemed({
+    as: "button",
+    css: css`
+        color: red;
+    `,
     mods: {
         add: true,
         delete: true,
     },
     elements: {
-        Icon: {
-            el: "span",
+        Icon: bemed({
+            as: "span",
             mods: {
                 danger: true,
             },
-        },
+        }),
     },
-});
+})("Button");
 
 // Usage of BEMed Components is idiomatic React
 // without BEM classes mutilating the readability

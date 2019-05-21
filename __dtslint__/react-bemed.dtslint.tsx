@@ -1,19 +1,20 @@
-import { bemed } from "../src/react-bemed";
+import { createBemed } from "../src/react-bemed";
 import React from "react";
+import { css } from "../src/css";
 
 function assertNotAny(a: number) {}
 function render(jsx: any) {}
 
 test("does not allow bad types on block components", () => {
-    const createBlock = bemed("prefix-");
+    const createBlock = createBemed("prefix-");
     // $ExpectError
     assertNotAny(createBlock);
 
-    const Block = createBlock("test-block", {
+    const Block = createBlock({
         mods: {
             ding: true,
         },
-    });
+    })("test-block");
 
     // $ExpectError
     assertNotAny(Block);
@@ -23,14 +24,14 @@ test("does not allow bad types on block components", () => {
 });
 
 test("does not allow bad types on block components", () => {
-    const createBlock = bemed("prefix-");
+    const createBlock = createBemed("prefix-");
 
-    const Block = createBlock("test-block", {
-        el: "div",
+    const Block = createBlock({
+        as: "div",
         mods: {
             ding: true,
         },
-    });
+    })("test-block");
 
     console.log(
         // $ExpectError
@@ -39,26 +40,26 @@ test("does not allow bad types on block components", () => {
 });
 
 test("can use custom els", () => {
-    const createBlock = bemed("prefix-");
+    const createBlock = createBemed("prefix-");
 
-    const Block = createBlock("test-block", {
-        el: "video",
+    const Block = createBlock({
+        as: "video",
         mods: {
             ding: true,
         },
-    });
+    })("test-block");
 
     render(<Block playsInline>test</Block>);
 });
 
 test("defaults to div", () => {
-    const createBlock = bemed("prefix-");
+    const createBlock = createBemed("prefix-");
 
-    const Block = createBlock("test-block", {
+    const Block = createBlock({
         mods: {
             ding: true,
         },
-    });
+    })("test-block");
 
     console.log(
         // $ExpectError
@@ -67,42 +68,41 @@ test("defaults to div", () => {
 });
 
 test("mods are true", () => {
-    const createBlock = bemed("prefix-");
+    const createBlock = createBemed("prefix-");
 
     const Block = createBlock(
-        "test-block",
         // $ExpectError
         {
             mods: {
                 foo: false,
             },
         },
-    );
+    )("test-block");
 });
 
 test("can create inline elements", () => {
-    const block = bemed();
+    const bemed = createBemed();
 
-    const Block = block("test-block", {
+    const Block = bemed({
         mods: {
             bar: true,
         },
         elements: {
-            FooDiv: {
+            FooDiv: bemed({
                 className: "sdf",
-                el: "div",
+                as: "div",
                 mods: {
                     ding: "sdf",
                 },
-            },
-            BarVideo: {
-                el: "video",
+            }),
+            BarVideo: bemed({
+                as: "video",
                 mods: {
                     ding: true,
                 },
-            },
+            }),
         },
-    });
+    })("test-block");
 
     // $ExpectError
     render(<Block bar playsInline />);
@@ -127,20 +127,20 @@ test("can create inline elements", () => {
 });
 
 test("inline elements default to divs", () => {
-    const block = bemed();
+    const bemed = createBemed();
 
-    const Block = block("test-block", {
+    const Block = bemed({
         mods: {
             bar: true,
         },
         elements: {
-            FooDiv: {
+            FooDiv: bemed({
                 mods: {
                     ding: true,
                 },
-            },
+            }),
         },
-    });
+    })("test-block");
 
     render(<Block.FooDiv ding />);
 
@@ -152,34 +152,41 @@ test("inline elements default to divs", () => {
 });
 
 test("do not allow extra props", () => {
-    const block = bemed();
+    const bemed = createBemed();
 
-    const Block = block("test-block", {
+    bemed({
         // $ExpectError
         bad: 1,
         mods: {
             bar: true,
         },
+    })("test-block");
+
+    bemed({
+        mods: {
+            bar: true,
+        },
         elements: {
             FooDiv: {
-                bad: 2, // XXX should fail!
+                // $ExpectError
+                bad: 2,
                 mods: {
                     ding: true,
                 },
             },
         },
-    });
+    })("test-block");
 });
 
 test("can use other components as children", () => {
-    const block = bemed();
+    const bemed = createBemed();
 
-    const Block = block("test-block", {
+    const Block = bemed({
         elements: {
-            Foo: { mods: { right: true } },
-            Bar: {},
+            Foo: bemed({ mods: { right: true } }),
+            Bar: bemed(),
         },
-    });
+    })("test-block");
 
     render(
         <Block>
@@ -203,13 +210,13 @@ test("can use other components as children", () => {
 });
 
 test("can use style attribute", () => {
-    const block = bemed();
+    const bemed = createBemed();
 
-    const Block = block("Block", {
+    const Block = bemed({
         elements: {
-            Foo: {},
+            Foo: bemed(),
         },
-    });
+    })("Block");
 
     render(<Block style={{ color: "red" }} />);
 
@@ -220,14 +227,50 @@ test("can use style attribute", () => {
 });
 
 test("some other default attributes work too", () => {
-    const block = bemed();
+    const bemed = createBemed();
 
-    const Block = block("Block", {
+    const Block = bemed({
         elements: {
-            Foo: {},
+            Foo: bemed(),
         },
-    });
+    })("Block");
 
-    render(<Block.Foo role="sdaf"  />);
+    render(<Block.Foo role="sdaf" />);
     render(<Block.Foo title="sdaf" />);
+});
+
+test("template tag types", () => {
+    const stringOK = css`
+        color: ${"string"};
+    `;
+
+    const numberOK = css`
+        color: ${1234};
+    `;
+
+    // prettier-ignore
+    const functionError = css`color: ${props => "bad"};`; // $ExpectError
+});
+
+test("can use function components as the elements", () => {
+    const bemed = createBemed();
+
+    function MyComp(props: { foo: string }) {
+        return <div>{props.foo}</div>;
+    }
+
+    const Block = bemed({
+        as: MyComp,
+        mods: {
+            bar: true,
+        },
+    })("Block");
+
+    render(<Block foo="sdf" bar />);
+
+    // $ExpectError
+    render(<Block />);
+
+    // $ExpectError
+    render(<Block foo={324} />);
 });

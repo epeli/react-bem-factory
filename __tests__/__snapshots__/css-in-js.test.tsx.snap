@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`incrementally renders used css 1`] = `
+<div
+  data-testid="container"
+>
+  <style
+    data-testid="bemed-style"
+  >
+    .TestBlock{color:blue;}
+  </style>
+  <div
+    class="TestBlock"
+  >
+    normal
+  </div>
+  <div
+    class="TestBlock"
+  >
+    normal dup
+  </div>
+  <style
+    data-testid="bemed-style"
+  >
+    .TestBlock--ding{color:orange;}
+  </style>
+  <div
+    class="TestBlock TestBlock--ding"
+  >
+    ding
+  </div>
+  <div
+    class="TestBlock TestBlock--ding"
+  >
+    ding dup
+  </div>
+</div>
+`;
