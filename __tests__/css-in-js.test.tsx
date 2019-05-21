@@ -5,7 +5,7 @@ import React from "react";
 import { css } from "../src/css";
 import { css as precompiledCSS } from "../src/css-precompiled";
 import { injectGlobal } from "../src/inject-css";
-import { SSRProvider, _resetModuleState } from "../src/css-core";
+import { SSRProvider, _resetModuleState, createCSSTag } from "../src/css-core";
 
 jest.mock("../src/inject-css");
 
@@ -60,6 +60,13 @@ test("can use variables in template literals", () => {
 
 test("Autoprefixes during injection", () => {
     const bemed = createBemed();
+
+    const css = createCSSTag(
+        new Stylis({
+            prefix: true,
+        }),
+    );
+
     const Block = bemed({
         css: css`
             @keyframes slide {
@@ -374,6 +381,12 @@ test("incrementally renders used css", () => {
 });
 
 test("Autoprefixes during injection", () => {
+    const css = createCSSTag(
+        new Stylis({
+            prefix: true,
+        }),
+    );
+
     const bemed = createBemed();
     const Block = bemed({
         css: css`
@@ -389,6 +402,11 @@ test("Autoprefixes during injection", () => {
 
 test("server renders autoprefixed", () => {
     process.env.TEST_ENV = "node";
+    const css = createCSSTag(
+        new Stylis({
+            prefix: true,
+        }),
+    );
 
     const bemed = createBemed();
     const Block = bemed({

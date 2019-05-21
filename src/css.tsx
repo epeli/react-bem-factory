@@ -1,5 +1,9 @@
-import stylis from "stylis";
+import Stylis from "stylis";
 
 import { createCSSTag } from "./css-core";
 
-export const css = createCSSTag(stylis);
+const customStylis = new Stylis({
+    prefix: process.env.NODE_ENV === "production",
+});
+
+export const css = createCSSTag(customStylis);
