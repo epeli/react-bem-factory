@@ -330,4 +330,6 @@ export function createBemed(
     return defineBEMBlock;
 }
 
-export const bemed = createBemed();
+export const bemed = createBemed("", {
+    className: "bemed",
+});
