@@ -114,7 +114,7 @@ test("can create block elements", () => {
         },
         elements: {
             TestElement: bemed({
-                el: "div",
+                as: "div",
             }),
         },
     })("TestBlock");
@@ -134,7 +134,7 @@ test("block elements can have mods too", () => {
         },
         elements: {
             TestElement: bemed({
-                el: "div",
+                as: "div",
                 mods: {
                     dong: true,
                 },
@@ -159,7 +159,7 @@ test("block elements can have multiple mods", () => {
         },
         elements: {
             TestElement: bemed({
-                el: "div",
+                as: "div",
                 mods: {
                     dong: true,
                     dong2: true,
@@ -216,7 +216,7 @@ test("can use custom elements", () => {
     const bemed = createBemed();
 
     const Block = bemed({
-        el: "input",
+        as: "input",
     })("test-block");
 
     const rtl = render(<Block type="submit" role="test" />);
@@ -322,7 +322,7 @@ test("can use custom mod class names with element", () => {
     const Block = bemed({
         elements: {
             TestElement: bemed({
-                el: "div",
+                as: "div",
                 mods: {
                     dong: "customel",
                 },
@@ -355,7 +355,7 @@ test("custom class name in a block don't leak to elements", () => {
     const Block = bemed({
         className: "custom",
         elements: {
-            Elm: bemed({ el: "div" }),
+            Elm: bemed({ as: "div" }),
         },
     })("test-block");
 
@@ -372,7 +372,7 @@ test("elements can add custom class names too", () => {
         className: "block-custom",
         elements: {
             Elm: bemed({
-                el: "div",
+                as: "div",
                 className: "el-custom",
             }),
         },
@@ -399,7 +399,7 @@ test("can use custom separators", () => {
         },
         elements: {
             Elm: bemed({
-                el: "div",
+                as: "div",
                 className: "el-custom",
                 mods: {
                     elmmod: true,
@@ -467,7 +467,7 @@ test("can use function components as the elements", () => {
     }
 
     const Block = bemed({
-        el: MyComp,
+        as: MyComp,
         mods: {
             bar: true,
         },

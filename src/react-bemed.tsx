@@ -259,7 +259,7 @@ export function createBemed(
     >(
         blockOptions:
             | {
-                  el?: BEMBlockDOMElement;
+                  as?: BEMBlockDOMElement;
                   mods?: BEMBlockMods;
                   css?: BEMCSS;
                   className?: string | string[];
@@ -293,7 +293,7 @@ export function createBemed(
             );
 
             // Ensure the type is BEMBlockDOMElement and not union with "div"
-            const comp: BEMBlockDOMElement = (blockOptions.el || "div") as any;
+            const comp: BEMBlockDOMElement = (blockOptions.as || "div") as any;
 
             const Block = createReactBEMComponent({
                 component: comp,

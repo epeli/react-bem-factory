@@ -27,7 +27,7 @@ test("does not allow bad types on block components", () => {
     const createBlock = createBemed("prefix-");
 
     const Block = createBlock({
-        el: "div",
+        as: "div",
         mods: {
             ding: true,
         },
@@ -43,7 +43,7 @@ test("can use custom els", () => {
     const createBlock = createBemed("prefix-");
 
     const Block = createBlock({
-        el: "video",
+        as: "video",
         mods: {
             ding: true,
         },
@@ -90,13 +90,13 @@ test("can create inline elements", () => {
         elements: {
             FooDiv: bemed({
                 className: "sdf",
-                el: "div",
+                as: "div",
                 mods: {
                     ding: "sdf",
                 },
             }),
             BarVideo: bemed({
-                el: "video",
+                as: "video",
                 mods: {
                     ding: true,
                 },
@@ -260,7 +260,7 @@ test("can use function components as the elements", () => {
     }
 
     const Block = bemed({
-        el: MyComp,
+        as: MyComp,
         mods: {
             bar: true,
         },

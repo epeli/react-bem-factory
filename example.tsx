@@ -6,7 +6,7 @@ const bemed = createBemed("app");
 
 // Create a "BEMed Block Component"
 const Button = bemed({
-    el: "button",
+    as: "button",
     css: css`
         color: red;
     `,
@@ -16,7 +16,7 @@ const Button = bemed({
     },
     elements: {
         Icon: bemed({
-            el: "span",
+            as: "span",
             mods: {
                 danger: true,
             },
