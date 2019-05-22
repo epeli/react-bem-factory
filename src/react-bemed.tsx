@@ -242,6 +242,8 @@ export function createBemed(
     prefix?: string,
     bemedOptions: BemedOptions | undefined = {},
 ) {
+    const USED_BLOCK_NAMES: Record<string, true | undefined> = {};
+
     /**
      * Define BEM Block and Elements
      */
@@ -287,6 +289,16 @@ export function createBemed(
                 blockClassName =
                     (prefix ? prefix + separators.namespace : "") + blockName;
             }
+
+            const isCollision = USED_BLOCK_NAMES[blockClassName];
+
+            if (isCollision) {
+                throw new Error(
+                    `Class name collision with "${blockClassName}". Make sure you pass unique class names to the function returned by bemed()`,
+                );
+            }
+
+            USED_BLOCK_NAMES[blockClassName] = true;
 
             const globalStaticClassNames = classNameToArray(
                 bemedOptions.className,

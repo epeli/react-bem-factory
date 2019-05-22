@@ -487,3 +487,12 @@ test("can use function components as the elements", () => {
     expect(el.className).toBe("Block Block--bar");
     expect(el.innerHTML).toBe("FOO");
 });
+
+test("does not allow duplicate class names", () => {
+    const bemed = createBemed();
+    bemed()("Foo");
+
+    expect(() => {
+        bemed()("Foo");
+    }).toThrow("Class name collision");
+});
