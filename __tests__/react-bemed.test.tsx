@@ -2,7 +2,12 @@ import { render, cleanup, fireEvent } from "react-testing-library";
 import { createBemed } from "../src/react-bemed";
 import React, { Children } from "react";
 
-afterEach(cleanup);
+afterEach(() => {
+    cleanup();
+    jest.resetAllMocks();
+    process.env.TEST_ENV = "browser";
+    process.env.NODE_ENV = "test";
+});
 
 test("single class name", () => {
     const bemed = createBemed();
@@ -495,4 +500,11 @@ test("does not allow duplicate class names", () => {
     expect(() => {
         bemed()("Foo");
     }).toThrow("Class name collision");
+});
+
+test("server render allows duplicate class names", () => {
+    process.env.TEST_ENV = "node";
+    const bemed = createBemed();
+    bemed()("Foo");
+    bemed()("Foo");
 });

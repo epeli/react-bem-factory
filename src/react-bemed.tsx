@@ -1,7 +1,11 @@
 import { forwardRef, createElement } from "react";
 import React from "react";
+import { isBrowser } from "./is-browser";
 
 type BEMCSS = import("./css-core").BEMCSS;
+
+// Webpack module global with .hot
+declare const module: any;
 
 type AnyReactComponent =
     | keyof JSX.IntrinsicElements
@@ -242,7 +246,14 @@ export function createBemed(
     prefix?: string,
     bemedOptions: BemedOptions | undefined = {},
 ) {
-    const USED_BLOCK_NAMES: Record<string, true | undefined> = {};
+    const usedBlockNames: Record<string, true | undefined> = {};
+    let isHotReloading = false;
+
+    if (module && module.hot) {
+        module.hot.addStatusHandler((status: string) => {
+            isHotReloading = status !== "idle";
+        });
+    }
 
     /**
      * Define BEM Block and Elements
@@ -290,15 +301,19 @@ export function createBemed(
                     (prefix ? prefix + separators.namespace : "") + blockName;
             }
 
-            const isCollision = USED_BLOCK_NAMES[blockClassName];
+            const isCollision = usedBlockNames[blockClassName];
 
-            if (isCollision) {
+            // We must skip the collision check when:
+            //  - Executing on the server. The memory is shared between requests
+            //    so multiple requests cause false positives
+            //  - When hot reload is active it by definition re-executes the same code
+            if (isCollision && !isHotReloading && isBrowser()) {
                 throw new Error(
                     `Class name collision with "${blockClassName}". Make sure you pass unique class names to the function returned by bemed()`,
                 );
             }
 
-            USED_BLOCK_NAMES[blockClassName] = true;
+            usedBlockNames[blockClassName] = true;
 
             const globalStaticClassNames = classNameToArray(
                 bemedOptions.className,
