@@ -55,14 +55,19 @@ class DisappearingStyle extends React.Component<{
         /**
          * Props for the style tag
          */
-        let styleProps: any = {};
+        const styleProps: any = {
+            // Set dangerously to avoid escaping quotes
+            dangerouslySetInnerHTML: {
+                __html: this.props.children,
+            },
+        };
 
         if (process.env.NODE_ENV !== "production") {
             // For react-testing-library
             styleProps["data-testid"] = "bemed-style";
         }
 
-        return React.createElement("style", styleProps, this.props.children);
+        return React.createElement("style", styleProps);
     }
 }
 

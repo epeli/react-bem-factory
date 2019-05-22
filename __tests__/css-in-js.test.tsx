@@ -1,4 +1,5 @@
 import { render, cleanup, fireEvent } from "react-testing-library";
+import ReactDOMServer from "react-dom/server";
 import Stylis from "stylis";
 import { createBemed } from "../src/react-bemed";
 import React from "react";
@@ -566,5 +567,26 @@ test("css can work as normal function call with precompiled css", () => {
     expect(mockInjectGlobal.mock.calls[0][0]).toEqual("TestBlock");
     expect(mockInjectGlobal.mock.calls[0][1]).toEqual(
         ".TestBlock{color: orange;}",
+    );
+});
+
+test("server render does not escape quotes", () => {
+    process.env.TEST_ENV = "node";
+
+    const bemed = createBemed();
+    const Block = bemed({
+        css: css`
+            background-image: url("static/showell_logo_white.svg");
+        `,
+    })("TestBlock");
+
+    const html = ReactDOMServer.renderToString(
+        <SSRProvider>
+            <Block>test</Block>
+        </SSRProvider>,
+    );
+
+    expect(html).toEqual(
+        '<style data-testid="bemed-style">.TestBlock{background-image:url("static/showell_logo_white.svg");}</style><div class="TestBlock">test</div>',
     );
 });
