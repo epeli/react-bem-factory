@@ -7,15 +7,16 @@ exports[`incrementally renders used css 1`] = `
   <style
     data-testid="bemed-style"
   >
-    .TestBlock{color:blue;}
+    .foo{color:pink;}
+.TestBlock{color:blue;}
   </style>
   <div
-    class="TestBlock"
+    class="TestBlock foo"
   >
     normal
   </div>
   <div
-    class="TestBlock"
+    class="TestBlock foo"
   >
     normal dup
   </div>
@@ -25,12 +26,12 @@ exports[`incrementally renders used css 1`] = `
     .TestBlock--ding{color:orange;}
   </style>
   <div
-    class="TestBlock TestBlock--ding"
+    class="TestBlock TestBlock--ding foo"
   >
     ding
   </div>
   <div
-    class="TestBlock TestBlock--ding"
+    class="TestBlock TestBlock--ding foo"
   >
     ding dup
   </div>

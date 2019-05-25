@@ -413,7 +413,15 @@ test("incrementally renders used css", () => {
 
     const bemed = createBemed();
 
+    const FOO = createClassName(
+        "foo",
+        css`
+            color: pink;
+        `,
+    );
+
     const Block = bemed({
+        className: FOO,
         css: css`
             color: blue;
         `,
