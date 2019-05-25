@@ -103,6 +103,34 @@ test("can use union block mods with strings", () => {
     expect(el.className).toBe("Block my-foo");
 });
 
+test("can use multiple submods at once", () => {
+    const bemed = createBemed("");
+
+    const Block = bemed({
+        mods: {
+            things1: {
+                foo: true,
+                bar: true,
+            },
+            things2: {
+                foo: "my-foo",
+                bar: "my-bar",
+            },
+        },
+    })("Block");
+
+    const rtl = render(
+        <div>
+            <Block things1="foo" things2="bar">
+                test
+            </Block>
+        </div>,
+    );
+
+    const el = rtl.getByText("test");
+    expect(el.className).toBe("Block Block--things1--foo my-bar");
+});
+
 test("block mods can change", () => {
     const bemed = createBemed("prefix");
 
