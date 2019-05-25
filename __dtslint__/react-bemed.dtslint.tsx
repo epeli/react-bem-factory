@@ -1,6 +1,7 @@
 import { createBemed } from "../src/react-bemed";
 import React from "react";
 import { css } from "../src/css";
+import { createClassName } from "../src/css-core";
 
 function assertNotAny(a: number) {}
 function render(jsx: any) {}
@@ -300,4 +301,22 @@ test("union mods", () => {
 
     // $ExpectError
     render(<Block things="bad" />);
+});
+
+test("createClassName() as the class name", () => {
+    const bemed = createBemed();
+    const FOO_CLASS = createClassName(
+        ".foo",
+        css`
+            color: red;
+        `,
+    );
+
+    bemed({
+        className: FOO_CLASS,
+    })("Block");
+
+    bemed({
+        className: [FOO_CLASS, "bar"],
+    })("Block");
 });

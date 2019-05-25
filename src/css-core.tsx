@@ -149,6 +149,13 @@ function createRenderer(cssCompiler: CSSCompiler) {
 
 type Placeholders = string | number;
 
+export function createClassName(className: string, bemCSS: BEMCSS) {
+    return {
+        className,
+        bemCSS,
+    };
+}
+
 export function createCSSTag(providedCompiler: CSSCompiler) {
     function compilerWrap(className: string, cssString: string) {
         return css.compiler(className, cssString);

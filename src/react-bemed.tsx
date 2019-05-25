@@ -4,8 +4,16 @@ import { isBrowser } from "./is-browser";
 
 type BEMCSS = import("./css-core").BEMCSS;
 
+type InlineClassName = ReturnType<typeof import("./css-core").createClassName>;
+
+type ClassNamesTypes = string | InlineClassName;
+
 function isBemCss(ob: any): ob is BEMCSS {
     return ob && typeof ob.render === "function";
+}
+
+function asArray<T>(value: T | undefined): T extends Array<any> ? T : T[] {
+    return (Array.isArray(value || []) ? value : [value]) as any;
 }
 
 type InlineCSS = BEMCSS;
@@ -17,8 +25,20 @@ type AnyReactComponent =
     | keyof JSX.IntrinsicElements
     | React.JSXElementConstructor<any>;
 
-function classNameToArray(className: undefined | string | string[]) {
-    return Array.isArray(className) ? className : (className || "").split(" ");
+function classNameToArray(
+    className?: ClassNamesTypes | ClassNamesTypes[],
+): string[] {
+    return (Array.isArray(className) ? className : [className]).map(foo => {
+        if (!foo) {
+            return "";
+        }
+
+        if (typeof foo === "string") {
+            return foo;
+        }
+
+        return foo.className;
+    });
 }
 
 /**
@@ -39,8 +59,8 @@ function createReactBEMComponent<
     component: Comp;
     blockClassName: string;
     knownMods: KnownMods;
-    staticClassNames: string[];
-    globalStaticClassNames: string[];
+    staticClassNames: ClassNamesTypes[];
+    globalStaticClassNames: ClassNamesTypes[];
     modifierSeparator: string;
     css?: BEMCSS;
 }) {
@@ -57,7 +77,7 @@ function createReactBEMComponent<
         /**
          * Class names passed during rendering in JSX
          */
-        const runtimeClassNames = classNameToArray(props.className);
+        const runtimeClassNames = (props.className || "").split(" ");
 
         /** Array of used BEM mods */
         const usedMods: string[] = [];
@@ -165,12 +185,25 @@ function createReactBEMComponent<
         /**
          * Final class name to be passed to DOM
          */
-        const finalClassName = [opts.blockClassName]
+        const finalClassName = ([opts.blockClassName] as ClassNamesTypes[])
             .concat(usedModClassNames.sort())
             .concat(customModClassNames)
             .concat(opts.staticClassNames)
             .concat(opts.globalStaticClassNames)
             .concat(runtimeClassNames)
+            .map(className => {
+                if (typeof className === "string") {
+                    return className;
+                }
+
+                if (!className) {
+                    return "";
+                }
+
+                usedCSS.unshift(className);
+
+                return className.className;
+            })
             .reduce(
                 (acc, className) => {
                     className = className.trim();
@@ -260,7 +293,7 @@ type FlattenToReturnTypes<T extends MethodObject> = {
 };
 
 export interface BemedOptions {
-    className?: string | string[];
+    className?: ClassNamesTypes | ClassNamesTypes[];
     separators?: {
         namespace?: string;
         modifier?: string;
@@ -336,7 +369,7 @@ export function createBemed(
                   as?: BEMBlockDOMElement;
                   mods?: BEMBlockMods;
                   css?: BEMCSS;
-                  className?: string | string[];
+                  className?: ClassNamesTypes | ClassNamesTypes[];
                   elements?: Elements;
               }
             | undefined = {},
@@ -376,10 +409,6 @@ export function createBemed(
 
             usedBlockNames[blockClassName] = true;
 
-            const globalStaticClassNames = classNameToArray(
-                bemedOptions.className,
-            );
-
             // Ensure the type is BEMBlockDOMElement and not union with "div"
             const comp: BEMBlockDOMElement = (blockOptions.as || "div") as any;
 
@@ -387,8 +416,8 @@ export function createBemed(
                 component: comp,
                 blockClassName,
                 knownMods: blockOptions.mods,
-                staticClassNames: classNameToArray(blockOptions.className),
-                globalStaticClassNames,
+                staticClassNames: asArray(blockOptions.className),
+                globalStaticClassNames: asArray(bemedOptions.className),
                 modifierSeparator: separators.modifier,
                 css: blockOptions.css,
             });

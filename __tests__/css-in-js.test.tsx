@@ -6,7 +6,12 @@ import React from "react";
 import { css } from "../src/css";
 import { css as precompiledCSS } from "../src/css-precompiled";
 import { injectGlobal } from "../src/inject-css";
-import { SSRProvider, _resetModuleState, createCSSTag } from "../src/css-core";
+import {
+    SSRProvider,
+    _resetModuleState,
+    createCSSTag,
+    createClassName,
+} from "../src/css-core";
 
 jest.mock("../src/inject-css");
 
@@ -643,4 +648,26 @@ test("server render does not escape quotes", () => {
     expect(html).toEqual(
         '<style data-testid="bemed-style">.TestBlock{background-image:url("static/showell_logo_white.svg");}</style><div class="TestBlock">test</div>',
     );
+});
+
+test("can inject class names from createClassName()", () => {
+    const bemed = createBemed();
+
+    const FOO = createClassName(
+        "foo",
+        css`
+            color: orange;
+        `,
+    );
+
+    const Block = bemed({
+        className: FOO,
+    })("TestBlock");
+
+    render(<Block>test</Block>);
+
+    expect(injectGlobal).toBeCalledTimes(1);
+    expect(mockInjectGlobal.mock.calls[0][0]).toEqual("foo");
+    expect(mockInjectGlobal.mock.calls[0][1]).toContain("orange");
+    expect(mockInjectGlobal.mock.calls[0][1]).toContain(".foo");
 });
