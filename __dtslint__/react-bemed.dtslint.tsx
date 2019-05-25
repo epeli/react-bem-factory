@@ -274,3 +274,30 @@ test("can use function components as the elements", () => {
     // $ExpectError
     render(<Block foo={324} />);
 });
+
+test("union mods", () => {
+    const bemed = createBemed();
+
+    const Block = bemed({
+        mods: {
+            top: true,
+            things: {
+                foo: true,
+                bar: "string",
+                baz: css`
+                    color: red;
+                `,
+            },
+        },
+    })("Block");
+
+    render(<Block />);
+
+    render(<Block top things="foo" />);
+    render(<Block things="foo" />);
+    render(<Block things="bar" />);
+    render(<Block things="baz" />);
+
+    // $ExpectError
+    render(<Block things="bad" />);
+});

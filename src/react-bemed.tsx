@@ -208,7 +208,7 @@ type ModPrimitives = string | true | InlineCSS;
 type AllModTypeds = ModPrimitives | Record<string, ModPrimitives>;
 
 type ModProps<T extends undefined | Record<string, AllModTypeds>> = {
-    [P in keyof T]: T[P] extends boolean
+    [P in keyof T]?: T[P] extends boolean
         ? boolean
         : T[P] extends string
         ? boolean
