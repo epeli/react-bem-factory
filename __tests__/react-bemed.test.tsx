@@ -580,3 +580,33 @@ test("server render allows duplicate class names", () => {
     bemed()("Foo");
     bemed()("Foo");
 });
+
+test("can set default props", () => {
+    const bemed = createBemed();
+
+    const Block = bemed({
+        defaultProps: {
+            title: "default title",
+        },
+    })("TestBlock");
+
+    const rtl = render(<Block>test</Block>);
+    const el = rtl.getByText("test");
+
+    expect(el.title).toBe("default title");
+});
+
+test("default props can be overridden", () => {
+    const bemed = createBemed();
+
+    const Block = bemed({
+        defaultProps: {
+            title: "default title",
+        },
+    })("TestBlock");
+
+    const rtl = render(<Block title="override">test</Block>);
+    const el = rtl.getByText("test");
+
+    expect(el.title).toBe("override");
+});

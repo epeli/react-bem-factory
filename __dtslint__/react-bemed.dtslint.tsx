@@ -320,3 +320,54 @@ test("createClassName() as the class name", () => {
         className: [FOO_CLASS, "bar"],
     })("Block");
 });
+
+test("default prop types", () => {
+    const bemed = createBemed();
+
+    bemed({
+        defaultProps: {
+            title: "sdaf",
+        },
+    })("Block");
+
+    bemed({
+        as: "video",
+        defaultProps: {
+            playsInline: true,
+        },
+    })("Block");
+
+    bemed({
+        defaultProps: {
+            // $ExpectError
+            playsInline: true,
+        },
+    })("Block");
+
+    function MyComp(props: { foo: string }) {
+        return <div>{props.foo}</div>;
+    }
+
+    bemed({
+        as: MyComp,
+        defaultProps: {
+            foo: "sdf",
+        },
+    })("Block");
+
+    // $ExpectError
+    bemed({
+        as: MyComp,
+        defaultProps: {
+            foo: 1,
+        },
+    })("Block");
+
+    bemed({
+        as: MyComp,
+        defaultProps: {
+            // $ExpectError
+            bad: 1,
+        },
+    })("Block");
+});

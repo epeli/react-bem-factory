@@ -61,6 +61,7 @@ function createReactBEMComponent<
     knownMods: KnownMods;
     staticClassNames: ClassNamesTypes[];
     globalStaticClassNames: ClassNamesTypes[];
+    defaultProps: Record<string, any>;
     modifierSeparator: string;
     css?: BEMCSS;
 }) {
@@ -243,7 +244,7 @@ function createReactBEMComponent<
 
         const reactElement = createElement(
             opts.component,
-            Object.assign({}, componentProps, {
+            Object.assign({}, opts.defaultProps, componentProps, {
                 className: finalClassName,
                 ref,
             }),
@@ -354,6 +355,7 @@ export function createBemed(
             ) => (props: any) => React.ReactNode;
         },
         BEMBlockDOMElement extends AnyReactComponent = "div",
+        DefaultProps extends React.ComponentProps<BEMBlockDOMElement> = any,
         BEMBlockMods extends
             | Record<
                   string,
@@ -367,6 +369,7 @@ export function createBemed(
         blockOptions:
             | {
                   as?: BEMBlockDOMElement;
+                  defaultProps?: DefaultProps;
                   mods?: BEMBlockMods;
                   css?: BEMCSS;
                   className?: ClassNamesTypes | ClassNamesTypes[];
@@ -419,6 +422,7 @@ export function createBemed(
                 staticClassNames: asArray(blockOptions.className),
                 globalStaticClassNames: asArray(bemedOptions.className),
                 modifierSeparator: separators.modifier,
+                defaultProps: blockOptions.defaultProps || {},
                 css: blockOptions.css,
             });
 
