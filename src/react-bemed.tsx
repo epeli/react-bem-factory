@@ -4,6 +4,8 @@ import { isBrowser } from "./is-browser";
 
 type BEMCSS = import("./css-core").BEMCSS;
 
+type InlineCSS = BEMCSS;
+
 // Webpack module global with .hot
 declare const module: any;
 
@@ -20,7 +22,15 @@ function classNameToArray(className: undefined | string | string[]) {
  */
 function createReactBEMComponent<
     Comp extends AnyReactComponent,
-    KnownMods extends Record<string, boolean | undefined>
+    KnownMods extends
+        | undefined
+        | Record<
+              string,
+              | true
+              | string
+              | InlineCSS
+              | Record<string, true | string | InlineCSS>
+          >
 >(opts: {
     component: Comp;
     blockClassName: string;
@@ -36,6 +46,7 @@ function createReactBEMComponent<
         ? ReactProps
         : ReactProps & ModProps<KnownMods>;
 
+    const knownMods = (opts.knownMods || {}) as NonNullable<KnownMods>;
     const BEMComponent = forwardRef((props: FinalProps, ref) => {
         let componentProps: Record<string, any> = {};
 
@@ -68,7 +79,7 @@ function createReactBEMComponent<
         const customModClassNames: string[] = [];
 
         const applyMods = (prop: string) => {
-            const modType = opts.knownMods[prop];
+            const modType = knownMods[prop];
 
             // Not a style mod. Just pass it as normal prop forward
             if (!modType) {
@@ -192,10 +203,22 @@ function createReactBEMComponent<
     return (BEMComponent as any) as ((props: FinalProps) => any);
 }
 
-/**
- * Convert dict of mods to boolean react props
- */
-type ModProps<T> = { [P in keyof T]?: boolean };
+type ModPrimitives = string | true | InlineCSS;
+
+type AllModTypeds = ModPrimitives | Record<string, ModPrimitives>;
+
+type ModProps<T extends undefined | Record<string, AllModTypeds>> = {
+    [P in keyof T]: T[P] extends boolean
+        ? boolean
+        : T[P] extends string
+        ? boolean
+        : T[P] extends InlineCSS
+        ? boolean
+        : T[P] extends undefined
+        ? never
+        : keyof T[P]
+};
+
 
 type MethodObject = { [key: string]: (...args: any[]) => any };
 
@@ -267,7 +290,13 @@ export function createBemed(
         },
         BEMBlockDOMElement extends AnyReactComponent = "div",
         BEMBlockMods extends
-            | Record<string, true | string | BEMCSS>
+            | Record<
+                  string,
+                  | true
+                  | string
+                  | InlineCSS
+                  | Record<string, true | string | InlineCSS>
+              >
             | undefined = undefined
     >(
         blockOptions:
@@ -325,7 +354,7 @@ export function createBemed(
             const Block = createReactBEMComponent({
                 component: comp,
                 blockClassName,
-                knownMods: blockOptions.mods as BEMBlockProps,
+                knownMods: blockOptions.mods,
                 staticClassNames: classNameToArray(blockOptions.className),
                 globalStaticClassNames,
                 modifierSeparator: separators.modifier,
