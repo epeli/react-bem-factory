@@ -182,6 +182,14 @@ function createReactBEMComponent<
             componentProps = props;
         }
 
+        // css-in-js css for the block
+        if (opts.css) {
+            usedCSS.unshift({
+                className: opts.blockClassName,
+                bemCSS: opts.css,
+            });
+        }
+
         /**
          * Final class name to be passed to DOM
          */
@@ -240,14 +248,6 @@ function createReactBEMComponent<
                 ref,
             }),
         );
-
-        // css-in-js css for the block
-        if (opts.css) {
-            usedCSS.unshift({
-                className: opts.blockClassName,
-                bemCSS: opts.css,
-            });
-        }
 
         if (usedCSS.length > 0) {
             // This is bit weird but we do it like this because this way the

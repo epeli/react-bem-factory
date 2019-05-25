@@ -671,3 +671,40 @@ test("can inject class names from createClassName()", () => {
     expect(mockInjectGlobal.mock.calls[0][1]).toContain("orange");
     expect(mockInjectGlobal.mock.calls[0][1]).toContain(".foo");
 });
+
+test("class names from createClassName() are injected before css and css mods", () => {
+    const bemed = createBemed();
+
+    const FOO = createClassName(
+        "foo",
+        css`
+            color: orange;
+        `,
+    );
+
+    const Block = bemed({
+        className: FOO,
+        css: css`
+            color: red;
+        `,
+        mods: {
+            mod: css`
+                color: darkred;
+            `,
+        },
+    })("TestBlock");
+
+    render(<Block mod>test</Block>);
+
+    expect(injectGlobal).toBeCalledTimes(3);
+
+    // The createClassNameInjection();
+    expect(mockInjectGlobal.mock.calls[0][0]).toEqual("foo");
+    expect(mockInjectGlobal.mock.calls[0][1]).toContain("orange");
+    expect(mockInjectGlobal.mock.calls[0][1]).toContain(".foo");
+
+    // The main block styles
+    expect(mockInjectGlobal.mock.calls[1][0]).toEqual("TestBlock");
+    // Mod styles
+    expect(mockInjectGlobal.mock.calls[2][0]).toEqual("TestBlock--mod");
+});
