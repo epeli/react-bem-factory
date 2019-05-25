@@ -126,36 +126,31 @@ function createReactBEMComponent<
                 return;
             }
 
+            // At this point modType can be only a submod
+
+            const knownSubMods = modType;
             const selectedSubMod = props[prop];
-            const knownSubMods = knownMods[prop];
+            const subModValue = knownSubMods[selectedSubMod];
+            const subModClassName =
+                modClassName + opts.modifierSeparator + selectedSubMod;
 
-            if (
-                typeof knownSubMods !== "string" &&
-                typeof knownSubMods !== "boolean" &&
-                !isBemCss(knownSubMods)
-            ) {
-                const subModValue = knownSubMods[selectedSubMod];
-                const submodClassName =
-                    modClassName + opts.modifierSeparator + selectedSubMod;
+            if (subModValue === true) {
+                usedModClassNames.push(subModClassName);
+                return;
+            }
 
-                if (subModValue === true) {
-                    usedModClassNames.push(submodClassName);
-                    return;
-                }
+            if (typeof subModValue === "string") {
+                usedModClassNames.push(subModValue);
+                return;
+            }
 
-                if (typeof subModValue === "string") {
-                    usedModClassNames.push(subModValue);
-                    return;
-                }
-
-                if (isBemCss(subModValue)) {
-                    usedModClassNames.push(modClassName);
-                    usedCSS.push({
-                        className: submodClassName,
-                        bemCSS: subModValue,
-                    });
-                    return;
-                }
+            if (isBemCss(subModValue)) {
+                usedModClassNames.push(modClassName);
+                usedCSS.push({
+                    className: subModClassName,
+                    bemCSS: subModValue,
+                });
+                return;
             }
         };
 
