@@ -339,6 +339,37 @@ test("server renders block mods", () => {
     expect(styleTags[0].innerHTML).toContain(".TestBlock--ding");
 });
 
+test("server renders block submods", () => {
+    process.env.TEST_ENV = "node";
+
+    const bemed = createBemed();
+
+    const Block = bemed({
+        css: css`
+            color: blue;
+        `,
+        mods: {
+            things: {
+                ding: css`
+                    color: orange;
+                `,
+            },
+        },
+    })("TestBlock");
+
+    const rtl = render(
+        <SSRProvider>
+            <Block things="ding">test</Block>
+        </SSRProvider>,
+    );
+
+    const styleTags = rtl.getAllByTestId("bemed-style");
+
+    expect(styleTags.length).toBe(1);
+    expect(styleTags[0].innerHTML).toContain("orange");
+    expect(styleTags[0].innerHTML).toContain(".TestBlock--things--ding");
+});
+
 test("server renders element mods", () => {
     process.env.TEST_ENV = "node";
 
