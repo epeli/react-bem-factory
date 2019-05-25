@@ -720,18 +720,30 @@ test("class names from createClassName() are injected before css and css mods", 
 test("css can apply selector manually", () => {
     const cssString = css`
         color: orange;
-    `(".foo");
+    `.asCSS(".foo");
 
     expect(cssString).toEqual(".foo{color:orange;}");
 });
 
 test("css can apply selector manually in the precompiled form", () => {
-    const cssString = (css as any)("color: orange;", "")(".foo");
+    const cssString = (css as any)("color: orange;", "").asCSS(".foo");
 
     expect(cssString).toEqual(".foo{color:orange;}");
 });
 
 test("precompiled css can be applied too", () => {
-    const cssString = precompiledCSS("__BEMED__{color: orange;}", "")(".foo");
+    const cssString = precompiledCSS("__BEMED__{color: orange;}", "").asCSS(
+        ".foo",
+    );
     expect(cssString).toEqual(".foo{color: orange;}");
+});
+
+test("css can apply selector manually and get style tag", () => {
+    const Tag = css`
+        color: orange;
+    `.asStyleTag(".foo");
+
+    const rtl = render(<Tag data-testid="style" />);
+    const el = rtl.getByTestId("style");
+    expect(el.innerHTML).toEqual(".foo{color:orange;}");
 });

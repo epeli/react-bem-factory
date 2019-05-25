@@ -163,25 +163,20 @@ export function createCSSTag(providedCompiler: CSSCompiler) {
 
     const renderWithStyleTags = createRenderer(compilerWrap);
 
-    function css(
-        style: string,
-        sourceMap: string,
-    ): {
-        (selector: string): string;
+    type ReturnValue = {
+        asCSS(selector: string): string;
+        asStyleTag(selector: string): (props: any) => JSX.Element;
         cssString: string;
         sourceMap: string;
         render: typeof renderWithStyleTags;
     };
 
+    function css(style: string, sourceMap: string): ReturnValue;
+
     function css(
         literals: TemplateStringsArray,
         ...placeholders: Placeholders[]
-    ): {
-        (selector: string): string;
-        cssString: string;
-        sourceMap: string;
-        render: typeof renderWithStyleTags;
-    };
+    ): ReturnValue;
 
     function css(...args: any[]) {
         let cssString = "";
@@ -205,15 +200,36 @@ export function createCSSTag(providedCompiler: CSSCompiler) {
             cssString += literals[literals.length - 1];
         }
 
-        function compile(selector: string) {
-            return providedCompiler(selector, cssString);
+        function asCSS(selector: string) {
+            return (
+                providedCompiler(selector, cssString) +
+                "\n" +
+                sourceMap
+            ).trim();
         }
 
-        return Object.assign(compile, {
+        function asStyleTag(selector: string) {
+            const cssString = asCSS(selector);
+
+            return function ReactBemedStyleTag(props: any) {
+                return React.createElement(
+                    "style",
+                    Object.assign({}, props, {
+                        dangerouslySetInnerHTML: {
+                            __html: cssString,
+                        },
+                    }),
+                );
+            };
+        }
+
+        return {
             cssString,
             sourceMap,
             render: renderWithStyleTags,
-        });
+            asCSS,
+            asStyleTag,
+        };
     }
 
     css.compiler = providedCompiler;
