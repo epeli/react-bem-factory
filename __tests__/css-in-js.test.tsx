@@ -127,6 +127,29 @@ test("injects style tag for block mods", () => {
     expect(mockInjectGlobal.mock.calls[0][1]).toContain(".TestBlock--ding");
 });
 
+test("injects style tag for block submods", () => {
+    const bemed = createBemed();
+
+    const Block = bemed({
+        mods: {
+            sub: {
+                ding: css`
+                    color: orange;
+                `,
+            },
+        },
+    })("TestBlock");
+
+    render(<Block sub="ding">test</Block>);
+
+    expect(injectGlobal).toBeCalledTimes(1);
+    expect(mockInjectGlobal.mock.calls[0][0]).toEqual("TestBlock--sub--ding");
+    expect(mockInjectGlobal.mock.calls[0][1]).toContain("orange");
+    expect(mockInjectGlobal.mock.calls[0][1]).toContain(
+        ".TestBlock--sub--ding",
+    );
+});
+
 test("also adds the BEM class for css block mods", () => {
     const bemed = createBemed("prefix");
 

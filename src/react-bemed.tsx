@@ -135,15 +135,25 @@ function createReactBEMComponent<
                 !isBemCss(knownSubMods)
             ) {
                 const subModValue = knownSubMods[selectedSubMod];
+                const submodClassName =
+                    modClassName + opts.modifierSeparator + selectedSubMod;
+
                 if (subModValue === true) {
-                    usedModClassNames.push(
-                        modClassName + opts.modifierSeparator + selectedSubMod,
-                    );
+                    usedModClassNames.push(submodClassName);
                     return;
                 }
 
                 if (typeof subModValue === "string") {
                     usedModClassNames.push(subModValue);
+                    return;
+                }
+
+                if (isBemCss(subModValue)) {
+                    usedModClassNames.push(modClassName);
+                    usedCSS.push({
+                        className: submodClassName,
+                        bemCSS: subModValue,
+                    });
                     return;
                 }
             }
