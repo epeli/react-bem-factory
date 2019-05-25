@@ -167,6 +167,7 @@ export function createCSSTag(providedCompiler: CSSCompiler) {
         style: string,
         sourceMap: string,
     ): {
+        (selector: string): string;
         cssString: string;
         sourceMap: string;
         render: typeof renderWithStyleTags;
@@ -176,6 +177,7 @@ export function createCSSTag(providedCompiler: CSSCompiler) {
         literals: TemplateStringsArray,
         ...placeholders: Placeholders[]
     ): {
+        (selector: string): string;
         cssString: string;
         sourceMap: string;
         render: typeof renderWithStyleTags;
@@ -203,11 +205,15 @@ export function createCSSTag(providedCompiler: CSSCompiler) {
             cssString += literals[literals.length - 1];
         }
 
-        return {
+        function compile(selector: string) {
+            return providedCompiler(selector, cssString);
+        }
+
+        return Object.assign(compile, {
             cssString,
             sourceMap,
             render: renderWithStyleTags,
-        };
+        });
     }
 
     css.compiler = providedCompiler;

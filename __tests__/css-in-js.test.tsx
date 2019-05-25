@@ -716,3 +716,22 @@ test("class names from createClassName() are injected before css and css mods", 
     // Mod styles
     expect(mockInjectGlobal.mock.calls[2][0]).toEqual("TestBlock--mod");
 });
+
+test("css can apply selector manually", () => {
+    const cssString = css`
+        color: orange;
+    `(".foo");
+
+    expect(cssString).toEqual(".foo{color:orange;}");
+});
+
+test("css can apply selector manually in the precompiled form", () => {
+    const cssString = (css as any)("color: orange;", "")(".foo");
+
+    expect(cssString).toEqual(".foo{color:orange;}");
+});
+
+test("precompiled css can be applied too", () => {
+    const cssString = precompiledCSS("__BEMED__{color: orange;}", "")(".foo");
+    expect(cssString).toEqual(".foo{color: orange;}");
+});
