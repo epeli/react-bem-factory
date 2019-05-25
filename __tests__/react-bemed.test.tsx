@@ -59,7 +59,7 @@ test("can use block mods", () => {
     expect(el.className).toBe("prefix-test-block prefix-test-block--ding");
 });
 
-test.only("can use union block mods", () => {
+test("can use union block mods", () => {
     const bemed = createBemed("");
 
     const Block = bemed({
