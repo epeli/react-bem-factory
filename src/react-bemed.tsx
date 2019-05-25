@@ -139,6 +139,12 @@ function createReactBEMComponent<
                     usedModClassNames.push(
                         modClassName + opts.modifierSeparator + selectedSubMod,
                     );
+                    return;
+                }
+
+                if (typeof subModValue === "string") {
+                    usedModClassNames.push(subModValue);
+                    return;
                 }
             }
         };

@@ -59,7 +59,7 @@ test("can use block mods", () => {
     expect(el.className).toBe("prefix-test-block prefix-test-block--ding");
 });
 
-test("can use union block mods", () => {
+test("can use union block mods with booleans", () => {
     const bemed = createBemed("");
 
     const Block = bemed({
@@ -79,6 +79,28 @@ test("can use union block mods", () => {
 
     const el = rtl.getByText("test");
     expect(el.className).toBe("Block Block--things--foo");
+});
+
+test("can use union block mods with strings", () => {
+    const bemed = createBemed("");
+
+    const Block = bemed({
+        mods: {
+            things: {
+                foo: "my-foo",
+                bar: "my-bar",
+            },
+        },
+    })("Block");
+
+    const rtl = render(
+        <div>
+            <Block things="foo">test</Block>
+        </div>,
+    );
+
+    const el = rtl.getByText("test");
+    expect(el.className).toBe("Block my-foo");
 });
 
 test("block mods can change", () => {
