@@ -59,6 +59,28 @@ test("can use block mods", () => {
     expect(el.className).toBe("prefix-test-block prefix-test-block--ding");
 });
 
+test.only("can use union block mods", () => {
+    const bemed = createBemed("");
+
+    const Block = bemed({
+        mods: {
+            things: {
+                foo: true,
+                bar: true,
+            },
+        },
+    })("Block");
+
+    const rtl = render(
+        <div>
+            <Block things="foo">test</Block>
+        </div>,
+    );
+
+    const el = rtl.getByText("test");
+    expect(el.className).toBe("Block Block--things--foo");
+});
+
 test("block mods can change", () => {
     const bemed = createBemed("prefix");
 

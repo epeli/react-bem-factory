@@ -4,6 +4,10 @@ import { isBrowser } from "./is-browser";
 
 type BEMCSS = import("./css-core").BEMCSS;
 
+function isBemCss(ob: any): ob is BEMCSS {
+    return ob && typeof ob.render === "function";
+}
+
 type InlineCSS = BEMCSS;
 
 // Webpack module global with .hot
@@ -107,19 +111,36 @@ function createReactBEMComponent<
                 opts.modifierSeparator +
                 prop.trim();
 
-            usedModClassNames.push(modClassName);
-
             // Class name only mod
             if (modType === true) {
+                usedModClassNames.push(modClassName);
                 return;
             }
 
-            // At the point it must be a css-in-js mod
-            const cssMod = (modType as any) as BEMCSS;
-            usedCSS.push({
-                className: modClassName,
-                bemCSS: cssMod,
-            });
+            if (isBemCss(modType)) {
+                usedModClassNames.push(modClassName);
+                usedCSS.push({
+                    className: modClassName,
+                    bemCSS: modType,
+                });
+                return;
+            }
+
+            const selectedSubMod = props[prop];
+            const knownSubMods = knownMods[prop];
+
+            if (
+                typeof knownSubMods !== "string" &&
+                typeof knownSubMods !== "boolean" &&
+                !isBemCss(knownSubMods)
+            ) {
+                const subModValue = knownSubMods[selectedSubMod];
+                if (subModValue === true) {
+                    usedModClassNames.push(
+                        modClassName + opts.modifierSeparator + selectedSubMod,
+                    );
+                }
+            }
         };
 
         if (opts.knownMods) {
