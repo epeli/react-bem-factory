@@ -26,15 +26,130 @@ type AnyReactComponent =
     | React.JSXElementConstructor<any>;
 
 interface BEMComponentProperties {
+    parent?: BemedFC;
     bemed: true;
     className: string;
     displayName: string;
     css?: BEMCSS;
-    mods: any;
+    mods?: Mods;
 }
 
-function isBemedComponent(c: any): c is React.FC & BEMComponentProperties {
+type BemedFC = React.FC & BEMComponentProperties;
+
+function isBemedComponent(c: any): c is BemedFC {
     return Boolean(c && c.bemed === true);
+}
+
+interface Mods {
+    [key: string]:
+        | true
+        | string
+        | InlineCSS
+        | Record<string, true | string | InlineCSS>;
+}
+
+interface CSSWithClassName {
+    className: string;
+    bemCSS: BEMCSS;
+}
+
+function applyMods(opts: {
+    className: string;
+    providedProps: Record<string, any>;
+    knownMods: Mods;
+    modifierSeparator: string;
+    parent?: BemedFC;
+    out?: {
+        componentProps: Record<string, any>;
+        customModClassNames: string[];
+        usedModClassNames: string[];
+        usedMods: string[];
+        usedCSS: CSSWithClassName[];
+    };
+}) {
+    if (!opts.out) {
+        opts.out = {
+            componentProps: {},
+            customModClassNames: [],
+            usedModClassNames: [],
+            usedMods: [],
+            usedCSS: [],
+        };
+    }
+
+    const out = opts.out;
+
+    for (const prop in opts.providedProps) {
+        const modType = opts.knownMods[prop];
+
+        // Not a style mod. Just pass it as normal prop forward
+        if (!modType) {
+            out.componentProps[prop] = opts.providedProps[prop];
+            continue;
+        }
+
+        // Inactive props. Eg. mymod={false} passed
+        if (!opts.providedProps[prop]) {
+            continue;
+        }
+
+        // Custom class name mod
+        if (typeof modType === "string") {
+            out.customModClassNames.push(modType);
+            continue;
+        }
+
+        // A BEM mod. We need to generate BEM modifier class name from this
+        out.usedMods.push(prop);
+
+        // The generated mod class name
+        const modClassName =
+            opts.className.trim() + opts.modifierSeparator + prop.trim();
+
+        // Class name only mod
+        if (modType === true) {
+            out.usedModClassNames.push(modClassName);
+            continue;
+        }
+
+        if (isBemCss(modType)) {
+            out.usedModClassNames.push(modClassName);
+            out.usedCSS.push({
+                className: modClassName,
+                bemCSS: modType,
+            });
+            continue;
+        }
+
+        // At this point modType can be only a submod
+
+        const knownSubMods = modType;
+        const selectedSubMod = opts.providedProps[prop];
+        const subModValue = knownSubMods[selectedSubMod];
+        const subModClassName =
+            modClassName + opts.modifierSeparator + selectedSubMod;
+
+        if (subModValue === true) {
+            out.usedModClassNames.push(subModClassName);
+            continue;
+        }
+
+        if (typeof subModValue === "string") {
+            out.usedModClassNames.push(subModValue);
+            continue;
+        }
+
+        if (isBemCss(subModValue)) {
+            out.usedModClassNames.push(modClassName);
+            out.usedCSS.push({
+                className: subModClassName,
+                bemCSS: subModValue,
+            });
+            continue;
+        }
+    }
+
+    return out;
 }
 
 /**
@@ -67,116 +182,24 @@ function createReactBEMComponent<
         ? ReactProps
         : ReactProps & ModProps<KnownMods>;
 
-    const knownMods = (opts.knownMods || {}) as NonNullable<KnownMods>;
     const BEMComponent = forwardRef((props: FinalProps, ref) => {
-        let componentProps: Record<string, any> = {};
-
-        /**
-         * Class names passed during rendering in JSX
-         */
-        const runtimeClassNames = (props.className || "").split(" ");
-
-        /** Array of used BEM mods */
-        const usedMods: string[] = [];
-
-        /** css-in-js mods */
-        const usedCSS: {
-            className: string;
-            bemCSS: BEMCSS;
-        }[] = [];
-
-        const usedModClassNames: string[] = [];
-
-        /**
-         * Custom class names from string valued mod definitions
-         * Ex. from
-         *
-         * {
-         *      mods: {
-         *          foo: "my-custom-foo"
-         *      }
-         * }
-         */
-        const customModClassNames: string[] = [];
-
-        const applyMods = (prop: string) => {
-            const modType = knownMods[prop];
-
-            // Not a style mod. Just pass it as normal prop forward
-            if (!modType) {
-                componentProps[prop] = props[prop];
-                return;
-            }
-
-            // Inactive props. Eg. mymod={false} passed
-            if (!props[prop]) {
-                return;
-            }
-
-            // Custom class name mod
-            if (typeof modType === "string") {
-                customModClassNames.push(modType);
-                return;
-            }
-
-            // A BEM mod. We need to generate BEM modifier class name from this
-            usedMods.push(prop);
-
-            // The generated mod class name
-            const modClassName =
-                opts.blockClassName.trim() +
-                opts.modifierSeparator +
-                prop.trim();
-
-            // Class name only mod
-            if (modType === true) {
-                usedModClassNames.push(modClassName);
-                return;
-            }
-
-            if (isBemCss(modType)) {
-                usedModClassNames.push(modClassName);
-                usedCSS.push({
-                    className: modClassName,
-                    bemCSS: modType,
-                });
-                return;
-            }
-
-            // At this point modType can be only a submod
-
-            const knownSubMods = modType;
-            const selectedSubMod = props[prop];
-            const subModValue = knownSubMods[selectedSubMod];
-            const subModClassName =
-                modClassName + opts.modifierSeparator + selectedSubMod;
-
-            if (subModValue === true) {
-                usedModClassNames.push(subModClassName);
-                return;
-            }
-
-            if (typeof subModValue === "string") {
-                usedModClassNames.push(subModValue);
-                return;
-            }
-
-            if (isBemCss(subModValue)) {
-                usedModClassNames.push(modClassName);
-                usedCSS.push({
-                    className: subModClassName,
-                    bemCSS: subModValue,
-                });
-                return;
-            }
-        };
+        let usedModClassNames: string[] = [];
+        let customModClassNames: string[] = [];
+        let usedCSS: CSSWithClassName[] = [];
+        let finalProps: Record<string, any> = props;
 
         if (opts.knownMods) {
-            for (const prop in props) {
-                applyMods(prop);
-            }
-        } else {
-            componentProps = props;
+            const out = applyMods({
+                className: opts.blockClassName,
+                providedProps: props,
+                modifierSeparator: opts.modifierSeparator,
+                knownMods: opts.knownMods!,
+            });
+
+            usedModClassNames = out.usedModClassNames;
+            customModClassNames = out.customModClassNames;
+            usedCSS = out.usedCSS;
+            finalProps = out.componentProps;
         }
 
         // css-in-js css for the block
@@ -186,6 +209,11 @@ function createReactBEMComponent<
                 bemCSS: opts.css,
             });
         }
+
+        /**
+         * Class names passed during rendering in JSX
+         */
+        const runtimeClassNames = (props.className || "").split(" ");
 
         /**
          * Final class name to be passed to DOM
@@ -249,7 +277,7 @@ function createReactBEMComponent<
 
         const reactElement = createElement(
             opts.component,
-            Object.assign({}, opts.defaultProps, componentProps, {
+            Object.assign({}, opts.defaultProps, finalProps, {
                 className: finalClassName,
                 ref,
             }),
