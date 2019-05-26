@@ -58,7 +58,7 @@ function applyMods(opts: {
     providedProps: Record<string, any>;
     modifierSeparator: string;
     out?: {
-        componentProps: Record<string, any>;
+        modProps: Record<string, boolean>;
         customModClassNames: string[];
         usedModClassNames: string[];
         usedMods: string[];
@@ -67,7 +67,7 @@ function applyMods(opts: {
 }) {
     if (!opts.out) {
         opts.out = {
-            componentProps: {},
+            modProps: {},
             customModClassNames: [],
             usedModClassNames: [],
             usedMods: [],
@@ -78,7 +78,6 @@ function applyMods(opts: {
     let out = opts.out;
 
     if (opts.component.parent) {
-        console.log("PARANENT");
         out = applyMods(
             Object.assign({}, opts, {
                 out,
@@ -99,11 +98,13 @@ function applyMods(opts: {
     for (const prop in opts.providedProps) {
         const modType = knownMods[prop];
 
-        // Not a style mod. Just pass it as normal prop forward
+        // This prop does not match with a mod. Skip it.
         if (!modType) {
-            out.componentProps[prop] = opts.providedProps[prop];
             continue;
         }
+
+        // Mark this be a mod prop
+        out.modProps[prop] = true;
 
         // Inactive props. Eg. mymod={false} passed
         if (!opts.providedProps[prop]) {
@@ -206,19 +207,12 @@ function createReactBEMComponent<
             usedCSS,
             usedModClassNames,
             customModClassNames,
-            componentProps,
+            modProps,
         } = applyMods({
             component: BEMComponent as any,
             providedProps: props,
             modifierSeparator: opts.modifierSeparator,
         });
-
-        console.log(
-            "Got css for for:",
-            opts.blockClassName,
-            "##",
-            usedCSS.map(d => d.className).join("&"),
-        );
 
         /**
          * Class names passed during rendering in JSX
@@ -275,6 +269,14 @@ function createReactBEMComponent<
             )
             .final.join(" ")
             .trim();
+
+        // Remove those props that where used for BEM mods
+        const componentProps: Record<string, any> = {};
+        for (const prop in props) {
+            if (!modProps[prop]) {
+                componentProps[prop] = props[prop];
+            }
+        }
 
         const reactElement = createElement(
             opts.component,

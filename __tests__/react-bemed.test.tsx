@@ -614,24 +614,31 @@ test("default props can be overridden", () => {
 test("does not pass mod props to the underlying component", () => {
     const spy = jest.fn();
 
-    function Base(props: { bar: string }) {
+    function Target(props: { baz: string }) {
         spy(props);
         return null;
     }
 
     const bemed = createBemed();
 
-    const Block = bemed({
-        as: Base,
+    const Base = bemed({
+        as: Target,
         mods: {
             foo: true,
         },
+    })("Base");
+
+    const Block = bemed({
+        as: Base,
+        mods: {
+            bar: true,
+        },
     })("TestBlock");
 
-    render(<Block foo bar="bar" />);
+    render(<Block foo bar baz="zam" />);
 
     expect(spy).toHaveBeenCalledWith({
-        bar: "bar",
-        className: "TestBlock TestBlock--foo",
+        baz: "zam",
+        className: "Base TestBlock Base--foo TestBlock--bar",
     });
 });
