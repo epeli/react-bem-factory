@@ -765,42 +765,59 @@ test("css can apply selector manually and get style tag", () => {
 
 test("can extend other bemed components", () => {
     const bemed = createBemed();
-    const Base = bemed({
+
+    const Base1 = bemed({
         css: css`
             color: red;
         `,
-    })("Base");
+    })("Base1");
+
+    const Base2 = bemed({
+        as: Base1,
+        css: css`
+            color: green;
+        `,
+    })("Base2");
 
     const Block = bemed({
-        as: Base,
+        as: Base2,
         css: css`
-            color: orange;
+            color: blue;
         `,
     })("TestBlock");
 
     render(<Block>test</Block>);
 
-    expect(injectGlobal).toBeCalledTimes(2);
+    expect(injectGlobal).toBeCalledTimes(3);
     // Base component css must injected first so the extending component can
     // override it's css
-    expect(mockInjectGlobal.mock.calls[0][0]).toEqual("Base");
-    expect(mockInjectGlobal.mock.calls[1][0]).toEqual("TestBlock");
+    expect(mockInjectGlobal.mock.calls[0][0]).toEqual("Base1");
+    expect(mockInjectGlobal.mock.calls[1][0]).toEqual("Base2");
+    expect(mockInjectGlobal.mock.calls[2][0]).toEqual("TestBlock");
 });
 
 test("server rendering render base components in correct order", () => {
     process.env.TEST_ENV = "node";
 
     const bemed = createBemed();
-    const Base = bemed({
+
+    const Base1 = bemed({
         css: css`
             color: red;
         `,
-    })("Base");
+    })("Base1");
+
+    const Base2 = bemed({
+        as: Base1,
+        css: css`
+            color: green;
+        `,
+    })("Base2");
 
     const Block = bemed({
-        as: Base,
+        as: Base2,
         css: css`
-            color: orange;
+            color: blue;
         `,
     })("TestBlock");
 
@@ -813,8 +830,13 @@ test("server rendering render base components in correct order", () => {
     const styleTags = rtl.getAllByTestId("bemed-style");
 
     expect(styleTags.length).toBe(1);
-    expect(styleTags[0].innerHTML).toEqual(`.Base{color:red;}
-.TestBlock{color:orange;}`);
+    expect(styleTags[0].innerHTML).toEqual(
+        `
+.Base1{color:red;}
+.Base2{color:green;}
+.TestBlock{color:blue;}
+`.trim(),
+    );
 });
 
 test("can extend other bemed components with mods", () => {
