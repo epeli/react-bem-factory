@@ -92,7 +92,7 @@ function createRenderer(cssCompiler: CSSCompiler) {
                     renderRecord[chunk.className] &&
                     // Skip only in prod to enable hot reloading in dev
                     (process.env.NODE_ENV === "production" ||
-                        process.env.TEST_ENV)
+                        process.env.NODE_ENV === "test")
                 ) {
                     // Already rendered to DOM/HTML.
                     continue;
