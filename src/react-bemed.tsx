@@ -75,13 +75,26 @@ function applyMods(opts: {
         };
     }
 
-    const out = opts.out;
+    let out = opts.out;
 
-    const knownMods = opts.component.mods;
-
-    if (!knownMods) {
-        return out;
+    if (opts.component.parent) {
+        console.log("PARANENT");
+        out = applyMods(
+            Object.assign({}, opts, {
+                out,
+                component: opts.component.parent,
+            }),
+        );
     }
+
+    if (opts.component.css) {
+        out.usedCSS.push({
+            className: opts.component.className,
+            bemCSS: opts.component.css,
+        });
+    }
+
+    const knownMods = opts.component.mods || {};
 
     for (const prop in opts.providedProps) {
         const modType = knownMods[prop];
@@ -189,31 +202,23 @@ function createReactBEMComponent<
         : ReactProps & ModProps<KnownMods>;
 
     const BEMComponent = forwardRef((props: FinalProps, ref) => {
-        let usedModClassNames: string[] = [];
-        let customModClassNames: string[] = [];
-        let usedCSS: CSSWithClassName[] = [];
-        let finalProps: Record<string, any> = props;
+        const {
+            usedCSS,
+            usedModClassNames,
+            customModClassNames,
+            componentProps,
+        } = applyMods({
+            component: BEMComponent as any,
+            providedProps: props,
+            modifierSeparator: opts.modifierSeparator,
+        });
 
-        if (opts.knownMods) {
-            const out = applyMods({
-                component: BEMComponent as any,
-                providedProps: props,
-                modifierSeparator: opts.modifierSeparator,
-            });
-
-            usedModClassNames = out.usedModClassNames;
-            customModClassNames = out.customModClassNames;
-            usedCSS = out.usedCSS;
-            finalProps = out.componentProps;
-        }
-
-        // css-in-js css for the block
-        if (opts.css) {
-            usedCSS.unshift({
-                className: opts.blockClassName,
-                bemCSS: opts.css,
-            });
-        }
+        console.log(
+            "Got css for for:",
+            opts.blockClassName,
+            "##",
+            usedCSS.map(d => d.className).join("&"),
+        );
 
         /**
          * Class names passed during rendering in JSX
@@ -271,18 +276,9 @@ function createReactBEMComponent<
             .final.join(" ")
             .trim();
 
-        if (isBemedComponent(opts.component)) {
-            if (opts.component.css) {
-                usedCSS.unshift({
-                    className: opts.component.className,
-                    bemCSS: opts.component.css,
-                });
-            }
-        }
-
         const reactElement = createElement(
             opts.component,
-            Object.assign({}, opts.defaultProps, finalProps, {
+            Object.assign({}, opts.defaultProps, componentProps, {
                 className: finalClassName,
                 ref,
             }),
@@ -447,6 +443,10 @@ export function createBemed(
                 css: blockOptions.css,
                 mods: blockOptions.mods,
             };
+
+            if (isBemedComponent(comp)) {
+                bemProperties.parent = comp;
+            }
 
             Object.assign(Block as any, bemProperties);
 

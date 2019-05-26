@@ -637,6 +637,21 @@ test("css can work as normal function call with precompiled css", () => {
     );
 });
 
+test("server render renders own props when no mods are defined", () => {
+    process.env.TEST_ENV = "node";
+
+    const bemed = createBemed();
+    const Block = bemed({})("TestBlock");
+
+    const html = ReactDOMServer.renderToString(
+        <SSRProvider>
+            <Block title="hello" />
+        </SSRProvider>,
+    );
+
+    expect(html).toEqual('<div title="hello" class="TestBlock"></div>');
+});
+
 test("server render does not escape quotes", () => {
     process.env.TEST_ENV = "node";
 
@@ -800,4 +815,42 @@ test("server rendering render base components in correct order", () => {
     expect(styleTags.length).toBe(1);
     expect(styleTags[0].innerHTML).toEqual(`.Base{color:red;}
 .TestBlock{color:orange;}`);
+});
+
+test("can extend other bemed components with mods", () => {
+    const bemed = createBemed();
+    const Base = bemed({
+        css: css`
+            color: red;
+        `,
+        mods: {
+            foo: css`
+                background-color: blue;
+            `,
+        },
+    })("Base");
+
+    const Block = bemed({
+        as: Base,
+        css: css`
+            color: orange;
+        `,
+        mods: {
+            bar: css`
+                border: 1px solid black;
+            `,
+        },
+    })("TestBlock");
+
+    render(
+        <Block foo bar>
+            test
+        </Block>,
+    );
+
+    expect(injectGlobal).toBeCalledTimes(4);
+    expect(mockInjectGlobal.mock.calls[0][0]).toEqual("Base");
+    expect(mockInjectGlobal.mock.calls[1][0]).toEqual("Base--foo");
+    expect(mockInjectGlobal.mock.calls[2][0]).toEqual("TestBlock");
+    expect(mockInjectGlobal.mock.calls[3][0]).toEqual("TestBlock--bar");
 });
