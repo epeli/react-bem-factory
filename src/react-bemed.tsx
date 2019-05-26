@@ -54,11 +54,9 @@ interface CSSWithClassName {
 }
 
 function applyMods(opts: {
-    className: string;
+    component: BemedFC;
     providedProps: Record<string, any>;
-    knownMods: Mods;
     modifierSeparator: string;
-    parent?: BemedFC;
     out?: {
         componentProps: Record<string, any>;
         customModClassNames: string[];
@@ -79,8 +77,14 @@ function applyMods(opts: {
 
     const out = opts.out;
 
+    const knownMods = opts.component.mods;
+
+    if (!knownMods) {
+        return out;
+    }
+
     for (const prop in opts.providedProps) {
-        const modType = opts.knownMods[prop];
+        const modType = knownMods[prop];
 
         // Not a style mod. Just pass it as normal prop forward
         if (!modType) {
@@ -104,7 +108,9 @@ function applyMods(opts: {
 
         // The generated mod class name
         const modClassName =
-            opts.className.trim() + opts.modifierSeparator + prop.trim();
+            opts.component.className.trim() +
+            opts.modifierSeparator +
+            prop.trim();
 
         // Class name only mod
         if (modType === true) {
@@ -190,10 +196,9 @@ function createReactBEMComponent<
 
         if (opts.knownMods) {
             const out = applyMods({
-                className: opts.blockClassName,
+                component: BEMComponent as any,
                 providedProps: props,
                 modifierSeparator: opts.modifierSeparator,
-                knownMods: opts.knownMods!,
             });
 
             usedModClassNames = out.usedModClassNames;
