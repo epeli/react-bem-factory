@@ -8,11 +8,11 @@
         "url": "https://github.com/epeli/react-bemed"
     },
     "scripts": {
-        "test": "npm run dtslint && jest",
+        "test": "yarn dtslint && jest",
         "build": "rm -rf build && tsc --project tsconfig.build.json && rm -rf lib && mv build/src lib && rm -rf build",
         "clean": "rm -rf lib build",
         "dtslint": "tslint --project tsconfig.dtslint.json",
-        "prepublishOnly": "npm run test && npm run build",
+        "prepublishOnly": "yarn test && yarn build",
         "example": "cd example && webpack-dev-server --mode development"
     },
     "keywords": [
