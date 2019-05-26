@@ -876,3 +876,23 @@ test("can extend other bemed components with mods", () => {
     expect(mockInjectGlobal.mock.calls[2][0]).toEqual("TestBlock");
     expect(mockInjectGlobal.mock.calls[3][0]).toEqual("TestBlock--bar");
 });
+
+test("createClassName() works with precompiledCSS()", () => {
+    const bemed = createBemed();
+
+    const FOO = createClassName(
+        "foo",
+        precompiledCSS("__BEMED__{color: orange;}", ""),
+    );
+
+    const Block = bemed({
+        className: FOO,
+    })("TestBlock");
+
+    render(<Block>test</Block>);
+
+    expect(injectGlobal).toBeCalledTimes(1);
+    expect(mockInjectGlobal.mock.calls[0][0]).toEqual("foo");
+    expect(mockInjectGlobal.mock.calls[0][1]).toContain("orange");
+    expect(mockInjectGlobal.mock.calls[0][1]).toContain(".foo");
+});
