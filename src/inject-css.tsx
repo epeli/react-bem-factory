@@ -7,7 +7,7 @@ if (isBrowser()) {
     sheet = new StyleSheet({
         key: "bemed",
         container: document.head,
-        speedy: true,
+        speedy: false,
     });
 }
 
