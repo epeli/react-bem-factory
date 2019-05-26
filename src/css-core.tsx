@@ -88,14 +88,24 @@ function createRenderer(cssCompiler: CSSCompiler) {
             let compiledChunks: { className: string; css: string }[] = [];
 
             for (const chunk of cssChunks) {
-                if (
-                    renderRecord[chunk.className] &&
-                    // Skip only in prod to enable hot reloading in dev
-                    (process.env.NODE_ENV === "production" ||
-                        process.env.NODE_ENV === "test")
-                ) {
-                    // Already rendered to DOM/HTML.
-                    continue;
+                if (renderRecord[chunk.className]) {
+                    // Never allow duplicate style in prod
+                    if (process.env.NODE_ENV === "production") {
+                        continue;
+                    }
+
+                    // or tests
+                    if (process.env.NODE_ENV === "test") {
+                        continue;
+                    }
+
+                    // or during server rendering
+                    if (!isBrowser()) {
+                        continue;
+                    }
+
+                    // But allow during development in the browser to eneable
+                    // style hot reloading
                 }
 
                 const compiled = cssCompiler(
