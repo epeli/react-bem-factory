@@ -1,6 +1,6 @@
 {
     "name": "react-bemed",
-    "version": "0.6.0",
+    "version": "0.6.1",
     "description": "",
     "main": "lib/react-bemed.js",
     "types": "lib/react-bemed.d.ts",
