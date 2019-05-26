@@ -41,6 +41,18 @@ function classNameToArray(
     });
 }
 
+interface BEMComponentProperties {
+    bemed: true;
+    className: string;
+    displayName: string;
+    css?: BEMCSS;
+    mods: any;
+}
+
+function isBemedComponent(c: any): c is React.FC & BEMComponentProperties {
+    return Boolean(c && c.bemed === true);
+}
+
 /**
  * Add BEM class names to any given React Component that takes a className prop
  */
@@ -242,6 +254,15 @@ function createReactBEMComponent<
             .final.join(" ")
             .trim();
 
+        if (isBemedComponent(opts.component)) {
+            if (opts.component.css) {
+                usedCSS.unshift({
+                    className: opts.component.className,
+                    bemCSS: opts.component.css,
+                });
+            }
+        }
+
         const reactElement = createElement(
             opts.component,
             Object.assign({}, opts.defaultProps, componentProps, {
@@ -308,10 +329,7 @@ export interface BemedOptions {
 type BEMBlock<
     Block,
     Elements extends { [key: string]: (props: any) => React.ReactNode }
-> = Block & {
-    className: string;
-    displayName: string;
-} & FlattenToReturnTypes<Elements>;
+> = Block & BEMComponentProperties & FlattenToReturnTypes<Elements>;
 
 /*
 type BEM<
@@ -426,7 +444,15 @@ export function createBemed(
                 css: blockOptions.css,
             });
 
-            (Block as any).displayName = `BEM(${blockClassName})`;
+            const bemProperties: BEMComponentProperties = {
+                bemed: true,
+                displayName: `BEM(${blockClassName})`,
+                className: blockClassName,
+                css: blockOptions.css,
+                mods: blockOptions.mods,
+            };
+
+            Object.assign(Block as any, bemProperties);
 
             const out: any = {};
 

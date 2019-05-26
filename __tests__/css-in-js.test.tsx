@@ -747,3 +747,25 @@ test("css can apply selector manually and get style tag", () => {
     const el = rtl.getByTestId("style");
     expect(el.innerHTML).toEqual(".foo{color:orange;}");
 });
+
+test("can extend other bemed components", () => {
+    const bemed = createBemed();
+    const Base = bemed({
+        css: css`
+            color: red;
+        `,
+    })("Base");
+
+    const Block = bemed({
+        as: Base,
+        css: css`
+            color: orange;
+        `,
+    })("TestBlock");
+
+    render(<Block>test</Block>);
+
+    expect(injectGlobal).toBeCalledTimes(2);
+    expect(mockInjectGlobal.mock.calls[0][0]).toEqual("Base");
+    expect(mockInjectGlobal.mock.calls[1][0]).toEqual("TestBlock");
+});
