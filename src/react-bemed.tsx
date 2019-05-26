@@ -25,22 +25,6 @@ type AnyReactComponent =
     | keyof JSX.IntrinsicElements
     | React.JSXElementConstructor<any>;
 
-function classNameToArray(
-    className?: ClassNamesTypes | ClassNamesTypes[],
-): string[] {
-    return (Array.isArray(className) ? className : [className]).map(foo => {
-        if (!foo) {
-            return "";
-        }
-
-        if (typeof foo === "string") {
-            return foo;
-        }
-
-        return foo.className;
-    });
-}
-
 interface BEMComponentProperties {
     bemed: true;
     className: string;
@@ -306,7 +290,6 @@ type ModProps<T extends undefined | Record<string, AllModTypeds>> = {
         : keyof T[P]
 };
 
-
 type MethodObject = { [key: string]: (...args: any[]) => any };
 
 /** flatten functions in an object to their return values */
@@ -330,24 +313,6 @@ type BEMBlock<
     Block,
     Elements extends { [key: string]: (props: any) => React.ReactNode }
 > = Block & BEMComponentProperties & FlattenToReturnTypes<Elements>;
-
-/*
-type BEM<
-    BEMBlockDOMElement extends ElementNames,
-    BEMBlockMods extends Record<string, true | string | BEMCSS> | undefined,
-    Elements extends {
-        [key: string]: (
-            className: string,
-            isElement?: boolean,
-        ) => (props: any) => React.ReactNode;
-    }
-> = ((
-    props: BEMBlockMods extends undefined
-        ? JSX.IntrinsicElements[BEMBlockDOMElement]
-        : JSX.IntrinsicElements[BEMBlockDOMElement] & ModProps<BEMBlockMods>,
-) => any) &
-    FlattenToReturnTypes<Elements>;
-*/
 
 export function createBemed(
     prefix?: string,
@@ -404,8 +369,6 @@ export function createBemed(
                 },
                 bemedOptions ? bemedOptions.separators : {},
             );
-
-            type BEMBlockProps = ModProps<BEMBlockMods>;
 
             let blockClassName = "";
 
