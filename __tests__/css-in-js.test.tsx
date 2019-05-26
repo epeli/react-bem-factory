@@ -766,6 +766,38 @@ test("can extend other bemed components", () => {
     render(<Block>test</Block>);
 
     expect(injectGlobal).toBeCalledTimes(2);
+    // Base component css must injected first so the extending component can
+    // override it's css
     expect(mockInjectGlobal.mock.calls[0][0]).toEqual("Base");
     expect(mockInjectGlobal.mock.calls[1][0]).toEqual("TestBlock");
+});
+
+test("server rendering render base components in correct order", () => {
+    process.env.TEST_ENV = "node";
+
+    const bemed = createBemed();
+    const Base = bemed({
+        css: css`
+            color: red;
+        `,
+    })("Base");
+
+    const Block = bemed({
+        as: Base,
+        css: css`
+            color: orange;
+        `,
+    })("TestBlock");
+
+    const rtl = render(
+        <SSRProvider>
+            <Block>test</Block>
+        </SSRProvider>,
+    );
+
+    const styleTags = rtl.getAllByTestId("bemed-style");
+
+    expect(styleTags.length).toBe(1);
+    expect(styleTags[0].innerHTML).toEqual(`.Base{color:red;}
+.TestBlock{color:orange;}`);
 });
