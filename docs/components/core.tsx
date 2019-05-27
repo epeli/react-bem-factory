@@ -26,4 +26,5 @@ export const Colors = {
     black: "#0e1e24",
     fontBlack: "#5d5d5d",
     menuTitle: "#828282",
+    reactBlue: "#61dafb",
 };

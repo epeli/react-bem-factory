@@ -18,11 +18,13 @@ const Code = bemed({
         Line: bemed({
             css: css`
                 display: block;
-                padding-left: ${rem(PADDING)};
-                padding-right: ${rem(PADDING)};
                 min-width: 100%;
             `,
             mods: {
+                paddings: css`
+                    padding-left: ${rem(PADDING)};
+                    padding-right: ${rem(PADDING)};
+                `,
                 firstLine: css`
                     margin-top: ${rem(PADDING)};
                 `,
@@ -131,7 +133,7 @@ function parseCodeFence(fence?: string): Range[] {
 
 export function MdxCodeBlock(props: { className?: string; children: string }) {
     return (
-        <CodeBlock highlightRanges={parseCodeFence(props.className)}>
+        <CodeBlock paddings highlightRanges={parseCodeFence(props.className)}>
             {props.children}
         </CodeBlock>
     );
@@ -139,6 +141,7 @@ export function MdxCodeBlock(props: { className?: string; children: string }) {
 
 export function CodeBlock(props: {
     highlightRanges?: Range[];
+    paddings?: boolean;
     children: string;
 }) {
     return (
@@ -157,10 +160,13 @@ export function CodeBlock(props: {
                         );
                         return (
                             <Code.Line
+                                paddings={props.paddings}
                                 {...hl.getLineProps({ line, key: i })}
                                 focusLine={isFocusLine}
-                                firstLine={i === 0}
-                                lastLine={hl.tokens.length - 1 === i}
+                                firstLine={i === 0 && props.paddings}
+                                lastLine={
+                                    hl.tokens.length - 1 === i && props.paddings
+                                }
                                 firstFocusLine={isFirstInRange(
                                     i + 1,
                                     props.highlightRanges,

@@ -3,6 +3,7 @@ import { css } from "react-bemed/css";
 import { bemed } from "react-bemed";
 import { createClassName } from "react-bemed/lib/css-core";
 import { rem } from "polished";
+import { Colors } from "./core";
 
 const FOO = createClassName(
     "TutorialButton",
@@ -153,7 +154,7 @@ export const Step6 = bemed({
                 border-radius: 20px;
                 padding: 1px;
                 path {
-                    fill: #61dafb;
+                    fill: ${Colors.reactBlue};
                 }
             `,
         }),
