@@ -15,6 +15,7 @@ const Blk = bemed({
         justify-content: space-around;
         margin-left: ${rem(15)};
         margin-right: ${rem(15)};
+        height: ${rem(50)};
 
         /* Make room for the mobile menu button */
         @media (${Vars.isMobile}) {

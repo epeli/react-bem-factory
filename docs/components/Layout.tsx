@@ -10,7 +10,7 @@ import { Colors, Vars } from "./core";
 import { MenuFooter } from "./MenuFooter";
 import { useScrollLock } from "./hooks";
 
-const MENU_WIDTH = rem(250);
+const MENU_WIDTH = rem(280);
 
 const Blk = bemed({
     css: css`
@@ -77,7 +77,6 @@ const Blk = bemed({
         }),
         Content: bemed({
             css: css`
-                width: 100%;
                 padding-left: ${rem(30)};
                 padding-right: ${rem(30)};
                 padding-bottom: ${rem(100)};

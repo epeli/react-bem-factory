@@ -7,8 +7,8 @@ import React from "react";
 
 const Blk = bemed({
     css: css`
-        padding-left: ${rem(25)};
-        padding-right: ${rem(25)};
+        padding-left: ${rem(30)};
+        padding-right: ${rem(30)};
     `,
     elements: {
         Title: bemed({

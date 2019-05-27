@@ -20,6 +20,13 @@ function slugify(s: string) {
 
 const MdxBemed = bemed({
     elements: {
+        H1: bemed({
+            as: "h1",
+            css: css`
+                display: block;
+                font-size: 34pt;
+            `,
+        }),
         Paragraph: bemed({
             as: "p",
             css: css`
@@ -95,7 +102,7 @@ const MdxComponents = {
     li: MdxBemed.Li,
     code: MdxCodeBlock,
     inlineCode: MdxBemed.InlineCode,
-    h1: createLinkableHeader("h1"),
+    h1: createLinkableHeader(MdxBemed.H1),
     h2: createLinkableHeader("h2"),
 };
 
