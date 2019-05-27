@@ -32,18 +32,21 @@ const Blk = bemed({
     className: Utils.AbsoluteStretch,
     css: css`
         align-items: center;
-        @media (${Vars.isDesktop}) {
+        @media (${Vars.isDesktop}) and (min-height: 1000px) {
             justify-content: center;
-            /* margin-top: ${rem(50)}; */
         }
     `,
     elements: {
-        Header: bemed({
+        Heading: bemed({
             as: "h1",
             css: css`
                 height: ${50};
                 background-color: ${Colors.black};
                 color: ${Colors.menuTitle};
+                @media (${Vars.isDesktop}) {
+                    maring-top: ${rem(20)};
+                    font-size: 44pt;
+                }
             `,
         }),
         CodeTitle: bemed({
@@ -68,6 +71,7 @@ const Blk = bemed({
         TagLine: bemed({
             css: css`
                 color: white;
+                margin-left: ${rem(10)};
             `,
         }),
         Content: bemed({
@@ -241,7 +245,7 @@ function Landing() {
         <Blk>
             <BodyStyles />
             <Blk.Content>
-                <Blk.Header>BEMed Components</Blk.Header>
+                <Blk.Heading>BEMed Components</Blk.Heading>
                 <Blk.TagLine>React Component Primitives for Humans</Blk.TagLine>
 
                 <Blk.CodeWrap>
