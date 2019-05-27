@@ -121,33 +121,33 @@ const Blk = bemed({
 
 const code1 = `
 const Link = bemed({
-    as: "a",
-    css: css\`
-        background-color: hotpink;
-        ...
-    \`,
-    mods: {
-        awesome: css\`
-            box-shadow: 0px 0px 30px 10px purple;
-            ...
-        \`
-    },
-    elements: {
-        Icon: bemed({
-            as: ReactSVGIcon,
-            className: "react-colors",
-            mods: {
-                playAnimation "icon-animation",
-            }
-        }),
-    },
+  as: "a",
+  css: css\`
+    background-color: hotpink;
+    ...
+  \`,
+  mods: {
+    awesome: css\`
+      box-shadow: 0px 0px 30px 10px purple;
+      ...
+    \`
+  },
+  elements: {
+    Icon: bemed({
+      as: ReactSVGIcon,
+      className: "react-colors",
+      mods: {
+        playAnimation "icon-animation",
+      }
+    }),
+  },
 })("TutorialLink");
 `;
 
 const code2 = `
 <Link awesome href="/tutorial">
-    <Link.Icon playAnimation={clicked} />
-    Get started!
+  <Link.Icon playAnimation={clicked} />
+  Get started!
 </Link>
 `;
 
