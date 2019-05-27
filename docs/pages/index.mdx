@@ -339,3 +339,33 @@ the components that can make it harder to refactor and in worst case can leak
 into unwanted components. For example if the `FaIcon` would accept children
 and you would pass a `path` component to it the style we created earlier
 would apply to it.
+
+## TypeScript
+
+All the code shown in this tutorial has been actually valid and 100% typed
+TypeScript. BEMed leverages TypeScript type inference very heavily so you as
+the developer don't have to worry about writing types manually.
+
+For example when we used `"button"` for the `as` property the resulting BEMed
+component will typed as a button. Which means is will be typed as a button.
+
+For example this invalid
+
+```tsx
+<MyButton type="bad" /> // Type error!
+```
+
+Because the type of the `type` prop is `'"button" | "submit" | "reset" | undefined'`
+
+The mod we created extend the button type and is type of `boolean | undefined` which means the following are valid values for it
+
+```tsx
+<MyButton /> // Implicit undefined
+<MyButton important /> // implicit true
+<MyButton important={true} />
+<MyButton important={false} />
+<MyButton important={undefined} />
+
+// but this is a type error!
+<MyButton important={1} />
+```

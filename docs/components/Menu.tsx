@@ -98,6 +98,7 @@ export function Menu() {
                     title="Scoped CSS Selectors"
                     href="/#scoped-css-selectors"
                 />
+                <Item sub title="TypeScript" href="/#typescript" />
 
                 <Item title="Modifier Types" href="/mods" />
                 <Item title="Server-Side Rendering" href="/ssr" />
