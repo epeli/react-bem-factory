@@ -72,7 +72,11 @@ const Blk = bemed({
         }),
         Content: bemed({
             css: css`
-                /* border: 1px solid hotpink; */
+                width: 100%;
+                padding: ${rem(10)};
+                @media (min-width: 450px) {
+                    width: auto;
+                }
             `,
         }),
         Pre: bemed({
