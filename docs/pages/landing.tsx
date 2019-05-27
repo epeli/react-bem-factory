@@ -221,6 +221,7 @@ function AnimatedLink() {
         e.preventDefault();
         setClicked(true);
         setTimeout(() => {
+            window.scrollTo(0, 0);
             Router.push(TUTORIAL_HREF);
         }, 1000);
     }
