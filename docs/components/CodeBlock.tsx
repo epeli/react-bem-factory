@@ -4,9 +4,11 @@ import { bemed } from "react-bemed";
 import { css } from "react-bemed/css";
 import theme from "prism-react-renderer/themes/nightOwl";
 import { rem } from "polished";
-import { Utils } from "./core";
+import { Utils, Colors } from "./core";
 
 const PADDING = 22;
+
+theme.plain.backgroundColor = Colors.black;
 
 const Code = bemed({
     css: css`

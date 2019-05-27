@@ -14,7 +14,7 @@ const Blk = bemed({
         Title: bemed({
             as: "h1",
             css: css`
-                text-align: center;
+                /* text-align: center; */
                 a {
                     color: ${Colors.menuTitle};
                     text-decoration: none;
