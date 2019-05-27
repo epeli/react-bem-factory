@@ -1,10 +1,10 @@
-# BEMed Components Documentation site 
+# BEMed Components Documentation site
 
 <https://bemed-components.netlify.com/>
 
 Hacking
 
 ```
-yarn install
-yarn dev
+npm ci
+npm run dev
 ```
