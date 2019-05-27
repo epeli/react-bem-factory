@@ -1,0 +1,341 @@
+import {
+    Example,
+    Step1,
+    Step2,
+    Step3,
+    Step4,
+    Step5,
+    Step6,
+} from "../components/TutorialSteps";
+
+import { Title } from "../components/Title";
+
+<Title>Tutorial</Title>
+
+# Tutorial
+
+BEMed Components or `react-bemed` is a component primitive building tool for
+React.js inspired by Styled Components and the Block Element Modifier
+convention.
+
+Feature highlights
+
+-   Human readable class names
+-   Optional CSS-in-JS api
+    -   Server-side rendering of the critical CSS
+    -   Source maps and zero-runtime when using the Babel plugin
+-   Always up to date TypeScript types as it is written in TypeScript
+
+## Install
+
+    npm install react-bemed
+
+## Basics
+
+Simplest possible component with BEMed is
+
+```tsx
+import { bemed } from "react-bemed";
+
+const Button = bemed({})("MyButton");
+```
+
+This just creates a `div` with a `MyButton` class
+
+```tsx
+<Button />
+// =>
+<div class="MyButton"></div>
+```
+
+We could just start styling right away with vanilla CSS into a separate .css
+file but we can also use the CSS-in-JS api and write the styles within
+the component definition
+
+```tsx{1,1}{4,8}
+import { css } from "react-bemed/css";
+
+const Button = bemed({
+    css: css`
+        color: white;
+        background-color: hotpink;
+        padding: 10px;
+    `,
+})("MyButton");
+```
+
+and now with
+
+```tsx
+<Button>My button</Button>
+```
+
+we get
+
+<Example>
+    <Step1>My button</Step1>
+</Example>
+
+## Target DOM Elements
+
+but this is not very accessible button because it's a `div` and not a real
+button. Lets make it into a real button
+
+```tsx{2,2}
+const Button = bemed({
+    as: "button",
+    css: css`
+        color: white;
+        background-color: hotpink;
+        padding: 10px;
+    `,
+})("MyButton");
+```
+
+```tsx
+// Result
+<button class="MyButton">My button</button>
+```
+
+It's better but now the default browser styles have ruined our cool button styles
+
+<Example>
+    <Step2>My button</Step2>
+</Example>
+
+## Custom Class Names
+
+Luckily we have already defined an utility class that can reset button
+styles. Let's apply it to our button
+
+```tsx{3,3}
+const Button = bemed({
+    as: "button",
+    className: "reset-button",
+    css: css`
+        color: white;
+        background-color: hotpink;
+        padding: 10px;
+    `,
+})("MyButton");
+```
+
+```tsx
+// Result
+<button class="MyButton reset-button">My button</button>
+```
+
+<Example>
+    <Step3>My button</Step3>
+</Example>
+
+## Default Props
+
+Our button is starting to look pretty good but for a generic React button
+this has one annoying feature: When it is inside a `<form>` element it will
+by default submit the form when clicked.
+
+We can prevent this by changing the button type from the default `submit` to
+the `button` type which has no default behaviour when clicked.
+
+This can be done by adding a default prop for it
+
+```tsx{4,6}
+const Button = bemed({
+    as: "button",
+    className: "reset-button",
+    defaultProps: {
+        type: "button",
+    }
+    css: css`
+        color: white;
+        background-color: hotpink;
+        padding: 10px;
+    `,
+})("MyButton");
+```
+
+```tsx
+// Result
+<button type="button" class="MyButton reset-button">
+    My button
+</button>
+```
+
+## Modifiers
+
+Some buttons are more important than others. So lets add a modifier that can
+make the button look more important
+
+```tsx{12,15}
+const Button = bemed({
+    as: "button",
+    className: "reset-button",
+    defaultProps: {
+        type: "button",
+    }
+    css: css`
+        color: white;
+        background-color: hotpink;
+        padding: 10px;
+    `,
+    mods: {
+        important: css`
+            box-shadow: 0px 0px 30px 10px purple;
+        `
+    }
+})("MyButton");
+```
+
+We can apply this mod just by adding the `important` boolean prop
+
+```
+<Button important>My button</Button>
+```
+
+```tsx
+// Result
+<button type="button" class="MyButton MyButton--important reset-button">
+    My button
+</button>
+```
+
+This will add a class `MyButton--important` to the button and apply the
+styles to it when it's true
+
+<Example>
+    <Step4 important>My button</Step4>
+</Example>
+
+## Elements
+
+We already have pretty good button primitive with basic styles but real world
+React components are composed from multiple components. For example button
+might have an icon element inside it.
+
+One could start by just creating a another standalone component with the
+`bemed()` function but in BEM there is a concept of "elements" that have no
+standalone meaning but are part of a larger component or a "block" in BEM
+terms.
+
+The `bemed()` function supports this convention with the `elements` property
+
+```tsx{1,1}{19,23}
+import { FaReact } from "react-icons/fa";
+
+const Button = bemed({
+    as: "button",
+    className: "reset-button",
+    defaultProps: {
+        type: "button",
+    }
+    css: css`
+        color: white;
+        background-color: hotpink;
+        padding: 10px;
+    `,
+    mods: {
+        important: css`
+            box-shadow: 0px 0px 30px 10px purple;
+        `
+    },
+    elements: {
+        Icon: bemed({
+            as: FaReact,
+        }),
+    },
+})("MyButton");
+```
+
+These element components are not techincally any different from the
+standalone components. The idea is to just tell the reader that these
+components are inherently part of the parent component. They get class names
+automatically from the parent component (`MyButton__Icon`) and are exposed as
+properties of the parent:
+
+```tsx{2,2}
+<MyButton important>
+    <MyButton.Icon size={20} />
+    React is Awesome
+</MyButton>
+```
+
+```tsx
+// Result
+<button type="button" class="MyButton MyButton--important reset-button">
+    <svg className="MyButton__Icon"><path ... /></svg>
+    React is Awesome
+</button>
+```
+
+<Example>
+    <Step5 important icon="foo">
+        <Step5.Icon size={40} />
+        React is Awesome!
+    </Step5>
+</Example>
+
+## Custom Target Components
+
+Note how we used a custom component `FaReact` for the `as` property. In fact
+`bemed()` can use any components as the target; even other components created
+by itself.
+
+Props are passed to the underlying component so the `size` prop accepted
+by the `FaReact` component works as expected.
+
+## Scoped CSS Selectors
+
+The styling of the icon is bit off though. Lets fix that
+
+```tsx{20,27}
+const Button = bemed({
+    as: "button",
+    className: "reset-button",
+    defaultProps: {
+        type: "button",
+    }
+    css: css`
+        color: white;
+        background-color: hotpink;
+        padding: 10px;
+    `,
+    mods: {
+        important: css`
+            box-shadow: 0px 0px 30px 10px purple;
+        `
+    },
+    elements: {
+        Icon: bemed({
+            as: FaReact,
+            css: css`
+                background-color: black;
+                border-radius: 20px;
+                padding: 1px;
+                path {
+                    fill: #61dafb;
+                }
+            `,
+        }),
+    },
+})("MyButton");
+```
+
+We can target the `path` element inside the svg icon. This selector is scoped
+automatically under the `.MyButton__Icon` class selector.
+
+And here's the result
+
+<Example>
+    <Step6 important icon="foo">
+        <Step6.Icon size={40} />
+        React is Awesome
+    </Step6>
+</Example>
+
+Targeting child elements like this using CSS is really powerful but it should
+be avoided as much as possible because it makes fixed dependencies between
+the components that can make it harder to refactor and in worst case can leak
+into unwanted components. For example if the `FaIcon` would accept children
+and you would pass a `path` component to it the style we created earlier
+would apply to it.

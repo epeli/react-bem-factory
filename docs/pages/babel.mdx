@@ -1,0 +1,70 @@
+import { Title } from "../components/Title";
+
+<Title>Babel Plugin</Title>
+
+# Babel Plugin
+
+BEMed comes with a Babel Plugin which is completely optional but it can be
+used improve the developer experience and optimize bundle size and boot
+times.
+
+The entry point for the plugin is `react-bemed/babel`.
+
+So for example in Next.js you would add `babel.config.js` with
+
+```tsx
+module.exports = {
+    presets: ["next/babel"],
+    plugins: ["react-bemed/babel"],
+};
+```
+
+## Source Maps
+
+When the plugin is active source maps are enabled by default in development
+and removed in production.
+
+## CSS Precompiling
+
+You can enable CSS precompiling by passing `precompile: true` as the plugin options
+
+<!-- prettier-ignore-start -->
+```tsx{5,5}
+module.exports = {
+    plugins: [
+        [
+            "react-bemed/babel",
+            { precompile: true }
+        ]
+    ],
+};
+```
+<!-- prettier-ignore-end -->
+
+This will precompile the `css` tagged template literals during build-time as
+opposed to doing it during runtime in the browser. It will yield to smaller
+bundles and faster boot times because the CSS precompiler Stylis will not be
+added to your bundles at all. It will also run minification for the CSS
+strings.
+
+There is a limitation when using this: You can use variables only where the
+standard CSS variables are allowed because the precompiler does not know what
+your variable values are during the build so it puts CSS variables in place
+during the compilation.
+
+Eg. code like this does will not work
+
+```tsx{3,3}
+const Button = bemed({
+    css: css`
+        margin-${MARGIN_DIRECTION}: 10px;
+    `,
+})("MyButton");
+```
+
+because `margin-var(--BEMED): 10px` is not valid CSS.
+
+## CSS File Extraction
+
+Not implemented yet. Maybe in future. Not sure if it makes sense with
+code-splitting frameworks like Next or Gatsby 🤔

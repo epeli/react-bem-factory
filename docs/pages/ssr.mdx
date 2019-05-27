@@ -1,0 +1,42 @@
+import { Title } from "../components/Title";
+
+<Title>Server-Side Rendering</Title>
+
+# Server-Side Rendering
+
+Just wrap you app with the `SSRProvider` and you are good to go
+
+```tsx
+import { SSRProvider } from "react-bemed/css";
+
+export default (
+    <SSRProvider>
+        <App />
+    </SSRProvider>
+);
+```
+
+## Next.js
+
+In `pages/_app.tsx`
+
+```tsx{10,10}{12,12}
+import App, { Container } from "next/app";
+import { SSRProvider } from "react-bemed/css";
+
+class MyApp extends App {
+    render() {
+        const { Component, pageProps } = this.props;
+
+        return (
+            <Container>
+                <SSRProvider>
+                    <Component {...pageProps} />
+                </SSRProvider>
+            </Container>
+        );
+    }
+}
+
+export default MyApp;
+```

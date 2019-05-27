@@ -1,0 +1,45 @@
+import { Title } from "../components/Title";
+
+<Title>FAQ</Title>
+
+# Frequently Asked Questions
+
+## How to add CSS autoprefixing?
+
+CSS autoprefixing is enabled automatically in production builds.
+
+## Why every component has a "bemed" class?
+
+It can be used to change the base styles of the BEMed Components. For example
+I like to design my site with a flexbox-first style so I add
+
+```css
+.bemed {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    box-sizing: border-box;
+}
+```
+
+If you're familiar with React Native this is basically same as the `View` component.
+
+## Why the "css" is imported from the react-bemed/css entry?
+
+It avoids adding extra weight to your bundle if you don't actually use it.
+
+## Can I dynamically generate CSS based on the component props?
+
+No. Dynamic CSS generation during rendering adds non-trivial complexity and
+makes build-time optimizations harder with Babel. If you need dynamic styles
+just use the `style` prop.
+
+## Should I use TypeScript?
+
+Yes.
+
+## What CSS preprocessor is used?
+
+Stylis
+
+<https://stylis.js.org/>
