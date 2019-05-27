@@ -1,4 +1,5 @@
 import React from "react";
+import Router from "next/router";
 import { rem } from "polished";
 import { FaHamburger, FaReact } from "react-icons/fa";
 import { MdClose } from "react-icons/md";
@@ -9,8 +10,22 @@ import { Utils, Vars, Colors } from "../components/core";
 import { CodeBlock } from "../components/CodeBlock";
 import Link from "next/link";
 
+const TUTORIAL_HREF = "/";
+
 const BodyStyles = css`
     background-color: ${Colors.black};
+    @keyframes icon-scale {
+        from {
+            transform: rotate(0deg) scale(1);
+        }
+        to {
+            transform: rotate(360deg) scale(6);
+        }
+    }
+
+    .animate-icon {
+        animation: icon-scale 1s cubic-bezier(0.36, 0.09, 0.91, 0.42);
+    }
 `.asStyleTag("body");
 
 const Blk = bemed({
@@ -45,7 +60,7 @@ const Blk = bemed({
             as: "span",
             css: css`
                 color: white;
-                font-size: 10pt;
+                font-size: 11pt;
                 font-family: system-ui, sans-serif;
                 font-style: italic;
             `,
@@ -89,7 +104,7 @@ const Blk = bemed({
                 }
             `,
         }),
-        LinkWrap: bemed({
+        LinkContainer: bemed({
             css: css`
                 margin-top: ${rem(50)};
                 margin-bottom: ${rem(50)};
@@ -118,7 +133,7 @@ const Link = bemed({
             as: ReactSVGIcon,
             className: "react-colors",
             mods: {
-                playAnimation true,
+                playAnimation "icon-animation",
             }
         }),
     },
@@ -133,14 +148,17 @@ const code2 = `
 `;
 
 const code3 = `
-<a class="TutorialLink TutorialLink--awesome">
+<a class="TutorialLink TutorialLink--awesome"
+   href="/tutorial">
     <svg class="TutorialLink__Icon react-colors" ... />
     Get started!
 </a>
 `;
 
 const TutorialLink = bemed({
+    as: "a",
     css: css`
+        text-decoration: none;
         background-color: hotpink;
         flex-direction: row;
         justify-content: center;
@@ -148,9 +166,11 @@ const TutorialLink = bemed({
         width: ${rem(240)};
         padding: ${rem(10)};
         padding-right: ${rem(20)};
-        color: white;
+        color: #9beaff;
+        font-weight: bold;
         font-size: 18pt;
         border-radius: ${rem(10)};
+        cursor: pointer;
     `,
     mods: {
         awesome: css`
@@ -166,6 +186,9 @@ const TutorialLink = bemed({
                 width: ${rem(50)};
                 height: ${rem(50)};
             `,
+            mods: {
+                playAnimation: "animate-icon",
+            },
         }),
     },
 })("TutorialLink");
@@ -181,6 +204,30 @@ function CodeBox(props: { title: string; subtitle: string; children: string }) {
                 <CodeBlock>{props.children}</CodeBlock>
             </Blk.Pre>
         </>
+    );
+}
+
+function AnimatedLink() {
+    const [clicked, setClicked] = React.useState(false);
+
+    function handleClick(e: {
+        preventDefault: () => void;
+        target: { href: string };
+    }) {
+        e.preventDefault();
+        setClicked(true);
+        setTimeout(() => {
+            Router.push(TUTORIAL_HREF);
+        }, 1000);
+    }
+
+    return (
+        <Link passHref href={TUTORIAL_HREF}>
+            <TutorialLink awesome onClick={handleClick as any}>
+                <TutorialLink.Icon playAnimation={clicked} />
+                Get Started!
+            </TutorialLink>
+        </Link>
     );
 }
 
@@ -215,14 +262,9 @@ function Landing() {
                     </Blk.Colum2>
                 </Blk.CodeWrap>
 
-                <Blk.LinkWrap>
-                    <Link passHref href="/">
-                        <TutorialLink awesome>
-                            <TutorialLink.Icon />
-                            Get Started
-                        </TutorialLink>
-                    </Link>
-                </Blk.LinkWrap>
+                <Blk.LinkContainer>
+                    <AnimatedLink />
+                </Blk.LinkContainer>
             </Blk.Content>
         </Blk>
     );
