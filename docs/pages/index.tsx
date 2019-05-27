@@ -10,7 +10,7 @@ import { Utils, Vars, Colors } from "../components/core";
 import { CodeBlock } from "../components/CodeBlock";
 import Link from "next/link";
 
-const TUTORIAL_HREF = "/";
+const TUTORIAL_HREF = "/tutorial";
 
 const BodyStyles = css`
     background-color: ${Colors.black};
