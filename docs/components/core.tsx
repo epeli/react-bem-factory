@@ -19,6 +19,7 @@ const MOBILE_BREAK_POINT = 740;
 export const Vars = {
     isMobile: `max-width: ${rem(MOBILE_BREAK_POINT)}`,
     isDesktop: `min-width: ${rem(MOBILE_BREAK_POINT)}`,
+    lineHeight: 1.5,
 };
 
 export const Colors = {

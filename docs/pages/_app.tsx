@@ -6,7 +6,7 @@ import { bemed } from "react-bemed";
 import { css } from "react-bemed/css";
 import { MdxCodeBlock } from "../components/CodeBlock";
 import { rem } from "polished";
-import { Colors } from "../components/core";
+import { Colors, Utils, Vars } from "../components/core";
 
 const { MDXProvider } = require("@mdx-js/react");
 
@@ -26,7 +26,15 @@ const MdxBemed = bemed({
                 display: block;
                 margin-top: ${rem(5)};
                 margin-bottom: ${rem(5)};
-                line-height: 1.6;
+                line-height: ${Vars.lineHeight};
+            `,
+        }),
+
+        Li: bemed({
+            css: css`
+                list-style-type: circle;
+                display: list-item;
+                line-height: ${Vars.lineHeight};
             `,
         }),
 
@@ -84,6 +92,7 @@ function createLinkableHeader(El: any) {
 const MdxComponents = {
     wrapper: Layout,
     p: MdxBemed.Paragraph,
+    li: MdxBemed.Li,
     code: MdxCodeBlock,
     inlineCode: MdxBemed.InlineCode,
     h1: createLinkableHeader("h1"),
