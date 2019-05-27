@@ -4,7 +4,7 @@ import { bemed } from "react-bemed";
 import { css } from "react-bemed/css";
 import theme from "prism-react-renderer/themes/nightOwl";
 import { rem } from "polished";
-import { ABSOLUTE_STRECH } from "./core";
+import { Utils } from "./core";
 
 const PADDING = 22;
 
@@ -42,7 +42,7 @@ const Code = bemed({
         }),
 
         LineBar: bemed({
-            className: ABSOLUTE_STRECH,
+            className: Utils.AbsoluteStretch,
             css: css`
                 right: auto;
                 width: ${rem(PADDING / 2)};

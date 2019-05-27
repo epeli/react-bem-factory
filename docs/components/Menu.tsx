@@ -2,7 +2,7 @@ import Link from "next/link";
 import { css } from "react-bemed/css";
 import { bemed } from "react-bemed";
 import { rem } from "polished";
-import { Colors, ABSOLUTE_STRECH } from "./core";
+import { Colors } from "./core";
 import React from "react";
 
 const Blk = bemed({

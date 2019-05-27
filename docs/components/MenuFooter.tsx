@@ -4,10 +4,10 @@ import { rem } from "polished";
 import { FaHamburger } from "react-icons/fa";
 import { bemed } from "react-bemed";
 import { css } from "react-bemed/css";
-import { ABSOLUTE_STRECH, Colors, MOBILE_BREAK_POINT } from "./core";
+import { Colors, Utils, Vars } from "./core";
 
 const Blk = bemed({
-    className: ABSOLUTE_STRECH,
+    className: Utils.AbsoluteStretch,
     css: css`
         flex-direction: row;
         align-items: center;
@@ -17,7 +17,7 @@ const Blk = bemed({
         margin-right: ${rem(15)};
 
         /* Make room for the mobile menu button */
-        @media (max-width: ${MOBILE_BREAK_POINT}) {
+        @media (${Vars.isMobile}) {
             margin-right: ${rem(100)};
         }
 

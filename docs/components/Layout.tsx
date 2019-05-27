@@ -6,7 +6,7 @@ import { MdClose } from "react-icons/md";
 import { bemed } from "react-bemed";
 import { css } from "react-bemed/css";
 import { Menu } from "./Menu";
-import { Colors, MOBILE_BREAK_POINT } from "./core";
+import { Colors, Vars } from "./core";
 import { MenuFooter } from "./MenuFooter";
 import { useScrollLock } from "./hooks";
 
@@ -27,8 +27,9 @@ const Blk = bemed({
                 height: ${50};
                 background-color: ${Colors.black};
                 color: ${Colors.menuTitle};
-                @media (min-width: ${MOBILE_BREAK_POINT}) {
-                    display: none;
+                display: none;
+                @media (${Vars.isMobile}) {
+                    display: flex;
                 }
             `,
         }),
@@ -42,13 +43,14 @@ const Blk = bemed({
                 left: 0;
                 top: 0;
                 bottom: 0;
-                @media (max-width: ${MOBILE_BREAK_POINT}) {
-                    display: none;
+                display: none;
+                @media (${Vars.isDesktop}) {
+                    display: flex;
                 }
             `,
             mods: {
                 showMobile: css`
-                    @media (max-width: ${MOBILE_BREAK_POINT}) {
+                    @media (${Vars.isMobile}) {
                         display: flex;
                         top: 0;
                         right: 0;
@@ -67,7 +69,7 @@ const Blk = bemed({
         }),
         ContentWrap: bemed({
             css: css`
-                @media (min-width: ${MOBILE_BREAK_POINT}) {
+                @media (${Vars.isDesktop}) {
                     padding-left: ${MENU_WIDTH};
                 }
                 width: 100%;
@@ -103,8 +105,9 @@ const Blk = bemed({
                 justify-content: center;
                 box-shadow: 0px 0px 10px 3px gray;
 
-                @media (min-width: ${MOBILE_BREAK_POINT}) {
-                    display: none;
+                display: none;
+                @media (${Vars.isMobile}) {
+                    display: flex;
                 }
             `,
             mods: {
