@@ -1,8 +1,7 @@
 import React from "react";
 import Router from "next/router";
 import { rem } from "polished";
-import { FaHamburger, FaReact } from "react-icons/fa";
-import { MdClose } from "react-icons/md";
+import { FaReact } from "react-icons/fa";
 
 import { bemed } from "react-bemed";
 import { css } from "react-bemed/css";
@@ -14,18 +13,6 @@ const TUTORIAL_HREF = "/tutorial";
 
 const BodyStyles = css`
     background-color: ${Colors.black};
-    @keyframes icon-scale {
-        from {
-            transform: rotate(0deg) scale(1);
-        }
-        to {
-            transform: rotate(360deg) scale(6);
-        }
-    }
-
-    .animate-icon {
-        animation: icon-scale 1s cubic-bezier(0.36, 0.09, 0.91, 0.42);
-    }
 `.asStyleTag("body");
 
 const Blk = bemed({
@@ -195,7 +182,19 @@ const TutorialLink = bemed({
                 height: ${rem(50)};
             `,
             mods: {
-                playAnimation: "animate-icon",
+                playAnimation: css`
+                    @keyframes icon-scale {
+                        from {
+                            transform: rotate(0deg) scale(1);
+                        }
+                        to {
+                            transform: rotate(360deg) scale(6);
+                        }
+                    }
+
+                    animation: icon-scale 1s
+                        cubic-bezier(0.36, 0.09, 0.91, 0.42);
+                `,
             },
         }),
     },
