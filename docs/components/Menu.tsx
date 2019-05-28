@@ -59,9 +59,16 @@ const Blk = bemed({
     },
 })("Menu");
 
+function removeTrailinSlash(path: string) {
+    return path.replace(/\/$/, "");
+}
+
 function useIsActive(path: string) {
     const router = useRouter();
-    return router.asPath.split("#")[0] === path;
+    return (
+        removeTrailinSlash(router.asPath.split("#")[0]) ===
+        removeTrailinSlash(path)
+    );
 }
 
 function Item(props: { sub?: boolean; href: string; title: string }) {
