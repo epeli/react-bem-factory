@@ -32,7 +32,7 @@ const Code = bemed({
                     margin-bottom: ${rem(PADDING)};
                 `,
                 focusLine: css`
-                    background-color: rgb(45, 43, 43);
+                    background-color: rgb(45, 45, 45);
                 `,
                 firstFocusLine: css`
                     margin-top: 3px;
