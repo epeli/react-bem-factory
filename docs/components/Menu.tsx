@@ -148,6 +148,8 @@ export function Menu() {
                 </GrouppedItems>
 
                 <Item title="Modifier Types" href="/mods" />
+                <Item title="Reusing CSS" href="/reusing-css" />
+
                 <Item title="Server-Side Rendering" href="/ssr" />
 
                 <GrouppedItems title="Babel Plugin" href="/babel">

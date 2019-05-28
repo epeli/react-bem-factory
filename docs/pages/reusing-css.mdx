@@ -1,0 +1,141 @@
+import { Title } from "../components/Title";
+
+<Title>Reusing CSS</Title>
+
+# Reusing CSS
+
+Whenever possible you should use the components for CSS reuse.
+
+But sometimes one just needs share bits of common CSS between components and
+BEMed embraces the nature of CSS for that with CSS selectors. So do not
+create JavaScript variables with bits of CSS code and stick them to the
+template literals.
+
+Eg. this is bad
+
+```tsx{2,4}{14,14}{21,21}
+// XXX Bad code!
+const common = `
+    border-radius: 10px;
+`;
+
+const ButtonList = bemed({
+    css: css`
+        flex-direction: column;
+    `,
+    elements: {
+        Save: bemed({
+            as: "button",
+            css: css`
+                ${common} /* XXX Bad code! */
+                color: green;
+            `,
+        }),
+        Cancel: bemed({
+            as: "button",
+            css: css`
+                ${common} /* XXX Bad code! */
+                color: red;
+            `,
+        }),
+    },
+})("ButtonList");
+```
+
+It will not work with the Babel precompiler option and will duplicate styles
+sent over the network when server rendering.
+
+## Scoped CSS Selectors
+
+Slightly better way to do this is to use the scoped CSS selectors
+
+```tsx{4,6}
+const ButtonList = bemed({
+    css: css`
+        flex-direction: column;
+        button {
+            border-radius: 10px;
+        }
+    `,
+    elements: {
+        // ...
+    },
+})("ButtonList");
+```
+
+But this is bit broad as it will match any buttons passed as the
+`<ButtonList>` children.
+
+We can use class names to be more specific
+
+```tsx{4,6}{11,11}{18,18}
+const ButtonList = bemed({
+    css: css`
+        flex-direction: column;
+        .rounded {
+            border-radius: 10px;
+        }
+    `,
+    elements: {
+        Save: bemed({
+            as: "button",
+            className: "rounded",
+            css: css`
+                color: green;
+            `,
+        }),
+        Cancel: bemed({
+            as: "button",
+            className: "rounded",
+            css: css`
+                color: red;
+            `,
+        }),
+    },
+})("ButtonList");
+```
+
+## CSS Utility Classes
+
+If you need to share CSS between different BEMed blocks you can just use
+standalone CSS classes you have defined in some external stylesheet.
+
+Multiple classes can be defined with arrays
+
+```tsx{3,3}
+const Button = bemed({
+    as: "button",
+    className: ["rounded", "button-font"],
+    css: css`
+        color: green;
+    `,
+});
+```
+
+For cconvenience a `createClassName()` helper is provided
+
+```tsx{12,12}
+import { createClassName } from "react-bemed/css";
+
+const Rounded = createClassName(
+    "rounded",
+    css`
+        border-radius: 10px;
+    `,
+);
+
+const Button = bemed({
+    as: "button",
+    className: Rounded,
+    css: css`
+        color: green;
+    `,
+});
+```
+
+There are two benefits to using this helper as opposed to external classes.
+
+1. TypeScript and ESLint will catch the error if you make a typo with variable name
+
+2. Because BEMed creates these styles it can skip injecting them when doing
+   critical CSS server-side rendering if they are not used in the initial render
