@@ -5,7 +5,8 @@
     "license": "MIT",
     "scripts": {
         "dev": "next dev",
-        "build": "next build && next export"
+        "build": "next build && next export",
+        "build-serve": "next build && next export && cd out && serve ."
     },
     "dependencies": {
         "@mdx-js/loader": "^1.0.20",
