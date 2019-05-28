@@ -89,7 +89,7 @@ function createRenderer(cssCompiler: CSSCompiler) {
 
             for (const chunk of cssChunks) {
                 if (renderRecord[chunk.className]) {
-                    // Never allow duplicate style in prod
+                    // Never allow duplicate styles in prod
                     if (process.env.NODE_ENV === "production") {
                         continue;
                     }
@@ -104,7 +104,13 @@ function createRenderer(cssCompiler: CSSCompiler) {
                         continue;
                     }
 
-                    // But allow during development in the browser to eneable
+                    // or during the initial rendering in the brower because it
+                    // must match with the server-rendered content
+                    if (!INITIAL_BROWSER_RENDER_DONE) {
+                        continue;
+                    }
+
+                    // But allow during development in the browser to enable
                     // style hot reloading
                 }
 
