@@ -43,7 +43,7 @@ const ButtonList = bemed({
 ```
 
 It will not work with the Babel precompiler option and will duplicate styles
-sent over the network when server rendering.
+sent over the network when server-rendering critical CSS.
 
 ## Scoped CSS Selectors
 
@@ -137,5 +137,6 @@ There are two benefits to using this helper as opposed to external classes.
 
 1. TypeScript and ESLint will catch the error if you make a typo with variable name
 
-2. Because BEMed creates these styles it can skip injecting them when doing
-   critical CSS server-side rendering if they are not used in the initial render
+2. Because BEMed creates these styles it can skip injecting them completely
+   when doing critical CSS server-side rendering if they are not used in the
+   initial render
