@@ -9,6 +9,7 @@ import { Menu } from "./Menu";
 import { Colors, Vars } from "./core";
 import { MenuFooter } from "./MenuFooter";
 import { useScrollLock } from "./hooks";
+import Link from "next/link";
 
 const MENU_WIDTH = rem(280);
 
@@ -26,10 +27,13 @@ const Blk = bemed({
                 padding-left: ${rem(30)};
                 height: ${50};
                 background-color: ${Colors.black};
-                color: ${Colors.menuTitle};
                 display: none;
                 @media (${Vars.isMobile}) {
                     display: flex;
+                }
+                a {
+                    color: ${Colors.menuTitle};
+                    text-decoration: none;
                 }
             `,
         }),
@@ -142,7 +146,11 @@ export function Layout(props: { children: React.ReactNode }) {
     return (
         <Blk>
             <Blk.ContentWrap>
-                <Blk.MobileHeader>BEMed Components</Blk.MobileHeader>
+                <Blk.MobileHeader>
+                    <Link passHref href="/">
+                        <a>BEMed Components</a>
+                    </Link>
+                </Blk.MobileHeader>
                 <Blk.Content>{props.children}</Blk.Content>
             </Blk.ContentWrap>
 
