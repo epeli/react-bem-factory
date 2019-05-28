@@ -22,8 +22,10 @@ Feature highlights
 
 -   Human readable class names
 -   Optional CSS-in-JS api
-    -   Server-side rendering of the critical CSS
+    -   Server-side rendering of critical CSS
     -   Source maps and zero-runtime when using the Babel plugin
+-   Perfect for hybrid approaches: Write essential component structure with
+    CSS-in-JS but add theming via external stylesheet
 -   Always up to date TypeScript types as it is written in TypeScript
 
 ## Install
@@ -48,9 +50,9 @@ This just creates a `div` with a `MyButton` class
 <div class="MyButton"></div>
 ```
 
-We could just start styling right away with vanilla CSS into a separate .css
-file but we can also use the CSS-in-JS api and write the styles within
-the component definition
+We could just start styling right away with vanilla CSS into a external
+stylesheet file but we can also use the CSS-in-JS api and write the styles
+within the component definition
 
 ```tsx{1,1}{4,8}
 import { css } from "react-bemed/css";
