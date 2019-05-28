@@ -147,8 +147,24 @@ export function Menu() {
                     <Item sub title="TypeScript" href="/tutorial#typescript" />
                 </GrouppedItems>
 
-                <Item title="Modifier Types" href="/mods" />
-                <Item title="Reusing CSS" href="/reusing-css" />
+                <GrouppedItems title="Modifier Types" href="/mods">
+                    <Item sub title="Boolean Mods" href="/mods#boolean-mods" />
+                    <Item sub title="String Mods" href="/mods#string-mods" />
+                    <Item sub title="Enum Mods" href="/mods#enum-mods" />
+                </GrouppedItems>
+
+                <GrouppedItems title="Reusing CSS" href="/reusing-css">
+                    <Item
+                        sub
+                        title="Scoped CSS Selectors"
+                        href="/reusing-css#css-utility-classes"
+                    />
+                    <Item
+                        sub
+                        title="CSS Utility Classes"
+                        href="/reusing-css#scoped-css-selectors"
+                    />
+                </GrouppedItems>
 
                 <Item title="Server-Side Rendering" href="/ssr" />
 
