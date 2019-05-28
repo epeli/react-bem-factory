@@ -1,12 +1,17 @@
 {
     "name": "react-bemed",
     "version": "0.6.3",
-    "description": "",
+    "description": "React Component Primitives for Humans inspired by the Block Element Modifier convention",
+    "author": {
+        "name": "Esa-Matti Suuronen"
+    },
     "main": "lib/react-bemed.js",
     "types": "lib/react-bemed.d.ts",
     "repository": {
+        "type": "git",
         "url": "https://github.com/epeli/react-bemed"
     },
+    "homepage": "https://bemed-components.netlify.com/",
     "scripts": {
         "test": "npm run dtslint && jest",
         "build": "rm -rf build && tsc --project tsconfig.build.json && rm -rf lib && mv build/src lib && rm -rf build",
@@ -18,7 +23,6 @@
     "keywords": [
         "typescript"
     ],
-    "author": "",
     "license": "ISC",
     "files": [
         "lib",
