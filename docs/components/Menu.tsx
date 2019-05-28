@@ -63,16 +63,19 @@ function removeTrailinSlash(path: string) {
     return path.replace(/\/$/, "");
 }
 
-function useIsActive(path: string) {
+function useIsActive(path: string, sub?: boolean) {
     const router = useRouter();
-    return (
-        removeTrailinSlash(router.asPath.split("#")[0]) ===
-        removeTrailinSlash(path)
-    );
+
+    const [urlPath, hash] = router.asPath.split("#");
+
+    const pathMatches =
+        removeTrailinSlash(urlPath) === removeTrailinSlash(path);
+
+    return pathMatches;
 }
 
 function Item(props: { sub?: boolean; href: string; title: string }) {
-    const isActive = useIsActive(props.href);
+    const isActive = useIsActive(props.href, props.sub);
     const ItemLink = props.sub ? Blk.SubLink : Blk.Link;
 
     return (
