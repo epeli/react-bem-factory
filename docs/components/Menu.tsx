@@ -33,6 +33,13 @@ const Blk = bemed({
                 margin-top: ${rem(10)};
                 margin-bottom: ${rem(10)};
             `,
+            mods: {
+                isActive: css`
+                    a {
+                        font-weight: bold;
+                    }
+                `,
+            },
         }),
         Link: bemed({
             as: "a",
@@ -52,11 +59,17 @@ const Blk = bemed({
     },
 })("Menu");
 
+function useIsActive(path: string) {
+    const router = useRouter();
+    return router.asPath.split("#")[0] === path;
+}
+
 function Item(props: { sub?: boolean; href: string; title: string }) {
+    const isActive = useIsActive(props.href);
     const ItemLink = props.sub ? Blk.SubLink : Blk.Link;
 
     return (
-        <Blk.Item>
+        <Blk.Item isActive={isActive}>
             <Link href={props.href} passHref>
                 <ItemLink>{props.title}</ItemLink>
             </Link>
@@ -69,10 +82,8 @@ function GrouppedItems(props: {
     href: string;
     children: React.ReactNode;
 }) {
-    const router = useRouter();
-    const currentPath = router.asPath.split("#")[0];
-
-    const subitems = currentPath === props.href ? props.children : null;
+    const isActive = useIsActive(props.href);
+    const subitems = isActive ? props.children : null;
 
     return (
         <>
