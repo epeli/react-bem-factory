@@ -4,7 +4,7 @@ import { isBrowser } from "./is-browser";
 
 declare const process: any;
 
-type StyleRenderRecord = Record<string, true>;
+type StyleRenderRecord = Record<string, true | number>;
 
 /**
  * Record CSS strings that are rendered to DOM
@@ -114,8 +114,17 @@ function createRenderer(cssCompiler: CSSCompiler) {
                     // style hot reloading
                 }
 
+                let styleOrder = "";
+
+                if (process.env.NODE_ENV !== "production") {
+                    // Just for debugging in dev
+                    const num = (renderRecord.__counter || 1) as number;
+                    renderRecord.__counter = num + 1;
+                    styleOrder = `/* ${num} */`;
+                }
+
                 const compiled = cssCompiler(
-                    "." + chunk.className,
+                    styleOrder + "." + chunk.className,
                     chunk.cssString,
                 );
 
