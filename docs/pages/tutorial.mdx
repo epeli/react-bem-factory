@@ -34,7 +34,7 @@ Feature highlights
 
 ## Basics
 
-Simplest possible component with BEMed is
+Simplest possible component (or a "Block" in BEM terms) with BEMed is
 
 ```tsx
 import { bemed } from "react-bemed";
@@ -216,9 +216,8 @@ React components are composed from multiple components. For example button
 might have an icon element inside it.
 
 One could start by just creating a another standalone component with the
-`bemed()` function but in BEM there is a concept of "elements" that have no
-standalone meaning but are part of a larger component or a "block" in BEM
-terms.
+`bemed()` function but in BEM there is a concept of "Elements" that have no
+standalone meaning but are part of a larger "Block" component.
 
 The `bemed()` function supports this convention with the `elements` property
 
