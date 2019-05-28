@@ -4,6 +4,7 @@ import { bemed } from "react-bemed";
 import { rem } from "polished";
 import { Colors } from "./core";
 import React from "react";
+import { useRouter } from "../pages/_app";
 
 const Blk = bemed({
     css: css`
@@ -63,7 +64,27 @@ function Item(props: { sub?: boolean; href: string; title: string }) {
     );
 }
 
+function GrouppedItems(props: {
+    title: string;
+    href: string;
+    children: React.ReactNode;
+}) {
+    const router = useRouter();
+    const currentPath = router.asPath.split("#")[0];
+
+    const subitems = currentPath === props.href ? props.children : null;
+
+    return (
+        <>
+            <Item title={props.title} href={props.href} />
+            {subitems}
+        </>
+    );
+}
+
 export function Menu() {
+    const router = useRouter();
+
     return (
         <Blk>
             <Blk.Title>
@@ -72,47 +93,51 @@ export function Menu() {
                 </Link>
             </Blk.Title>
             <Blk.List>
-                <Item title="Tutorial" href="/tutorial" />
-                <Item sub title="Install" href="/tutorial#install" />
-                <Item sub title="Basics" href="/tutorial#basics" />
-                <Item
-                    sub
-                    title="Target DOM Elements"
-                    href="/tutorial#target-dom-elements"
-                />
-                <Item
-                    sub
-                    title="Custom Class Names"
-                    href="/tutorial#custom-class-names"
-                />
-                <Item
-                    sub
-                    title="Default Props"
-                    href="/tutorial#default-props"
-                />
-                <Item sub title="Modifiers" href="/tutorial#modifiers" />
-                <Item sub title="Elements" href="/tutorial#elements" />
-                <Item
-                    sub
-                    title="Custom Target Components"
-                    href="/tutorial#custom-target-components"
-                />
-                <Item
-                    sub
-                    title="Scoped CSS Selectors"
-                    href="/tutorial#scoped-css-selectors"
-                />
-                <Item sub title="TypeScript" href="/tutorial#typescript" />
+                <GrouppedItems title="Tutorial" href="/tutorial">
+                    <Item sub title="Install" href="/tutorial#install" />
+                    <Item sub title="Basics" href="/tutorial#basics" />
+                    <Item
+                        sub
+                        title="Target DOM Elements"
+                        href="/tutorial#target-dom-elements"
+                    />
+                    <Item
+                        sub
+                        title="Custom Class Names"
+                        href="/tutorial#custom-class-names"
+                    />
+                    <Item
+                        sub
+                        title="Default Props"
+                        href="/tutorial#default-props"
+                    />
+                    <Item sub title="Modifiers" href="/tutorial#modifiers" />
+                    <Item sub title="Elements" href="/tutorial#elements" />
+                    <Item
+                        sub
+                        title="Custom Target Components"
+                        href="/tutorial#custom-target-components"
+                    />
+                    <Item
+                        sub
+                        title="Scoped CSS Selectors"
+                        href="/tutorial#scoped-css-selectors"
+                    />
+                    <Item sub title="TypeScript" href="/tutorial#typescript" />
+                </GrouppedItems>
 
                 <Item title="Modifier Types" href="/mods" />
                 <Item title="Server-Side Rendering" href="/ssr" />
-                <Item title="Babel Plugin" href="/babel" />
-                <Item sub title="Source Maps" href="/babel#source-maps" />
-                <Item
-                    sub
-                    title="CSS Precompiling"
-                    href="/babel#css-precompiling"
-                />
+
+                <GrouppedItems title="Babel Plugin" href="/babel">
+                    <Item sub title="Source Maps" href="/babel#source-maps" />
+                    <Item
+                        sub
+                        title="CSS Precompiling"
+                        href="/babel#css-precompiling"
+                    />
+                </GrouppedItems>
+
                 <Item title="Examples" href="/examples" />
                 <Item title="FAQ" href="/faq" />
             </Blk.List>

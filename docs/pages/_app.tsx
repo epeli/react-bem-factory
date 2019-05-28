@@ -7,6 +7,7 @@ import { css } from "react-bemed/css";
 import { MdxCodeBlock } from "../components/CodeBlock";
 import { rem } from "polished";
 import { Colors, Utils, Vars } from "../components/core";
+import { Router } from "next/router";
 
 const { MDXProvider } = require("@mdx-js/react");
 
@@ -106,17 +107,30 @@ const MdxComponents = {
     h2: createLinkableHeader("h2"),
 };
 
+const RouterContext = React.createContext<Router | null>(null);
+
+export function useRouter() {
+    const router = React.useContext(RouterContext);
+    if (!router) {
+        throw new Error("Router Context missing");
+    }
+
+    return router;
+}
+
 class Docs extends App {
     render() {
         const { Component, pageProps } = this.props;
 
         return (
             <Container>
-                <SSRProvider>
-                    <MDXProvider components={MdxComponents}>
-                        <Component {...pageProps} />
-                    </MDXProvider>
-                </SSRProvider>
+                <RouterContext.Provider value={this.props.router}>
+                    <SSRProvider>
+                        <MDXProvider components={MdxComponents}>
+                            <Component {...pageProps} />
+                        </MDXProvider>
+                    </SSRProvider>
+                </RouterContext.Provider>
             </Container>
         );
     }
