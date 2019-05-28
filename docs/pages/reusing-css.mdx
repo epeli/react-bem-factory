@@ -15,7 +15,7 @@ Eg. this is bad
 
 ```tsx{2,4}{14,14}{21,21}
 // XXX Bad code!
-const common = `
+const rounded = `
     border-radius: 10px;
 `;
 
@@ -27,14 +27,14 @@ const ButtonList = bemed({
         Save: bemed({
             as: "button",
             css: css`
-                ${common} /* XXX Bad code! */
+                ${rounded} /* XXX Bad code! */
                 color: green;
             `,
         }),
         Cancel: bemed({
             as: "button",
             css: css`
-                ${common} /* XXX Bad code! */
+                ${rounded} /* XXX Bad code! */
                 color: red;
             `,
         }),
