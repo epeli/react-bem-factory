@@ -4,7 +4,8 @@ import { Title } from "../components/Title";
 
 # Server-Side Rendering
 
-Just wrap you app with the `SSRProvider` and you are good to go
+Just wrap your app with the `SSRProvider` and you are good to go with
+automatic critical CSS rendering
 
 ```tsx
 import { SSRProvider } from "react-bemed/css";
@@ -15,6 +16,70 @@ export default (
     </SSRProvider>
 );
 ```
+
+## Implementation
+
+Because BEMed knows about both your components and the CSS it can
+incrementally inject the styles as your components are being rendered.
+
+So for example with BEM Block of
+
+```tsx
+const MyButton = bemed({
+    as: "button",
+    css: css`
+        background-color: hotpink;
+    `,
+    mods: {
+        awesome: css`
+            box-shadow: 0px 0px 30px 10px purple;
+        `,
+    },
+    elements: {
+        as: SvgIcon,
+        Icon: bemed({
+            css: css`
+                margin: 10px;
+            `,
+        }),
+    },
+})("MyButton");
+```
+
+and JSX
+
+```tsx
+<MyButton>
+    Cool?
+    <MyButton.Icon />
+</MyButton>
+```
+
+this HTML will be rendered
+
+```tsx
+<style>
+.MyButton {
+    background-color: hotpink;
+}
+</style>
+<button class="MyButton">
+    Cool?
+    <style>
+    .MyButton__Icon {
+        margin: 10px;
+    }
+    </style>
+    <svg class="MyButton__Icon" ... ><svg>
+</button>
+```
+
+Notice how the `box-shadow` rule for the `awesome` mod is not present. This
+is because the `awesome` prop was not passed and therefor that CSS was not
+required for the initial render.
+
+So not only the critically required CSS is picked but it is also sent in
+the optimal order.
 
 ## Next.js
 
