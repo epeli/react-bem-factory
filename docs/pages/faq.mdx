@@ -19,6 +19,17 @@ standard so there are few tools can take advantage of it:
 [prettier]: https://prettier.io/
 [vscode-prettier]: https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode
 
+## Is there any examples?
+
+This documentation site is styled using BEMed Components.
+
+Check it out on Github
+
+<https://github.com/epeli/react-bemed/tree/master/docs>
+
+You might want to just start inspecting this site too see how what kind of
+class names are being generated.
+
 ## How to add CSS autoprefixing?
 
 CSS autoprefixing is enabled automatically in production builds.
@@ -59,16 +70,17 @@ because it does not support dynamic CSS generation or React Context based
 theming. Basically all BEMed Components does during runtime is generating the
 strings for the `className` props.
 
-One could even say that BEMed Components is just the [classnames][] module with steroids.
+One could even say that BEMed Components is just a glorified version of the
+[classnames][] module.
 
 [classnames]: https://www.npmjs.com/package/classnames
-
-## Should I use TypeScript?
-
-Yes.
 
 ## What CSS preprocessor is used?
 
 Stylis
 
 <https://stylis.js.org/>
+
+## Should I use TypeScript?
+
+Definitely.

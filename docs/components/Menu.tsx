@@ -177,7 +177,6 @@ export function Menu() {
                     />
                 </GrouppedItems>
 
-                <Item title="Examples" href="/examples" />
                 <Item title="FAQ" href="/faq" />
             </Blk.List>
         </Blk>
