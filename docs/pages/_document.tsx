@@ -17,11 +17,15 @@ const BemedStyles = css`
     box-sizing: border-box;
 `.asStyleTag(".bemed");
 
+export const TAG_LINE =
+    "React Component Primitives for Humans inspired by the Block Element Modifier convention. react-bemed on npm.";
+
 class MyDocument extends Document {
     render() {
         return (
             <Html>
                 <Head>
+                    <meta name="Description" content={TAG_LINE} />
                     <GlobalStyles />
                     <BemedStyles />
                 </Head>

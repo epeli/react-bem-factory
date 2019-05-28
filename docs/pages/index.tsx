@@ -8,6 +8,7 @@ import { css } from "react-bemed/css";
 import { Utils, Vars, Colors } from "../components/core";
 import { CodeBlock } from "../components/CodeBlock";
 import Link from "next/link";
+import Head from "next/head";
 
 const TUTORIAL_HREF = "/tutorial";
 
@@ -58,7 +59,7 @@ const Blk = bemed({
         TagLine: bemed({
             css: css`
                 color: white;
-                margin-left: ${rem(10)};
+                margin-left: ${rem(5)};
             `,
         }),
         Content: bemed({
@@ -242,10 +243,16 @@ function AnimatedLink() {
 function Landing() {
     return (
         <Blk>
+            <Head>
+                <title>BEMed Components</title>
+            </Head>
             <BodyStyles />
             <Blk.Content>
                 <Blk.Heading>BEMed Components</Blk.Heading>
-                <Blk.TagLine>React Component Primitives for Humans</Blk.TagLine>
+                <Blk.TagLine>
+                    React Component Primitives for Humans inspired by the Block
+                    Element Modifier convention
+                </Blk.TagLine>
 
                 <Blk.CodeWrap>
                     <Blk.Colum1>
