@@ -48,6 +48,16 @@ No. Dynamic CSS generation during rendering adds non-trivial complexity and
 makes build-time optimizations harder with Babel. If you need dynamic styles
 just use the `style` prop.
 
+## Is it fast?
+
+Should be. Maybe even blazing.
+
+I haven't made any benchmarks yet though. But when comparing to similar tools
+like Styled Components or Emotion: BEMed Components has a lot simpler runtime
+because it does not support dynamic CSS generation or React Context based
+theming. Basically all BEMed Components does during runtime is generating the
+strings for the `className` props.
+
 ## Should I use TypeScript?
 
 Yes.
