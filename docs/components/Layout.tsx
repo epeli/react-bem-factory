@@ -10,6 +10,7 @@ import { Colors, Vars } from "./core";
 import { MenuFooter } from "./MenuFooter";
 import { useScrollLock } from "./hooks";
 import Link from "next/link";
+import { useRouter } from "../pages/_app";
 
 const MENU_WIDTH = rem(280);
 
@@ -125,6 +126,31 @@ const Blk = bemed({
     },
 })("Layout");
 
+const GithubEditLink = bemed({
+    as: "a",
+    css: css`
+        position: absolute;
+        top: ${rem(15)};
+        right: ${rem(15)};
+        display: none;
+        font-size: 10pt;
+        @media (${Vars.isDesktop}) {
+            display: flex;
+        }
+    `,
+})("GithubEditLink");
+
+function Github() {
+    const router = useRouter();
+    const page = router.asPath.slice(1);
+
+    if (!page) {
+        return null;
+    }
+    const editURL = `https://github.com/epeli/react-bemed/edit/master/docs/pages/${page}.mdx`;
+    return <GithubEditLink href={editURL}>{router.asPath}</GithubEditLink>;
+}
+
 export function Layout(props: { children: React.ReactNode }) {
     const [isMobileMenuVisible, setMobileMenuVisible] = React.useState(false);
     const toggleMenu = () => setMobileMenuVisible(visible => !visible);
@@ -168,6 +194,7 @@ export function Layout(props: { children: React.ReactNode }) {
                     <FaHamburger size={25} />
                 )}
             </Blk.MenuButton>
+            <Github />
         </Blk>
     );
 }
