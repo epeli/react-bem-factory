@@ -350,13 +350,13 @@ the developer don't have to worry about writing types manually.
 For example when we used `"button"` for the `as` property the resulting BEMed
 component will typed as a button.
 
-For example this invalid
+So this invalid
 
 ```tsx
 <MyButton type="bad" /> // Type error!
 ```
 
-Because the type of the `type` prop is `'"button" | "submit" | "reset" | undefined'`
+Because the type of the `type` prop is `"button" | "submit" | "reset" | undefined`
 
 The mod we created extend the button type and is type of `boolean | undefined` which means the following are valid values for it
 
