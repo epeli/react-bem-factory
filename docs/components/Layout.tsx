@@ -137,6 +137,10 @@ const GithubEditLink = bemed({
         @media (${Vars.isDesktop}) {
             display: flex;
         }
+        &,
+        &:visited {
+            color: ${Colors.menuTitle};
+        }
     `,
 })("GithubEditLink");
 
@@ -148,7 +152,7 @@ function Github() {
         return null;
     }
     const editURL = `https://github.com/epeli/react-bemed/edit/master/docs/pages/${page}.mdx`;
-    return <GithubEditLink href={editURL}>{router.asPath}</GithubEditLink>;
+    return <GithubEditLink href={editURL}>Edit on Github</GithubEditLink>;
 }
 
 export function Layout(props: { children: React.ReactNode }) {
