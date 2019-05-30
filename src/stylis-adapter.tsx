@@ -119,7 +119,7 @@ export function adaptStylis(stylis: typeof Stylis): CSSCompiler {
 
     stylis.use(createSelectorsPlugin() as any);
     stylis.use(createInsertRule(rule => {
-        rules.push(rule);
+        rules.push(rule.split(DELIMETER).join(""));
     }) as any);
 
     return (selector: string, css: string) => {
