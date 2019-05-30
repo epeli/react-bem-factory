@@ -11,15 +11,15 @@
     "dependencies": {
         "@mdx-js/loader": "^1.0.20",
         "@next/mdx": "^8.1.0",
-        "@types/react": "^16.8.18",
+        "@types/react": "^16.8.19",
         "@types/react-dom": "^16.8.4",
         "next": "^8.1.1-canary.37",
         "polished": "^3.4.0",
         "prism-react-renderer": "^0.1.6",
         "react": "^16.8.6",
-        "react-bemed": "^0.6.3",
+        "react-bemed": "^0.6.4",
         "react-dom": "^16.8.6",
         "react-icons": "^3.7.0",
-        "typescript": "^3.5.0-dev.20190525"
+        "typescript": "^3.5.1"
     }
 }
