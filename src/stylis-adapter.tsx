@@ -29,7 +29,7 @@ export function createSelectorsPlugin() {
         if (context === ContextTypes.POST_PROCESS) {
             return content.replace(
                 // .Foo:--Bar
-                /(\.[a-zA-Z0-9]+)(.*?):--([a-zA-Z0-9]+)/g,
+                /(\.[a-zA-Z0-9]+|__BEMED__)(.*?):--([a-zA-Z0-9]+)/g,
                 (
                     full: string,
                     currentParent: string,
