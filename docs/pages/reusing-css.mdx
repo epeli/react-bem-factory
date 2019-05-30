@@ -95,6 +95,38 @@ const ButtonList = bemed({
 })("ButtonList");
 ```
 
+## Custom Element Selectors
+
+BEMed also defines custom CSS selectors using the [CSS
+Extensions][css-extensions] specification for child elements
+
+[css-extensions]: https://drafts.csswg.org/css-extensions/#custom-selectors
+
+```tsx{4,5}
+const ButtonList = bemed({
+    css: css`
+        flex-direction: column;
+        :--Save,
+        :--Cancel {
+            border-radius: 10px;
+        }
+    `,
+    // ...
+})("ButtonList");
+```
+
+This will correspond with following CSS
+
+```css
+.ButtonList__Save,
+.ButtonList__Cancel {
+    border-radius: 10px;
+}
+```
+
+The selectors are implemented within the CSS compiler so they will work in
+all browsers.
+
 ## CSS Utility Classes
 
 If you need to share CSS between different BEMed blocks you can just use
