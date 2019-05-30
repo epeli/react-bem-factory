@@ -89,7 +89,9 @@ export function createInsertRule(insertRule: (rule: string) => void) {
                 break;
             // selector
             case 2:
-                if (ns === 0) return content + DELIMETER;
+                if (ns === 0 && !content.endsWith(DELIMETER)) {
+                    return content + DELIMETER;
+                }
                 break;
             // at-rule
             case 3:
