@@ -18,7 +18,8 @@
         "clean": "rm -rf lib build",
         "dtslint": "tslint --project tsconfig.dtslint.json",
         "prepublishOnly": "npm run test && npm run build",
-        "example": "cd example && webpack-dev-server --mode development"
+        "example": "cd example && webpack-dev-server --mode development",
+        "docs": "cd docs && npm run dev"
     },
     "keywords": [
         "typescript"
