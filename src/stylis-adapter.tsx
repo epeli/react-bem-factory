@@ -16,6 +16,9 @@ const DELIMETER = "/*|*/";
 type ObjectValueTypes<T> = T[keyof T];
 type StylisContext = ObjectValueTypes<typeof ContextTypes>;
 
+/**
+ * Implement custom CSS selectors for the child elements
+ */
 export function createSelectorsPlugin() {
     return (
         context: StylisContext,
@@ -114,11 +117,16 @@ export function createInsertRule(insertRule: (rule: string) => void) {
     };
 }
 
+/**
+ * Extend given Stylis instance to delimite CSS rules with a comment blocks and
+ * add the element selector plugin
+ */
 export function adaptStylis(stylis: typeof Stylis): CSSCompiler {
     const rules: string[] = [];
 
     stylis.use(createSelectorsPlugin() as any);
     stylis.use(createInsertRule(rule => {
+        // Remove extranous delimeters
         rules.push(rule.split(DELIMETER).join(""));
     }) as any);
 
