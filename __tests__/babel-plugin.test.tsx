@@ -228,3 +228,29 @@ test("precompiles autoprefixing by default", () => {
         ),
     );
 });
+
+test("separates rules with /*|*/", () => {
+    const code = dedent`
+    import { css } from "react-bemed/css";
+    const foo = css\`
+        .foo {
+            color: red;
+        }
+        .bar {
+            border-radius: 10px;
+        }
+    }
+    \`;
+    `;
+
+    const res = runPlugin(code, {
+        precompile: true,
+        sourceMap: true,
+    });
+    expect(cleanSourceMapComment(res.code)).toEqual(
+        lines(
+            'import { css } from "react-bemed/css-precompiled";',
+            'const foo = css(["__BEMED__ .foo{color:red;}/*|*/__BEMED__ .bar{border-radius:10px;}"].join(""), "/*# sourceMappingURL=SOURCEMAP */");',
+        ),
+    );
+});

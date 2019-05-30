@@ -68,6 +68,26 @@ test("separates rules with /*|*/", () => {
     );
 });
 
+test("separates rules with /*|*/ 2", () => {
+    const bemed = createBemed();
+    const Block = bemed({
+        css: css`
+            color: orange;
+            .foo {
+                color: red;
+            }
+        `,
+    })("TestBlock");
+
+    render(<Block>test</Block>);
+
+    expect(injectGlobal).toBeCalledTimes(1);
+    expect(mockInjectGlobal.mock.calls[0][0]).toEqual("TestBlock");
+    expect(mockInjectGlobal.mock.calls[0][1]).toEqual(
+        ".TestBlock{color:orange;}/*|*/.TestBlock .foo{color:red;}",
+    );
+});
+
 test("can use variables in template literals", () => {
     const bemed = createBemed();
     const color = "orange";

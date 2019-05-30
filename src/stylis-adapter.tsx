@@ -59,7 +59,7 @@ export function createSelectorsPlugin() {
  * Borrowed from https://github.com/thysultan/stylis.js/blob/4561e9bc830fccf1cb0e9e9838488b4d1d5cebf5/plugins/rule-sheet/index.js#L29
  */
 export function createInsertRule(insertRule: (rule: string) => void) {
-    var needle = DELIMETER + "}";
+    const needle = DELIMETER + "}";
 
     function toSheet(block: string) {
         if (block)
@@ -108,7 +108,7 @@ export function createInsertRule(insertRule: (rule: string) => void) {
 }
 
 export function adaptStylis(stylis: typeof Stylis): CSSCompiler {
-    let rules: string[] = [];
+    const rules: string[] = [];
 
     stylis.use(createSelectorsPlugin() as any);
     stylis.use(createInsertRule(rule => {
@@ -116,7 +116,7 @@ export function adaptStylis(stylis: typeof Stylis): CSSCompiler {
     }) as any);
 
     return (selector: string, css: string) => {
-        rules = [];
+        rules.splice(0);
         stylis(selector, css);
         return rules.join(DELIMETER);
     };

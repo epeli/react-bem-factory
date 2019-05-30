@@ -3,6 +3,7 @@ import { Visitor, NodePath } from "@babel/traverse";
 import { SourceMapGenerator } from "source-map";
 import convert from "convert-source-map";
 import stylis from "stylis";
+import { adaptStylis } from "./stylis-adapter";
 
 declare const process: any;
 
@@ -171,7 +172,8 @@ export default function bemedBabelPlugin(
                 if (opts.precompile) {
                     const finalStylis = opts.stylis || stylis;
                     const styleString = cssArray.join("__BEMED_VAR__");
-                    cssArray = finalStylis("__BEMED__", styleString).split(
+                    const adaptedStylis = adaptStylis(finalStylis);
+                    cssArray = adaptedStylis("__BEMED__", styleString).split(
                         "__BEMED_VAR__",
                     );
                 }
