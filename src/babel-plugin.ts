@@ -2,8 +2,12 @@ import * as BabelTypes from "@babel/types";
 import { Visitor, NodePath } from "@babel/traverse";
 import { SourceMapGenerator } from "source-map";
 import convert from "convert-source-map";
-import stylis from "stylis";
+import Stylis from "stylis";
 import { adaptStylis } from "./stylis-adapter";
+
+const customStylis = new Stylis({
+    prefix: process.env.NODE_ENV === "production",
+});
 
 declare const process: any;
 
@@ -170,7 +174,7 @@ export default function bemedBabelPlugin(
                 });
 
                 if (opts.precompile) {
-                    const finalStylis = opts.stylis || stylis;
+                    const finalStylis = opts.stylis || customStylis;
                     const styleString = cssArray.join("__BEMED_VAR__");
                     const adaptedStylis = adaptStylis(finalStylis);
                     cssArray = adaptedStylis("__BEMED__", styleString).split(

@@ -1,4 +1,5 @@
 import dedent from "dedent";
+import Stylis from "stylis";
 import { transform } from "@babel/core";
 import * as vlq from "vlq";
 import { BemedBabelPluginOptions } from "../src/babel-plugin";
@@ -208,7 +209,7 @@ test("precompiles css", () => {
     );
 });
 
-test("precompiles autoprefixing by default", () => {
+test("can force prefixing with custom Stylis instance", () => {
     const code = dedent`
     import { css } from "react-bemed/css";
     const foo = css\`
@@ -220,6 +221,9 @@ test("precompiles autoprefixing by default", () => {
     const res = runPlugin(code, {
         precompile: true,
         sourceMap: true,
+        stylis: new Stylis({
+            prefix: true,
+        }),
     });
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
