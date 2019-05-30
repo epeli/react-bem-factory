@@ -1,13 +1,15 @@
 import { isBrowser } from "./is-browser";
 import { StyleSheet } from "@emotion/sheet";
 
+const DELIMETER = "/*|*/";
+
 let sheet: StyleSheet | null = null;
 
 if (isBrowser()) {
     sheet = new StyleSheet({
         key: "bemed",
         container: document.head,
-        speedy: false,
+        speedy: true,
     });
 }
 
@@ -15,9 +17,11 @@ if (isBrowser()) {
  * Use fast style injection production provided by @emotion/sheet
  */
 function productionInject(id: string, css: string) {
-    if (sheet) {
-        sheet.insert(css);
-    }
+    css.split(DELIMETER).forEach(rule => {
+        if (sheet) {
+            sheet.insert(rule);
+        }
+    });
 }
 
 const DEV_STYLE_TAGS: Record<
