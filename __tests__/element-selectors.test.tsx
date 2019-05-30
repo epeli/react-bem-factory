@@ -77,7 +77,7 @@ test("can use multiple element selectors", () => {
     })("TestBlock");
 
     expect(getCSS(Block)).toEqual(
-        ".TestBlock .TestBlock__Foo{border-radius:10px;}.TestBlock .TestBlock__Bar{border-radius:20px;}",
+        ".TestBlock .TestBlock__Foo{border-radius:10px;}/*|*/.TestBlock .TestBlock__Bar{border-radius:20px;}",
     );
 });
 
