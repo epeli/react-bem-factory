@@ -18,6 +18,9 @@ if (isBrowser()) {
 
 /**
  * Use fast style injection production provided by @emotion/sheet
+ *
+ * Rules must be delimited with the above comment because StyleSheet insertRule
+ * can insert only one rule at the time
  */
 function productionInject(id: string, css: string) {
     css.split(DELIMETER).forEach(rule => {
