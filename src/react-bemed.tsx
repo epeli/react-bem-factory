@@ -177,6 +177,7 @@ function applyMods(opts: {
  */
 function createReactBEMComponent<
     Comp extends AnyReactComponent,
+    VarFunction extends (props: any) => Record<string, string>,
     KnownMods extends
         | undefined
         | Record<
@@ -189,6 +190,7 @@ function createReactBEMComponent<
 >(opts: {
     component: Comp;
     blockClassName: string;
+    varFunction: VarFunction;
     knownMods: KnownMods;
     staticClassNames: ClassNamesTypes[];
     globalStaticClassNames: ClassNamesTypes[];
@@ -199,8 +201,8 @@ function createReactBEMComponent<
     type ReactProps = React.ComponentProps<Comp>;
 
     type FinalProps = typeof opts.knownMods extends undefined
-        ? ReactProps
-        : ReactProps & ModProps<KnownMods>;
+        ? ReactProps & Parameters<VarFunction>[0]
+        : ReactProps & ModProps<KnownMods> & Parameters<VarFunction>[0];
 
     const BEMComponent = forwardRef((props: FinalProps, ref) => {
         const {
@@ -370,6 +372,7 @@ export function createBemed(
         },
         BEMBlockDOMElement extends AnyReactComponent = "div",
         DefaultProps extends React.ComponentProps<BEMBlockDOMElement> = any,
+        VarProps = {},
         BEMBlockMods extends
             | Record<
                   string,
@@ -384,6 +387,7 @@ export function createBemed(
             | {
                   as?: BEMBlockDOMElement;
                   defaultProps?: DefaultProps;
+                  vars?: (props: VarProps) => Record<string, string>;
                   mods?: BEMBlockMods;
                   css?: BEMCSS;
                   className?: ClassNamesTypes | ClassNamesTypes[];
@@ -427,8 +431,11 @@ export function createBemed(
             // Ensure the type is BEMBlockDOMElement and not union with "div"
             const comp: BEMBlockDOMElement = (blockOptions.as || "div") as any;
 
+            const foo = (_props: {}) => ({});
+
             const Block = createReactBEMComponent({
                 component: comp,
+                varFunction: blockOptions.vars || foo,
                 blockClassName,
                 knownMods: blockOptions.mods,
                 staticClassNames: asArray(blockOptions.className),

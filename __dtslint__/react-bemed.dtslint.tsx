@@ -371,3 +371,18 @@ test("default prop types", () => {
         },
     })("Block");
 });
+
+test("var props", () => {
+    const bemed = createBemed();
+
+    const Block = bemed({
+        vars(props: { foo: number }) {
+            return { bar: String(props.foo) };
+        },
+    })("Block");
+
+    render(<Block foo={1} />);
+
+    // $ExpectError
+    render(<Block foo={/re/} />);
+});
