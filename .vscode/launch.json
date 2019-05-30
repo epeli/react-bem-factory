@@ -19,7 +19,8 @@
             "name": "Jest Current File",
             "program": "${workspaceFolder}/node_modules/.bin/jest",
             "windows": {
-                "program": "${workspaceFolder}/node_modules/jest/bin/jest"
+                "program": "${workspaceFolder}/node_modules/jest/bin/jest",
+                "args": ["--testMatch", "**/__tests__/**/${fileBasename}"]
             },
             "args": ["${relativeFile}"],
             "console": "internalConsole",
