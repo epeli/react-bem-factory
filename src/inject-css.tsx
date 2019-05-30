@@ -34,7 +34,10 @@ const DEV_STYLE_TAGS: Record<
  * reload
  */
 function devInject(id: string, css: string) {
-    css = css.trim();
+    css = css
+        .trim()
+        .split(DELIMETER)
+        .join("\n");
     const existing = DEV_STYLE_TAGS[id];
 
     if (existing) {
