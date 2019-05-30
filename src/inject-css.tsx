@@ -5,6 +5,9 @@ const DELIMETER = "/*|*/";
 
 let sheet: StyleSheet | null = null;
 
+// Webpack module global with .hot
+declare const module: any;
+
 if (isBrowser()) {
     sheet = new StyleSheet({
         key: "bemed",
@@ -24,10 +27,14 @@ function productionInject(id: string, css: string) {
     });
 }
 
-const DEV_STYLE_TAGS: Record<
-    string,
-    { el: HTMLStyleElement; css: string } | undefined
-> = {};
+let isHotReloading = false;
+
+if (module && module.hot) {
+    module.hot.addStatusHandler((status: string) => {
+        console.log("status", status);
+        isHotReloading = status !== "idle";
+    });
+}
 
 /**
  * In development use slower injection method that allows source maps and hot
@@ -38,15 +45,17 @@ function devInject(id: string, css: string) {
         .trim()
         .split(DELIMETER)
         .join("\n");
-    const existing = DEV_STYLE_TAGS[id];
+
+    const existing = document.querySelector<HTMLStyleElement>(
+        `style[data-bemed=${id}]`,
+    );
 
     if (existing) {
-        if (existing.el.innerHTML !== css) {
-            console.log("react-bemed: hot update: " + id);
-            existing.el.innerHTML = css;
-            existing.el.dataset.ver = String(
-                Number(existing.el.dataset.ver) + 1,
-            );
+        // The css content check works only when source maps are disabled
+        // because when the module updates so will the source map update too
+        if (isHotReloading && existing.innerHTML.trim() !== css) {
+            existing.innerHTML = css;
+            existing.dataset.ver = String(Number(existing.dataset.ver) + 1);
         }
     } else {
         const style = document.createElement("style");
@@ -54,10 +63,6 @@ function devInject(id: string, css: string) {
         style.dataset.ver = "1";
         style.innerHTML = css;
         document.head.appendChild(style);
-        DEV_STYLE_TAGS[id] = {
-            el: style,
-            css,
-        };
     }
 }
 

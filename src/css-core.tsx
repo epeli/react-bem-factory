@@ -118,15 +118,10 @@ function createRenderer(cssCompiler: CSSCompiler) {
 
                 let styleOrder = "";
 
-                if (
-                    process.env.NODE_ENV !== "production" &&
-                    process.env.NODE_ENV !== "test"
-                ) {
-                    // Just for debugging in dev
-                    const num = (renderRecord.__counter || 1) as number;
-                    renderRecord.__counter = num + 1;
-                    styleOrder = `/* ${num} */`;
-                }
+                // // Just for debugging in dev
+                // const num = (renderRecord.__counter || 1) as number;
+                // renderRecord.__counter = num + 1;
+                // styleOrder = `/* ${num} */`;
 
                 const compiled = cssCompiler(
                     styleOrder + "." + chunk.className,
