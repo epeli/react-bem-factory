@@ -1,6 +1,7 @@
 import React from "react";
 import { injectGlobal } from "./inject-css";
 import { isBrowser } from "./is-browser";
+import { createSelectorsPlugin } from "./custom-element-selectors";
 
 declare const process: any;
 
@@ -33,7 +34,10 @@ export class SSRProvider extends React.Component {
     }
 }
 
-export type CSSCompiler = (selector: string, css: string) => string;
+export interface CSSCompiler {
+    (selector: string, css: string): string;
+    use?(plugin: any): void;
+}
 
 class DisappearingStyle extends React.Component<{
     children: string;
@@ -185,6 +189,10 @@ export function createClassName(className: string, bemCSS: BEMCSS) {
 }
 
 export function createCSSTag(providedCompiler: CSSCompiler) {
+    if (providedCompiler.use) {
+        providedCompiler.use(createSelectorsPlugin());
+    }
+
     function compilerWrap(className: string, cssString: string) {
         return css.compiler(className, cssString);
     }
