@@ -101,7 +101,12 @@ export function createInsertRule(insertRule: (rule: string) => void) {
                     case 112:
                         return insertRule(selectors[0] + content), "";
                     default:
-                        return content + (at === 0 ? DELIMETER : "");
+                        return (
+                            content +
+                            (at === 0 && !content.endsWith(DELIMETER)
+                                ? DELIMETER
+                                : "")
+                        );
                 }
             case -2:
                 content.split(needle).forEach(toSheet);

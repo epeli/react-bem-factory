@@ -254,3 +254,36 @@ test("separates rules with /*|*/", () => {
         ),
     );
 });
+
+test("separates rules with /*|*/ with media queries", () => {
+    const code = dedent`
+    import { css } from "react-bemed/css";
+    const foo = css\`
+        .foo {
+            color: red;
+        }
+        @media (max-width: 600px) {
+            border-radius: 10px;
+        }
+    }
+    \`;
+    `;
+
+    // Make sure stylis internal state does not mess things up
+    runPlugin(code, {
+        precompile: true,
+        sourceMap: true,
+    });
+
+    const res = runPlugin(code, {
+        precompile: true,
+        sourceMap: true,
+    });
+
+    expect(cleanSourceMapComment(res.code)).toEqual(
+        lines(
+            'import { css } from "react-bemed/css-precompiled";',
+            'const foo = css(["__BEMED__ .foo{color:red;}/*|*/@media (max-width:600px){__BEMED__{border-radius:10px;}}"].join(""), "/*# sourceMappingURL=SOURCEMAP */");',
+        ),
+    );
+});
