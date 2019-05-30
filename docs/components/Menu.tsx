@@ -161,6 +161,11 @@ export function Menu() {
                     />
                     <Item
                         sub
+                        title="Custom Element Selectors"
+                        href="/reusing-css#custom-element-selectors"
+                    />
+                    <Item
+                        sub
                         title="CSS Utility Classes"
                         href="/reusing-css#scoped-css-selectors"
                     />
