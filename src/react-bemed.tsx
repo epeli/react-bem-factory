@@ -330,8 +330,8 @@ type FlattenToReturnTypes<T extends MethodObject> = {
 
 export interface BemedOptions {
     className?: ClassNamesTypes | ClassNamesTypes[];
+    prefix?: string;
     separators?: {
-        namespace?: string;
         modifier?: string;
         element?: string;
     };
@@ -345,10 +345,7 @@ type BEMBlock<
     Elements extends { [key: string]: (props: any) => React.ReactNode }
 > = Block & BEMComponentProperties & FlattenToReturnTypes<Elements>;
 
-export function createBemed(
-    prefix?: string,
-    bemedOptions: BemedOptions | undefined = {},
-) {
+export function createBemed(bemedOptions: BemedOptions | undefined = {}) {
     const usedBlockNames: Record<string, true | undefined> = {};
     let isHotReloading = false;
 
@@ -394,7 +391,6 @@ export function createBemed(
         return (blockName: string, isElement?: boolean) => {
             const separators = Object.assign(
                 {
-                    namespace: "-",
                     modifier: "--",
                     element: "__",
                 },
@@ -402,12 +398,15 @@ export function createBemed(
             );
 
             let blockClassName = "";
+            const prefix =
+                typeof bemedOptions.prefix === "string"
+                    ? bemedOptions.prefix
+                    : "";
 
             if (isElement) {
                 blockClassName = blockName;
             } else {
-                blockClassName =
-                    (prefix ? prefix + separators.namespace : "") + blockName;
+                blockClassName = prefix + blockName;
             }
 
             const isCollision = usedBlockNames[blockClassName];
@@ -475,6 +474,6 @@ export function createBemed(
     return defineBEMBlock;
 }
 
-export const bemed = createBemed("", {
+export const bemed = createBemed({
     className: "bemed",
 });

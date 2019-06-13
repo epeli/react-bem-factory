@@ -2,7 +2,7 @@ import { createBemed } from "./src/react-bemed";
 import React from "react";
 import { css } from "./src/css";
 
-const bemed = createBemed("app");
+const bemed = createBemed();
 
 // Create a "BEMed Block Component"
 const Button = bemed({

@@ -3,7 +3,7 @@ import React from "react";
 import { createBemed } from "../../src/react-bemed";
 import { css } from "../../src/css";
 
-const bemed = createBemed("ex");
+const bemed = createBemed();
 
 const Block = bemed({
     css: css`

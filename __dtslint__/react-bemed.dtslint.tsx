@@ -7,7 +7,7 @@ function assertNotAny(a: number) {}
 function render(jsx: any) {}
 
 test("does not allow bad types on block components", () => {
-    const createBlock = createBemed("prefix-");
+    const createBlock = createBemed();
     // $ExpectError
     assertNotAny(createBlock);
 
@@ -25,7 +25,7 @@ test("does not allow bad types on block components", () => {
 });
 
 test("does not allow bad types on block components", () => {
-    const createBlock = createBemed("prefix-");
+    const createBlock = createBemed();
 
     const Block = createBlock({
         as: "div",
@@ -41,7 +41,7 @@ test("does not allow bad types on block components", () => {
 });
 
 test("can use custom els", () => {
-    const createBlock = createBemed("prefix-");
+    const createBlock = createBemed();
 
     const Block = createBlock({
         as: "video",
@@ -54,7 +54,7 @@ test("can use custom els", () => {
 });
 
 test("defaults to div", () => {
-    const createBlock = createBemed("prefix-");
+    const createBlock = createBemed();
 
     const Block = createBlock({
         mods: {
@@ -69,7 +69,7 @@ test("defaults to div", () => {
 });
 
 test("mods are true", () => {
-    const createBlock = createBemed("prefix-");
+    const createBlock = createBemed();
 
     const Block = createBlock(
         // $ExpectError

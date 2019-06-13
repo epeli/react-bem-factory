@@ -196,7 +196,7 @@ test("injects style tag for block submods", () => {
 });
 
 test("also adds the BEM class for css block mods", () => {
-    const bemed = createBemed("prefix");
+    const bemed = createBemed({ prefix: "prefix-" });
 
     const Block = bemed({
         mods: {
@@ -213,7 +213,7 @@ test("also adds the BEM class for css block mods", () => {
 });
 
 test("also adds the BEM class for css element mods", () => {
-    const bemed = createBemed("prefix");
+    const bemed = createBemed({ prefix: "prefix-" });
 
     const Block = bemed({
         elements: {
@@ -536,7 +536,7 @@ test("server renders autoprefixed", () => {
 });
 
 test("can use custom stylis", () => {
-    const bemed = createBemed("");
+    const bemed = createBemed();
 
     css.compiler = new Stylis({
         prefix: false,
@@ -555,7 +555,7 @@ test("can use custom stylis", () => {
 });
 
 test("can use custom css compiler for injection", () => {
-    const bemed = createBemed("");
+    const bemed = createBemed();
 
     css.compiler = () => "custom";
 
@@ -600,7 +600,7 @@ test("can use custom css compiler for injection", () => {
 
 test("can use custom css compiler in server render", () => {
     process.env.TEST_ENV = "node";
-    const bemed = createBemed("");
+    const bemed = createBemed();
 
     css.compiler = () => "custom";
 
