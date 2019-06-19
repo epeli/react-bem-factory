@@ -416,7 +416,7 @@ export function createBemed(bemedOptions: BemedOptions | undefined = {}) {
             //    so multiple requests cause false positives
             //  - When hot reload is active it by definition re-executes the same code
             if (isCollision && !isHotReloading && isBrowser()) {
-                throw new Error(
+                console.warn(
                     `Class name collision with "${blockClassName}". Make sure you pass unique class names to the function returned by bemed()`,
                 );
             }

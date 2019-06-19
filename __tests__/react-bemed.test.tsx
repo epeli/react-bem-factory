@@ -568,15 +568,6 @@ test("can use function components as the elements", () => {
     expect(el.innerHTML).toBe("FOO");
 });
 
-test("does not allow duplicate class names", () => {
-    const bemed = createBemed();
-    bemed()("Foo");
-
-    expect(() => {
-        bemed()("Foo");
-    }).toThrow("Class name collision");
-});
-
 test("server render allows duplicate class names", () => {
     process.env.TEST_ENV = "node";
     const bemed = createBemed();
