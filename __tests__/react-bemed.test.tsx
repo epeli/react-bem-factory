@@ -59,7 +59,7 @@ test("can use block mods", () => {
     expect(el.className).toBe("prefix-test-block prefix-test-block--ding");
 });
 
-test("can use union block mods with booleans", () => {
+test("can use enum mods with booleans", () => {
     const bemed = createBemed();
 
     const Block = bemed({

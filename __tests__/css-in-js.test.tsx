@@ -936,3 +936,31 @@ test("createClassName() works with precompiledCSS()", () => {
     expect(mockInjectGlobal.mock.calls[0][1]).toContain("orange");
     expect(mockInjectGlobal.mock.calls[0][1]).toContain(".foo");
 });
+
+test("can use enum mods with css", () => {
+    const bemed = createBemed();
+
+    const Block = bemed({
+        mods: {
+            things: {
+                foo: css`
+                    color: red;
+                `,
+                bar: css`
+                    color: blue;
+                `,
+            },
+        },
+    })("Block");
+
+    const rtl = render(
+        <div>
+            <Block things="foo">test</Block>
+        </div>,
+    );
+
+    const el = rtl.getByText("test");
+    expect(el.className).toBe("Block Block--things--foo");
+    expect(injectGlobal).toBeCalledTimes(1);
+    expect(mockInjectGlobal.mock.calls[0][0]).toEqual("Block--things--foo");
+});

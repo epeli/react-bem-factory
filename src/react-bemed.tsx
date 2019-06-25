@@ -141,29 +141,29 @@ function applyMods(opts: {
             continue;
         }
 
-        // At this point modType can be only a submod
+        // At this point modType can be only an enum mod
 
         const knownSubMods = modType;
-        const selectedSubMod = opts.providedProps[prop];
-        const subModValue = knownSubMods[selectedSubMod];
-        const subModClassName =
-            modClassName + opts.modifierSeparator + selectedSubMod;
+        const selectedEnumMod = opts.providedProps[prop];
+        const enumModValue = knownSubMods[selectedEnumMod];
+        const enumModClassName =
+            modClassName + opts.modifierSeparator + selectedEnumMod;
 
-        if (subModValue === true) {
-            out.usedModClassNames.push(subModClassName);
+        if (enumModValue === true) {
+            out.usedModClassNames.push(enumModClassName);
             continue;
         }
 
-        if (typeof subModValue === "string") {
-            out.usedModClassNames.push(subModValue);
+        if (typeof enumModValue === "string") {
+            out.usedModClassNames.push(enumModValue);
             continue;
         }
 
-        if (isBemCss(subModValue)) {
-            out.usedModClassNames.push(modClassName);
+        if (isBemCss(enumModValue)) {
+            out.usedModClassNames.push(enumModClassName);
             out.usedCSS.push({
-                className: subModClassName,
-                bemCSS: subModValue,
+                className: enumModClassName,
+                bemCSS: enumModValue,
             });
             continue;
         }
