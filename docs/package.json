@@ -5,7 +5,7 @@
     "license": "MIT",
     "scripts": {
         "dev": "next dev",
-        "build": "next build && next export",
+        "build": "next build && next export && cp googlebcf0c0dff8e11d4a.html out",
         "build-serve": "next build && next export && cd out && serve ."
     },
     "dependencies": {
