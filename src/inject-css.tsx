@@ -34,7 +34,6 @@ let isHotReloading = false;
 
 if (module && module.hot) {
     module.hot.addStatusHandler((status: string) => {
-        console.log("status", status);
         isHotReloading = status !== "idle";
     });
 }
