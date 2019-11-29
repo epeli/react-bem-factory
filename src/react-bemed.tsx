@@ -25,7 +25,7 @@ type AnyReactComponent =
     | keyof JSX.IntrinsicElements
     | React.JSXElementConstructor<any>;
 
-interface BEMComponentProperties {
+export interface BEMComponentProperties {
     parent?: BemedFC;
     bemed: true;
     className: string;
@@ -34,7 +34,7 @@ interface BEMComponentProperties {
     mods?: Mods;
 }
 
-type BemedFC = React.FC & BEMComponentProperties;
+export type BemedFC = React.FC & BEMComponentProperties;
 
 function isBemedComponent(c: any): c is BemedFC {
     return Boolean(c && c.bemed === true);
