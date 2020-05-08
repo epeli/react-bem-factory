@@ -285,6 +285,17 @@ by itself.
 Props are passed to the underlying component so the `size` prop accepted
 by the `FaReact` component works as expected.
 
+If you make your own commponents you want to pass to the `bemed()` function all
+you need to do is to make sure it handles the `className` prop properly by
+passing it to the underlying component:
+
+```tsx
+function MyLink(props: {className?: string}) {
+  return <a className={props.className}>MyLink</a>;
+}
+```
+
+
 ## Scoped CSS Selectors
 
 The styling of the icon is bit off though. Lets fix that
