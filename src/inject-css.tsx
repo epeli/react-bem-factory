@@ -30,14 +30,6 @@ function productionInject(id: string, css: string) {
     });
 }
 
-let isHotReloading = false;
-
-if (module && module.hot) {
-    module.hot.addStatusHandler((status: string) => {
-        isHotReloading = status !== "idle";
-    });
-}
-
 /**
  * In development use slower injection method that allows source maps and hot
  * reload
@@ -55,7 +47,7 @@ function devInject(id: string, css: string) {
     if (existing) {
         // The css content check works only when source maps are disabled
         // because when the module updates so will the source map update too
-        if (isHotReloading && existing.innerHTML.trim() !== css) {
+        if (existing.innerHTML.trim() !== css) {
             existing.innerHTML = css;
             existing.dataset.ver = String(Number(existing.dataset.ver) + 1);
         }
