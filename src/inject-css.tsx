@@ -30,25 +30,39 @@ function productionInject(id: string, css: string) {
     });
 }
 
+function removeSourceMapLine(css: string) {
+    return css
+        .trim()
+        .split("\n")
+        .filter(line => {
+            // Starts with: /*# sourceMappingURL
+            return !/^[\/\*\# ]*sourceMappingURL=/.test(line);
+        })
+        .join("\n");
+}
+
 /**
  * In development use slower injection method that allows source maps and hot
  * reload
  */
-function devInject(id: string, css: string) {
-    css = css
-        .trim()
-        .split(DELIMETER)
-        .join("\n");
+function devInject(id: string, css: string, sourceMap: string) {
+    const cssWithMapping =
+        css +
+        "\n" +
+        sourceMap
+            .trim()
+            .split(DELIMETER)
+            .join("\n");
 
     const existing = document.querySelector<HTMLStyleElement>(
         `style[data-bemed=${id}]`,
     );
 
     if (existing) {
-        // The css content check works only when source maps are disabled
-        // because when the module updates so will the source map update too
-        if (existing.innerHTML.trim() !== css) {
-            existing.innerHTML = css;
+        const existingCSS = removeSourceMapLine(existing.innerHTML);
+        if (existingCSS !== css) {
+            console.log("[bemed live update] " + id);
+            existing.innerHTML = cssWithMapping;
             existing.dataset.ver = String(Number(existing.dataset.ver) + 1);
         }
     } else {
@@ -66,7 +80,7 @@ export function injectGlobal(id: string, css: string, sourceMap: string) {
     }
 
     if (process.env.NODE_ENV !== "production") {
-        return devInject(id, css + "\n" + sourceMap);
+        return devInject(id, css, sourceMap);
     }
 
     return productionInject(id, css);
