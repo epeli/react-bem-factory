@@ -1,6 +1,6 @@
 {
     "name": "react-bemed",
-    "version": "0.7.4",
+    "version": "0.7.5",
     "description": "React Component Primitives for Humans inspired by the Block Element Modifier convention",
     "author": {
         "name": "Esa-Matti Suuronen"
