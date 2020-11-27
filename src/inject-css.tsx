@@ -23,7 +23,7 @@ if (isBrowser()) {
  * can insert only one rule at the time
  */
 function productionInject(id: string, css: string) {
-    css.split(DELIMETER).forEach(rule => {
+    css.split(DELIMETER).forEach((rule) => {
         if (sheet) {
             sheet.insert(rule);
         }
@@ -34,7 +34,7 @@ function removeSourceMapLine(css: string) {
     return css
         .trim()
         .split("\n")
-        .filter(line => {
+        .filter((line) => {
             // Starts with: /*# sourceMappingURL
             return !/^[\/\*\# ]*sourceMappingURL=/.test(line);
         })
@@ -47,12 +47,7 @@ function removeSourceMapLine(css: string) {
  */
 function devInject(id: string, css: string, sourceMap: string) {
     const cssWithMapping =
-        css +
-        "\n" +
-        sourceMap
-            .trim()
-            .split(DELIMETER)
-            .join("\n");
+        css + "\n" + sourceMap.trim().split(DELIMETER).join("\n");
 
     const existing = document.querySelector<HTMLStyleElement>(
         `style[data-bemed=${id}]`,

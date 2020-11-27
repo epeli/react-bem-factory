@@ -154,8 +154,12 @@ function createRenderer(cssCompiler: CSSCompiler) {
                 React.Fragment,
                 null,
                 React.createElement(DisappearingStyle, {
-                    key: compiledChunks.map(chunk => chunk.className).join(","),
-                    children: compiledChunks.map(chunk => chunk.css).join("\n"),
+                    key: compiledChunks
+                        .map((chunk) => chunk.className)
+                        .join(","),
+                    children: compiledChunks
+                        .map((chunk) => chunk.css)
+                        .join("\n"),
                 }),
                 reactElement,
             ) as any;
@@ -214,7 +218,7 @@ export function createCSSTag(providedCompiler: CSSCompiler) {
         } else {
             const [literals, ...placeholders] = args as [
                 TemplateStringsArray,
-                Placeholders[]
+                Placeholders[],
             ];
 
             for (let i = 0; i < placeholders.length; i++) {

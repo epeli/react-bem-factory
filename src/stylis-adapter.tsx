@@ -48,7 +48,7 @@ export function createSelectorsPlugin() {
                         nestingSelectors,
                         `${currentParent}__${elementSelector}`,
                     ]
-                        .map(s => (s || "").trim())
+                        .map((s) => (s || "").trim())
                         .filter(Boolean)
                         .join(" ")
                         .trim();
@@ -125,10 +125,12 @@ export function adaptStylis(stylis: typeof Stylis): CSSCompiler {
     const rules: string[] = [];
 
     stylis.use(createSelectorsPlugin() as any);
-    stylis.use(createInsertRule(rule => {
-        // Remove extranous delimeters
-        rules.push(rule.split(DELIMETER).join(""));
-    }) as any);
+    stylis.use(
+        createInsertRule((rule) => {
+            // Remove extranous delimeters
+            rules.push(rule.split(DELIMETER).join(""));
+        }) as any,
+    );
 
     return (selector: string, css: string) => {
         rules.splice(0);

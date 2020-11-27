@@ -228,7 +228,7 @@ function createReactBEMComponent<
             .concat(opts.staticClassNames)
             .concat(opts.globalStaticClassNames)
             .concat(runtimeClassNames)
-            .map(className => {
+            .map((className) => {
                 if (typeof className === "string") {
                     return className;
                 }
@@ -291,7 +291,7 @@ function createReactBEMComponent<
             // css-in-js does not get imported unless it is actually used
             return usedCSS[0].bemCSS.render(
                 reactElement,
-                usedCSS.map(css => ({
+                usedCSS.map((css) => ({
                     className: css.className,
                     cssString: css.bemCSS.cssString,
                     sourceMap: css.bemCSS.sourceMap,
@@ -302,7 +302,7 @@ function createReactBEMComponent<
         return reactElement;
     });
 
-    return (BEMComponent as any) as ((props: FinalProps) => any);
+    return (BEMComponent as any) as (props: FinalProps) => any;
 }
 
 type ModPrimitives = string | true | InlineCSS;
@@ -318,14 +318,14 @@ type ModProps<T extends undefined | Record<string, AllModTypeds>> = {
         ? boolean
         : T[P] extends undefined
         ? never
-        : keyof T[P]
+        : keyof T[P];
 };
 
 type MethodObject = { [key: string]: (...args: any[]) => any };
 
 /** flatten functions in an object to their return values */
 type FlattenToReturnTypes<T extends MethodObject> = {
-    [K in keyof T]: ReturnType<T[K]>
+    [K in keyof T]: ReturnType<T[K]>;
 };
 
 export interface BemedOptions {
