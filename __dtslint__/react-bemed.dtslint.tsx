@@ -71,14 +71,12 @@ test("defaults to div", () => {
 test("mods are true", () => {
     const createBlock = createBemed();
 
-    const Block = createBlock(
-        // $ExpectError
-        {
-            mods: {
-                foo: false,
-            },
+    const Block = createBlock({
+        mods: {
+            // $ExpectError
+            foo: false,
         },
-    )("test-block");
+    })("test-block");
 });
 
 test("can create inline elements", () => {
@@ -355,10 +353,10 @@ test("default prop types", () => {
         },
     })("Block");
 
-    // $ExpectError
     bemed({
         as: MyComp,
         defaultProps: {
+            // $ExpectError
             foo: 1,
         },
     })("Block");
