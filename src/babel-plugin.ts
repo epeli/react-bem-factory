@@ -113,13 +113,13 @@ export default function bemedBabelPlugin(
     /**
      * Local name of the css import from react-bemed/css if any
      */
-    let name: string | null = null;
+    let cssImportName: string | null = null;
 
     return {
         visitor: {
             Program() {
                 // Reset import name state when entering a new file
-                name = null;
+                cssImportName = null;
             },
 
             ImportDeclaration(path, state) {
@@ -136,7 +136,7 @@ export default function bemedBabelPlugin(
                         continue;
                     }
                     if (s.imported.name === "css") {
-                        name = s.local.name;
+                        cssImportName = s.local.name;
                     }
                 }
 
@@ -146,11 +146,11 @@ export default function bemedBabelPlugin(
             },
 
             TaggedTemplateExpression(path, state) {
-                if (!name) {
+                if (!cssImportName) {
                     return;
                 }
 
-                if (!t.isIdentifier(path.node.tag, { name })) {
+                if (!t.isIdentifier(path.node.tag, { name: cssImportName })) {
                     return;
                 }
 
@@ -198,7 +198,7 @@ export default function bemedBabelPlugin(
                 const sourceMapStringLiteral = t.stringLiteral(sourceMap);
 
                 path.replaceWith(
-                    t.callExpression(t.identifier(name), [
+                    t.callExpression(t.identifier(cssImportName), [
                         arrayJoin,
                         sourceMapStringLiteral,
                     ]),
