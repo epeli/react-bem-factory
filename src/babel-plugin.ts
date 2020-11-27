@@ -1,4 +1,5 @@
 import * as BabelTypes from "@babel/types";
+import { basename } from "path";
 import { Visitor, NodePath } from "@babel/traverse";
 import { SourceMapGenerator } from "source-map";
 import convert from "convert-source-map";
@@ -30,6 +31,7 @@ export interface BemedBabelPluginOptions {
 interface VisitorState {
     opts?: BemedBabelPluginOptions;
     file: BabelFile;
+    filename?: string;
 }
 
 export interface Babel {
@@ -114,12 +116,14 @@ export default function bemedBabelPlugin(
      * Local name of the css import from react-bemed/css if any
      */
     let cssImportName: string | null = null;
+    let bemedImportName: string | null = null;
 
     return {
         visitor: {
             Program() {
                 // Reset import name state when entering a new file
                 cssImportName = null;
+                bemedImportName = null;
             },
 
             ImportDeclaration(path, state) {
@@ -127,22 +131,78 @@ export default function bemedBabelPlugin(
 
                 const target = opts.target || "react-bemed/css";
 
-                if (path.node.source.value !== target) {
+                if (path.node.source.value === "react-bemed/css") {
+                    for (const s of path.node.specifiers) {
+                        if (!t.isImportSpecifier(s)) {
+                            continue;
+                        }
+
+                        if (s.imported.name === "css") {
+                            cssImportName = s.local.name;
+                        }
+                    }
+
+                    if (opts.precompile) {
+                        path.node.source.value = "react-bemed/css-precompiled";
+                    }
+                }
+
+                if (path.node.source.value === "react-bemed") {
+                    for (const s of path.node.specifiers) {
+                        if (!t.isImportSpecifier(s)) {
+                            continue;
+                        }
+
+                        if (s.imported.name === "bemed") {
+                            bemedImportName = s.local.name;
+                        }
+                    }
+                }
+            },
+
+            CallExpression(path, state) {
+                if (bemedImportName === null) {
                     return;
                 }
 
-                for (const s of path.node.specifiers) {
-                    if (!t.isImportSpecifier(s)) {
-                        continue;
-                    }
-                    if (s.imported.name === "css") {
-                        cssImportName = s.local.name;
-                    }
+                if (!state.filename) {
+                    return;
                 }
 
-                if (opts.precompile) {
-                    path.node.source.value = "react-bemed/css-precompiled";
+                if (path.node.callee.type !== "Identifier") {
+                    return;
                 }
+
+                if (path.node.callee.name !== bemedImportName) {
+                    return;
+                }
+
+                if (path.parentPath.node.type !== "CallExpression") {
+                    return;
+                }
+
+                if (path.parentPath.parent.type !== "VariableDeclarator") {
+                    return;
+                }
+
+                if (path.parentPath.parent.id.type !== "Identifier") {
+                    return;
+                }
+
+                if (path.parentPath.node.arguments[0]) {
+                    return;
+                }
+
+                const name = path.parentPath.parent.id.name;
+                const filename = basename(state.filename)
+                    // Remove extension
+                    .replace(/\.[^/.]+$/, "")
+                    // remove weird characters
+                    .replace(/[^a-zA-Z0-9\-]+/, "-");
+
+                path.parentPath.node.arguments[0] = t.stringLiteral(
+                    `${filename}--${name}`,
+                );
             },
 
             TaggedTemplateExpression(path, state) {
@@ -169,7 +229,7 @@ export default function bemedBabelPlugin(
                     ? getSourceMap(path.node.loc.start, state.file)
                     : "";
 
-                let cssArray = path.node.quasi.quasis.map(q => {
+                let cssArray = path.node.quasi.quasis.map((q) => {
                     return q.value.raw;
                 });
 

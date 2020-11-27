@@ -291,3 +291,41 @@ test("separates rules with /*|*/ with media queries", () => {
         ),
     );
 });
+
+test("adds name automatically", () => {
+    const code = dedent`
+    import { bemed } from "react-bemed";
+    const Container = bemed({})();
+    `;
+
+    const res = runPlugin(code, {
+        precompile: true,
+        sourceMap: true,
+    });
+
+    expect(cleanSourceMapComment(res.code)).toEqual(
+        lines(
+            'import { bemed } from "react-bemed";',
+            'const Container = bemed({})("test--Container");',
+        ),
+    );
+});
+
+test("does not touch existing name", () => {
+    const code = dedent`
+    import { bemed } from "react-bemed";
+    const Container = bemed({})("existing-name");
+    `;
+
+    const res = runPlugin(code, {
+        precompile: true,
+        sourceMap: true,
+    });
+
+    expect(cleanSourceMapComment(res.code)).toEqual(
+        lines(
+            'import { bemed } from "react-bemed";',
+            'const Container = bemed({})("existing-name");',
+        ),
+    );
+});
