@@ -33,31 +33,31 @@
         "css.d.ts"
     ],
     "devDependencies": {
-        "@babel/core": "^7.4.5",
+        "@babel/core": "^7.12.9",
         "@epeli/webpack-config": "^0.10.1",
         "@types/convert-source-map": "^1.5.1",
         "@types/dedent": "^0.7.0",
-        "@types/jest": "^24.0.13",
-        "@types/node": "^12.0.3",
-        "@types/react": "^16.8.19",
-        "@types/react-dom": "^16.8.4",
+        "@types/jest": "^26.0.15",
+        "@types/node": "^14.14.10",
+        "@types/react": "^17.0.0",
+        "@types/react-dom": "^17.0.0",
         "dedent": "^0.7.0",
         "dtslint": "^0.7.7",
-        "jest": "^24.8.0",
-        "prettier": "^1.17.1",
-        "react": "^16.8.6",
-        "react-dom": "^16.8.6",
+        "jest": "^26.6.3",
+        "prettier": "^2.2.0",
+        "react": "^17.0.1",
+        "react-dom": "^17.0.1",
         "react-testing-library": "^7.0.1",
-        "ts-jest": "^24.0.2",
-        "typescript": "~3.5.1",
-        "vlq": "^1.0.0"
+        "ts-jest": "^26.4.4",
+        "typescript": "~4.1.2",
+        "vlq": "^1.0.1"
     },
     "peerDependencies": {
-        "react": "^16.8.6"
+        "react": "^17.0.1"
     },
     "dependencies": {
         "@emotion/sheet": "^0.9.2",
-        "convert-source-map": "^1.6.0",
+        "convert-source-map": "^1.7.0",
         "source-map": "^0.7.3",
         "stylis": "^3.5.4"
     }
