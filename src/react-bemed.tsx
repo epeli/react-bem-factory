@@ -388,7 +388,12 @@ export function createBemed(bemedOptions: BemedOptions | undefined = {}) {
               }
             | undefined = {},
     ) {
-        return (blockName: string, isElement?: boolean) => {
+        return (blockName?: string, isElement?: boolean) => {
+            if (!blockName) {
+                throw new Error(
+                    "You must pass class name to bemed() or use the babel plugin to automatically generate one",
+                );
+            }
             const separators = Object.assign(
                 {
                     modifier: "--",
