@@ -32,6 +32,7 @@ function getCSS(Component: any) {
 
 test("can use custom selectors to target child elements", () => {
     const Block = bemed({
+        name: "TestBlock",
         css: css`
             :--Foo {
                 color: red;
@@ -45,7 +46,7 @@ test("can use custom selectors to target child elements", () => {
                 `,
             }),
         },
-    })("TestBlock");
+    });
 
     expect(getCSS(Block)).toEqual(
         ".TestBlock .TestBlock__Foo{color:red;border-radius:10px;}",
@@ -54,6 +55,7 @@ test("can use custom selectors to target child elements", () => {
 
 test("can use multiple element selectors", () => {
     const Block = bemed({
+        name: "TestBlock",
         css: css`
             :--Foo {
                 border-radius: 10px;
@@ -74,7 +76,7 @@ test("can use multiple element selectors", () => {
                 `,
             }),
         },
-    })("TestBlock");
+    });
 
     expect(getCSS(Block)).toEqual(
         ".TestBlock .TestBlock__Foo{border-radius:10px;}/*|*/.TestBlock .TestBlock__Bar{border-radius:20px;}",
@@ -83,6 +85,7 @@ test("can use multiple element selectors", () => {
 
 test("can use multiple element selectors for single block", () => {
     const Block = bemed({
+        name: "TestBlock",
         css: css`
             :--Foo,
             :--Bar {
@@ -101,7 +104,7 @@ test("can use multiple element selectors for single block", () => {
                 `,
             }),
         },
-    })("TestBlock");
+    });
 
     expect(getCSS(Block)).toEqual(
         ".TestBlock .TestBlock__Foo,.TestBlock .TestBlock__Bar{border-radius:10px;}",
@@ -110,6 +113,7 @@ test("can use multiple element selectors for single block", () => {
 
 test("can use custom selectors with other selectors", () => {
     const Block = bemed({
+        name: "TestBlock",
         css: css`
             .other :--Foo {
                 color: red;
@@ -122,7 +126,7 @@ test("can use custom selectors with other selectors", () => {
                 `,
             }),
         },
-    })("TestBlock");
+    });
 
     expect(getCSS(Block)).toEqual(
         ".TestBlock .other .TestBlock__Foo{color:red;}",
@@ -131,6 +135,7 @@ test("can use custom selectors with other selectors", () => {
 
 test("can use custom selectors with custom nesting", () => {
     const Block = bemed({
+        name: "TestBlock",
         css: css`
             .custom-nesting {
                 :--Foo {
@@ -145,7 +150,7 @@ test("can use custom selectors with custom nesting", () => {
                 `,
             }),
         },
-    })("TestBlock");
+    });
 
     expect(getCSS(Block)).toEqual(
         ".TestBlock .custom-nesting .TestBlock__Foo{color:red;}",
@@ -154,6 +159,7 @@ test("can use custom selectors with custom nesting", () => {
 
 test("can use pseudo classes with custom selectors", () => {
     const Block = bemed({
+        name: "TestBlock",
         css: css`
             :--Foo:hover {
                 color: red;
@@ -166,7 +172,7 @@ test("can use pseudo classes with custom selectors", () => {
                 `,
             }),
         },
-    })("TestBlock");
+    });
 
     expect(getCSS(Block)).toEqual(
         ".TestBlock .TestBlock__Foo:hover{color:red;}",
@@ -175,6 +181,7 @@ test("can use pseudo classes with custom selectors", () => {
 
 test("can use media queries with custom selectors", () => {
     const Block = bemed({
+        name: "TestBlock",
         css: css`
             :--Foo {
                 @media (max-width: 600px) {
@@ -189,7 +196,7 @@ test("can use media queries with custom selectors", () => {
                 `,
             }),
         },
-    })("TestBlock");
+    });
 
     expect(getCSS(Block)).toEqual(
         "@media (max-width:600px){.TestBlock .TestBlock__Foo{color:red;}}",
