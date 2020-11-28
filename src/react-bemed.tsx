@@ -356,7 +356,7 @@ export function createBemed(bemedOptions: BemedOptions | undefined = {}) {
     }
 
     /**
-     * Define BEM Block and Elements
+     * Define BEM Block and Elements. The bemed() function
      */
     function defineBEMBlock<
         Elements extends {
