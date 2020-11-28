@@ -6,6 +6,7 @@ const bemed = createBemed();
 
 // Create a "BEMed Block Component"
 const Button = bemed({
+    name: "Button",
     as: "button",
     css: css`
         color: red;
@@ -22,7 +23,7 @@ const Button = bemed({
             },
         }),
     },
-})("Button");
+});
 
 // Usage of BEMed Components is idiomatic React
 // without BEM classes mutilating the readability

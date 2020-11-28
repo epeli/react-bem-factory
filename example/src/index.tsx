@@ -6,10 +6,11 @@ import { css } from "../../src/css";
 const bemed = createBemed();
 
 const Block = bemed({
+    name: "Hellolol",
     css: css`
         color: green;
     `,
-})("Hellolol");
+});
 
 function App() {
     return <Block>hello</Block>;
