@@ -12,7 +12,9 @@ afterEach(() => {
 test("single class name", () => {
     const bemed = createBemed();
 
-    const Block = bemed()("test-block");
+    const Block = bemed({
+        name: "test-block",
+    });
 
     const rtl = render(<Block>test</Block>);
     const el = rtl.getByText("test");
@@ -24,10 +26,11 @@ test("has class property", () => {
     const bemed = createBemed({ prefix: "ns-" });
 
     const Block = bemed({
+        name: "TestBlock",
         elements: {
             Foo: bemed(),
         },
-    })("TestBlock");
+    });
 
     expect(Block.className).toBe("ns-TestBlock");
     expect(Block.Foo.className).toBe("ns-TestBlock__Foo");
@@ -36,7 +39,9 @@ test("has class property", () => {
 test("single class name with prefix", () => {
     const bemed = createBemed({ prefix: "prefix-" });
 
-    const Block = bemed()("test-block");
+    const Block = bemed({
+        name: "test-block",
+    });
 
     const rtl = render(<Block>test</Block>);
     const el = rtl.getByText("test");
@@ -48,10 +53,11 @@ test("can use block mods", () => {
     const bemed = createBemed({ prefix: "prefix-" });
 
     const Block = bemed({
+        name: "test-block",
         mods: {
             ding: true,
         },
-    })("test-block");
+    });
 
     const rtl = render(<Block ding>test</Block>);
     const el = rtl.getByText("test");
@@ -63,13 +69,14 @@ test("can use enum mods with booleans", () => {
     const bemed = createBemed();
 
     const Block = bemed({
+        name: "Block",
         mods: {
             things: {
                 foo: true,
                 bar: true,
             },
         },
-    })("Block");
+    });
 
     const rtl = render(
         <div>
@@ -85,13 +92,14 @@ test("can use union block mods with strings", () => {
     const bemed = createBemed();
 
     const Block = bemed({
+        name: "Block",
         mods: {
             things: {
                 foo: "my-foo",
                 bar: "my-bar",
             },
         },
-    })("Block");
+    });
 
     const rtl = render(
         <div>
@@ -107,6 +115,7 @@ test("can use multiple submods at once", () => {
     const bemed = createBemed();
 
     const Block = bemed({
+        name: "Block",
         mods: {
             things1: {
                 foo: true,
@@ -117,7 +126,7 @@ test("can use multiple submods at once", () => {
                 bar: "my-bar",
             },
         },
-    })("Block");
+    });
 
     const rtl = render(
         <div>
@@ -135,10 +144,11 @@ test("block mods can change", () => {
     const bemed = createBemed({ prefix: "prefix-" });
 
     const Block = bemed({
+        name: "test-block",
         mods: {
             ding: true,
         },
-    })("test-block");
+    });
 
     function App() {
         const [tog, setToggle] = React.useState(false);
@@ -146,7 +156,7 @@ test("block mods can change", () => {
             <div>
                 <button
                     onClick={() => {
-                        setToggle(t => !t);
+                        setToggle((t) => !t);
                     }}
                 >
                     button
@@ -171,10 +181,11 @@ test("mods are optional", () => {
     const bemed = createBemed({ prefix: "prefix-" });
 
     const Block = bemed({
+        name: "test-block",
         mods: {
             ding: true,
         },
-    })("test-block");
+    });
 
     const rtl = render(<Block>test</Block>);
     const el = rtl.getByText("test");
@@ -186,6 +197,7 @@ test("can create block elements", () => {
     const bemed = createBemed({ prefix: "prefix-" });
 
     const Block = bemed({
+        name: "TestBlock",
         mods: {
             ding: true,
         },
@@ -194,7 +206,7 @@ test("can create block elements", () => {
                 as: "div",
             }),
         },
-    })("TestBlock");
+    });
 
     const rtl = render(<Block.TestElement>test</Block.TestElement>);
     const el = rtl.getByText("test");
@@ -206,6 +218,7 @@ test("block elements can have mods too", () => {
     const bemed = createBemed({ prefix: "prefix-" });
 
     const Block = bemed({
+        name: "TestBlock",
         mods: {
             ding: true,
         },
@@ -217,7 +230,7 @@ test("block elements can have mods too", () => {
                 },
             }),
         },
-    })("TestBlock");
+    });
 
     const rtl = render(<Block.TestElement dong>test</Block.TestElement>);
     const el = rtl.getByText("test");
@@ -231,6 +244,7 @@ test("block elements can have multiple mods", () => {
     const bemed = createBemed({ prefix: "prefix-" });
 
     const Block = bemed({
+        name: "TestBlock",
         mods: {
             ding: true,
         },
@@ -243,7 +257,7 @@ test("block elements can have multiple mods", () => {
                 },
             }),
         },
-    })("TestBlock");
+    });
 
     const rtl = render(
         <Block.TestElement dong dong2>
@@ -260,7 +274,9 @@ test("block elements can have multiple mods", () => {
 test("passes other props through", () => {
     const bemed = createBemed();
 
-    const Block = bemed()("test-block");
+    const Block = bemed({
+        name: "test-block",
+    });
 
     const rtl = render(<Block title="a title">test</Block>);
     const el = rtl.getByText("test");
@@ -272,10 +288,11 @@ test("passes other props through when using mods", () => {
     const bemed = createBemed();
 
     const Block = bemed({
+        name: "test-block",
         mods: {
             ding: true,
         },
-    })("test-block");
+    });
 
     const rtl = render(
         <Block ding title="a title">
@@ -293,8 +310,9 @@ test("can use custom elements", () => {
     const bemed = createBemed();
 
     const Block = bemed({
+        name: "test-block",
         as: "input",
-    })("test-block");
+    });
 
     const rtl = render(<Block type="submit" role="test" />);
     const el = rtl.getByRole("test");
@@ -307,10 +325,11 @@ test("can pass custom runtime class names", () => {
     const bemed = createBemed();
 
     const Block = bemed({
+        name: "TestBlock",
         elements: {
             Foo: bemed(),
         },
-    })("TestBlock");
+    });
 
     const rtl = render(
         <div>
@@ -330,11 +349,13 @@ test("forwards refs", () => {
     expect.assertions(1);
     const bemed = createBemed();
 
-    const Block = bemed()("test-block");
+    const Block = bemed({
+        name: "test-block",
+    });
 
     render(
         <Block
-            ref={el => {
+            ref={(el) => {
                 if (el) {
                     expect(el.tagName).toBe("DIV");
                 }
@@ -351,7 +372,9 @@ test("can use extra class names from the factory", () => {
         className: "bar",
     });
 
-    const Block = bemed()("TestBlock");
+    const Block = bemed({
+        name: "TestBlock",
+    });
 
     const rtl = render(<Block>test</Block>);
     const el = rtl.getByText("test");
@@ -365,7 +388,7 @@ test("can use multiple extra class names from the factory", () => {
         className: "ding dong",
     });
 
-    const Block = bemed()("TestBlock");
+    const Block = bemed({ name: "TestBlock" });
 
     const rtl = render(<Block>test</Block>);
     const el = rtl.getByText("test");
@@ -377,11 +400,12 @@ test("can use custom mod class names with block", () => {
     const bemed = createBemed({ prefix: "prefix-" });
 
     const Block = bemed({
+        name: "TestBlock",
         mods: {
             custom: "custommod",
             normal: true,
         },
-    })("TestBlock");
+    });
 
     const rtl = render(
         <Block custom normal>
@@ -399,6 +423,7 @@ test("can use custom mod class names with element", () => {
     const bemed = createBemed({ prefix: "prefix-" });
 
     const Block = bemed({
+        name: "TestBlock",
         elements: {
             TestElement: bemed({
                 as: "div",
@@ -407,7 +432,7 @@ test("can use custom mod class names with element", () => {
                 },
             }),
         },
-    })("TestBlock");
+    });
 
     const rtl = render(<Block.TestElement dong>test</Block.TestElement>);
     const el = rtl.getByText("test");
@@ -419,8 +444,9 @@ test("blocks can add custom class names", () => {
     const bemed = createBemed({ prefix: "ns-" });
 
     const Block = bemed({
-        className: " custom",
-    })("TestBlock");
+        name: "TestBlock",
+        className: "custom",
+    });
 
     const rtl = render(<Block>test</Block>);
     const el = rtl.getByText("test");
@@ -432,11 +458,12 @@ test("custom class name in a block don't leak to elements", () => {
     const bemed = createBemed({ prefix: "ns-" });
 
     const Block = bemed({
+        name: "test-block",
         className: "custom",
         elements: {
             Elm: bemed({ as: "div" }),
         },
-    })("test-block");
+    });
 
     const rtl = render(<Block.Elm>test</Block.Elm>);
     const el = rtl.getByText("test");
@@ -448,6 +475,7 @@ test("elements can add custom class names too", () => {
     const bemed = createBemed({ prefix: "ns-" });
 
     const Block = bemed({
+        name: "TestBlock",
         className: "block-custom",
         elements: {
             Elm: bemed({
@@ -455,7 +483,7 @@ test("elements can add custom class names too", () => {
                 className: "el-custom",
             }),
         },
-    })("TestBlock");
+    });
 
     const rtl = render(<Block.Elm>test</Block.Elm>);
     const el = rtl.getByText("test");
@@ -473,6 +501,7 @@ test("can use custom separators", () => {
     });
 
     const Block = bemed({
+        name: "TestBlock",
         mods: {
             blockmod: true,
         },
@@ -485,7 +514,7 @@ test("can use custom separators", () => {
                 },
             }),
         },
-    })("TestBlock");
+    });
 
     const rtl = render(
         <div>
@@ -509,13 +538,14 @@ test("duplicate classnames are removed", () => {
     });
 
     const Block = bemed({
+        name: "TestBlock",
         className: "dup",
         elements: {
             Foo: bemed({
                 className: "dup",
             }),
         },
-    })("TestBlock");
+    });
 
     const rtl = render(
         <div>
@@ -547,11 +577,12 @@ test("can use function components as the elements", () => {
     }
 
     const Block = bemed({
+        name: "Block",
         as: MyComp,
         mods: {
             bar: true,
         },
-    })("Block");
+    });
 
     const rtl = render(
         <div>
@@ -571,18 +602,19 @@ test("can use function components as the elements", () => {
 test("server render allows duplicate class names", () => {
     process.env.TEST_ENV = "node";
     const bemed = createBemed();
-    bemed()("Foo");
-    bemed()("Foo");
+    bemed({ name: "Foo" });
+    bemed({ name: "Foo" });
 });
 
 test("can set default props", () => {
     const bemed = createBemed();
 
     const Block = bemed({
+        name: "TestBlock",
         defaultProps: {
             title: "default title",
         },
-    })("TestBlock");
+    });
 
     const rtl = render(<Block>test</Block>);
     const el = rtl.getByText("test");
@@ -594,10 +626,11 @@ test("default props can be overridden", () => {
     const bemed = createBemed();
 
     const Block = bemed({
+        name: "TestBlock",
         defaultProps: {
             title: "default title",
         },
-    })("TestBlock");
+    });
 
     const rtl = render(<Block title="override">test</Block>);
     const el = rtl.getByText("test");
@@ -616,18 +649,20 @@ test("does not pass mod props to the underlying component", () => {
     const bemed = createBemed();
 
     const Base = bemed({
+        name: "Base",
         as: Target,
         mods: {
             foo: true,
         },
-    })("Base");
+    });
 
     const Block = bemed({
+        name: "TestBlock",
         as: Base,
         mods: {
             bar: true,
         },
-    })("TestBlock");
+    });
 
     render(<Block foo bar baz="zam" />);
 

@@ -26,12 +26,17 @@ type AnyReactComponent =
     | React.JSXElementConstructor<any>;
 
 export interface BEMComponentProperties {
+    blockName: string;
     parent?: BemedFC;
     bemed: true;
     className: string;
     displayName: string;
     css?: BEMCSS;
     mods?: Mods;
+    asElement(
+        elementName: string,
+        blockName: string,
+    ): (props: any) => React.ReactNode;
 }
 
 export type BemedFC = React.FC & BEMComponentProperties;
@@ -321,13 +326,6 @@ type ModProps<T extends undefined | Record<string, AllModTypeds>> = {
         : keyof T[P];
 };
 
-type MethodObject = { [key: string]: (...args: any[]) => any };
-
-/** flatten functions in an object to their return values */
-type FlattenToReturnTypes<T extends MethodObject> = {
-    [K in keyof T]: ReturnType<T[K]>;
-};
-
 export interface BemedOptions {
     className?: ClassNamesTypes | ClassNamesTypes[];
     prefix?: string;
@@ -340,30 +338,27 @@ export interface BemedOptions {
 /**
  * Create BEMBlock component type
  */
-type BEMBlock<
-    Block,
-    Elements extends { [key: string]: (props: any) => React.ReactNode }
-> = Block & BEMComponentProperties & FlattenToReturnTypes<Elements>;
+type BEMBlock<Block, Elements extends { [key: string]: ElementBlock }> = Block &
+    BEMComponentProperties &
+    Elements;
+
+interface ElementBlock {
+    (props: any): React.ReactNode;
+    asElement(
+        elementName: string,
+        blockName: string,
+    ): (props: any) => React.ReactNode;
+}
 
 export function createBemed(bemedOptions: BemedOptions | undefined = {}) {
     const usedBlockNames: Record<string, true | undefined> = {};
-    let isHotReloading = false;
-
-    if (module && module.hot) {
-        module.hot.addStatusHandler((status: string) => {
-            isHotReloading = status !== "idle";
-        });
-    }
 
     /**
      * Define BEM Block and Elements. The bemed() function
      */
     function defineBEMBlock<
         Elements extends {
-            [key: string]: (
-                className: string,
-                isElement?: boolean,
-            ) => (props: any) => React.ReactNode;
+            [key: string]: ElementBlock;
         },
         BEMBlockDOMElement extends AnyReactComponent = "div",
         DefaultProps extends React.ComponentProps<BEMBlockDOMElement> = any,
@@ -379,6 +374,7 @@ export function createBemed(bemedOptions: BemedOptions | undefined = {}) {
     >(
         blockOptions:
             | {
+                  name?: string;
                   as?: BEMBlockDOMElement;
                   defaultProps?: DefaultProps;
                   mods?: BEMBlockMods;
@@ -388,52 +384,57 @@ export function createBemed(bemedOptions: BemedOptions | undefined = {}) {
               }
             | undefined = {},
     ) {
-        return (blockName?: string, isElement?: boolean) => {
-            if (!blockName) {
-                throw new Error(
-                    "You must pass class name to bemed() or use the babel plugin to automatically generate one",
-                );
-            }
-            const separators = Object.assign(
-                {
-                    modifier: "--",
-                    element: "__",
+        // if (!blockName) {
+        //     throw new Error(
+        //         "You must pass class name to bemed() or use the babel plugin to automatically generate one",
+        //     );
+        // }
+        const separators = Object.assign(
+            {
+                modifier: "--",
+                element: "__",
+            },
+            bemedOptions ? bemedOptions.separators : {},
+        );
+
+        const prefix =
+            typeof bemedOptions.prefix === "string" ? bemedOptions.prefix : "";
+
+        const blockName = blockOptions.name
+            ? prefix + blockOptions.name
+            : undefined;
+
+        // Ensure the type is BEMBlockDOMElement and not union with "div"
+        const comp: BEMBlockDOMElement = (blockOptions.as || "div") as any;
+
+        function init(name: string | undefined) {
+            const bemProperties: BEMComponentProperties = {
+                bemed: true,
+                blockName: name ?? "invalid",
+                displayName: `BEM(${name ?? "invalid"})`,
+                className: "",
+                css: blockOptions.css,
+                mods: blockOptions.mods,
+                asElement(elementName, parentBlockName) {
+                    const fullElementName =
+                        parentBlockName + separators.element + elementName;
+                    return init(fullElementName);
                 },
-                bemedOptions ? bemedOptions.separators : {},
-            );
+            };
 
-            let blockClassName = "";
-            const prefix =
-                typeof bemedOptions.prefix === "string"
-                    ? bemedOptions.prefix
-                    : "";
-
-            if (isElement) {
-                blockClassName = blockName;
-            } else {
-                blockClassName = prefix + blockName;
+            if (!name) {
+                const Null = () => {
+                    throw new Error(
+                        "This component has no name. Pass in name or use it as an element",
+                    );
+                };
+                Object.assign(Null, bemProperties);
+                return (Null as any) as BEMBlock<typeof Block, Elements>;
             }
-
-            const isCollision = usedBlockNames[blockClassName];
-
-            // We must skip the collision check when:
-            //  - Executing on the server. The memory is shared between requests
-            //    so multiple requests cause false positives
-            //  - When hot reload is active it by definition re-executes the same code
-            if (isCollision && !isHotReloading && isBrowser()) {
-                console.warn(
-                    `Class name collision with "${blockClassName}". Make sure you pass unique class names to the function returned by bemed()`,
-                );
-            }
-
-            usedBlockNames[blockClassName] = true;
-
-            // Ensure the type is BEMBlockDOMElement and not union with "div"
-            const comp: BEMBlockDOMElement = (blockOptions.as || "div") as any;
 
             const Block = createReactBEMComponent({
                 component: comp,
-                blockClassName,
+                blockClassName: name,
                 knownMods: blockOptions.mods,
                 staticClassNames: asArray(blockOptions.className),
                 globalStaticClassNames: asArray(bemedOptions.className),
@@ -442,38 +443,27 @@ export function createBemed(bemedOptions: BemedOptions | undefined = {}) {
                 css: blockOptions.css,
             });
 
-            const bemProperties: BEMComponentProperties = {
-                bemed: true,
-                displayName: `BEM(${blockClassName})`,
-                className: blockClassName,
-                css: blockOptions.css,
-                mods: blockOptions.mods,
-            };
-
             if (isBemedComponent(comp)) {
                 bemProperties.parent = comp;
             }
-
-            Object.assign(Block as any, bemProperties);
 
             const out: any = {};
 
             if (blockOptions.elements) {
                 for (const key in blockOptions.elements) {
                     const def = blockOptions.elements[key];
-                    out[key] = def(
-                        blockClassName + separators.element + key,
-                        true,
-                    );
+                    out[key] = def.asElement(key, name);
                 }
             }
 
-            const final = Object.assign(Block, out, {
-                className: blockClassName,
+            const final = Object.assign(Block, bemProperties, out, {
+                className: name,
             });
 
             return final as BEMBlock<typeof Block, Elements>;
-        };
+        }
+
+        return init(blockName);
     }
 
     return defineBEMBlock;
