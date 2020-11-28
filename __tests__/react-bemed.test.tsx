@@ -671,3 +671,36 @@ test("does not pass mod props to the underlying component", () => {
         className: "Base TestBlock Base--foo TestBlock--bar",
     });
 });
+
+test("can extend other bemed components", () => {
+    const bemed = createBemed();
+
+    const Base = bemed({
+        name: "Base",
+        defaultProps: {
+            title: "title from base",
+        },
+        mods: {
+            foo: true,
+        },
+    });
+
+    const Block = bemed({
+        name: "TestBlock",
+        as: Base,
+        mods: {
+            bar: true,
+        },
+    });
+
+    const rtl = render(
+        <Block foo bar>
+            test
+        </Block>,
+    );
+
+    const el = rtl.getByText("test");
+
+    expect(el.className).toBe("Base TestBlock Base--foo TestBlock--bar");
+    expect(el.title).toBe("title from base");
+});
