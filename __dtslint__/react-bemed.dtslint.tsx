@@ -12,10 +12,11 @@ test("does not allow bad types on block components", () => {
     assertNotAny(createBlock);
 
     const Block = createBlock({
+        name: "test-block",
         mods: {
             ding: true,
         },
-    })("test-block");
+    });
 
     // $ExpectError
     assertNotAny(Block);
@@ -28,11 +29,12 @@ test("does not allow bad types on block components", () => {
     const createBlock = createBemed();
 
     const Block = createBlock({
+        name: "test-block",
         as: "div",
         mods: {
             ding: true,
         },
-    })("test-block");
+    });
 
     console.log(
         // $ExpectError
@@ -44,11 +46,12 @@ test("can use custom els", () => {
     const createBlock = createBemed();
 
     const Block = createBlock({
+        name: "test-block",
         as: "video",
         mods: {
             ding: true,
         },
-    })("test-block");
+    });
 
     render(<Block playsInline>test</Block>);
 });
@@ -57,10 +60,11 @@ test("defaults to div", () => {
     const createBlock = createBemed();
 
     const Block = createBlock({
+        name: "test-block",
         mods: {
             ding: true,
         },
-    })("test-block");
+    });
 
     console.log(
         // $ExpectError
@@ -72,17 +76,19 @@ test("mods are true", () => {
     const createBlock = createBemed();
 
     const Block = createBlock({
+        name: "test-block",
         mods: {
             // $ExpectError
             foo: false,
         },
-    })("test-block");
+    });
 });
 
 test("can create inline elements", () => {
     const bemed = createBemed();
 
     const Block = bemed({
+        name: "test-block",
         mods: {
             bar: true,
         },
@@ -101,7 +107,7 @@ test("can create inline elements", () => {
                 },
             }),
         },
-    })("test-block");
+    });
 
     // $ExpectError
     render(<Block bar playsInline />);
@@ -129,6 +135,7 @@ test("inline elements default to divs", () => {
     const bemed = createBemed();
 
     const Block = bemed({
+        name: "test-block",
         mods: {
             bar: true,
         },
@@ -139,7 +146,7 @@ test("inline elements default to divs", () => {
                 },
             }),
         },
-    })("test-block");
+    });
 
     render(<Block.FooDiv ding />);
 
@@ -154,14 +161,16 @@ test("do not allow extra props", () => {
     const bemed = createBemed();
 
     bemed({
+        name: "test-block",
         // $ExpectError
         bad: 1,
         mods: {
             bar: true,
         },
-    })("test-block");
+    });
 
     bemed({
+        name: "test-block",
         mods: {
             bar: true,
         },
@@ -174,18 +183,19 @@ test("do not allow extra props", () => {
                 },
             },
         },
-    })("test-block");
+    });
 });
 
 test("can use other components as children", () => {
     const bemed = createBemed();
 
     const Block = bemed({
+        name: "test-block",
         elements: {
             Foo: bemed({ mods: { right: true } }),
             Bar: bemed(),
         },
-    })("test-block");
+    });
 
     render(
         <Block>
@@ -212,10 +222,11 @@ test("can use style attribute", () => {
     const bemed = createBemed();
 
     const Block = bemed({
+        name: "Block",
         elements: {
             Foo: bemed(),
         },
-    })("Block");
+    });
 
     render(<Block style={{ color: "red" }} />);
 
@@ -229,10 +240,11 @@ test("some other default attributes work too", () => {
     const bemed = createBemed();
 
     const Block = bemed({
+        name: "Block",
         elements: {
             Foo: bemed(),
         },
-    })("Block");
+    });
 
     render(<Block.Foo role="sdaf" />);
     render(<Block.Foo title="sdaf" />);
@@ -259,11 +271,12 @@ test("can use function components as the elements", () => {
     }
 
     const Block = bemed({
+        name: "Block",
         as: MyComp,
         mods: {
             bar: true,
         },
-    })("Block");
+    });
 
     render(<Block foo="sdf" bar />);
 
@@ -278,6 +291,7 @@ test("union mods", () => {
     const bemed = createBemed();
 
     const Block = bemed({
+        name: "Block",
         mods: {
             top: true,
             things: {
@@ -288,7 +302,7 @@ test("union mods", () => {
                 `,
             },
         },
-    })("Block");
+    });
 
     render(<Block />);
 
@@ -311,61 +325,69 @@ test("createClassName() as the class name", () => {
     );
 
     bemed({
+        name: "Block",
         className: FOO_CLASS,
-    })("Block");
+    });
 
     bemed({
+        name: "Block",
         className: [FOO_CLASS, "bar"],
-    })("Block");
+    });
 });
 
 test("default prop types", () => {
     const bemed = createBemed();
 
     bemed({
+        name: "Block",
         defaultProps: {
             title: "sdaf",
         },
-    })("Block");
+    });
 
     bemed({
+        name: "Block",
         as: "video",
         defaultProps: {
             playsInline: true,
         },
-    })("Block");
+    });
 
     bemed({
+        name: "Block",
         defaultProps: {
             // $ExpectError
             playsInline: true,
         },
-    })("Block");
+    });
 
     function MyComp(props: { foo: string }) {
         return <div>{props.foo}</div>;
     }
 
     bemed({
+        name: "Block",
         as: MyComp,
         defaultProps: {
             foo: "sdf",
         },
-    })("Block");
+    });
 
     bemed({
+        name: "Block",
         as: MyComp,
         defaultProps: {
             // $ExpectError
             foo: 1,
         },
-    })("Block");
+    });
 
     bemed({
+        name: "Block",
         as: MyComp,
         defaultProps: {
             // $ExpectError
             bad: 1,
         },
-    })("Block");
+    });
 });
