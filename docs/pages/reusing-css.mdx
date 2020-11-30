@@ -20,6 +20,7 @@ const rounded = `
 `;
 
 const ButtonList = bemed({
+    name: "ButtonList",
     css: css`
         flex-direction: column;
     `,
@@ -39,7 +40,7 @@ const ButtonList = bemed({
             `,
         }),
     },
-})("ButtonList");
+});
 ```
 
 It will not work with the Babel precompiler option and will duplicate styles
@@ -51,6 +52,7 @@ Slightly better way to do this is to use the scoped CSS selectors
 
 ```tsx{4,6}
 const ButtonList = bemed({
+name: "ButtonList",
     css: css`
         flex-direction: column;
         button {
@@ -60,7 +62,7 @@ const ButtonList = bemed({
     elements: {
         // ...
     },
-})("ButtonList");
+});
 ```
 
 But this is bit broad as it will match any buttons passed as the
@@ -104,6 +106,7 @@ Extensions][css-extensions] specification for child elements
 
 ```tsx{4,5}
 const ButtonList = bemed({
+name: "ButtonList",
     css: css`
         flex-direction: column;
         :--Save,
@@ -112,7 +115,7 @@ const ButtonList = bemed({
         }
     `,
     // ...
-})("ButtonList");
+});
 ```
 
 This will correspond with following CSS

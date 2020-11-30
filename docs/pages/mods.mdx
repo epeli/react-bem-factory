@@ -10,10 +10,11 @@ Most basic modifier is the boolean mod.
 
 ```tsx{3,3}
 const Badge = bemed({
+    name: "Badge",
     mods: {
         important: true,
     },
-})("Badge");
+});
 ```
 
 It just adds the `Badge--important` class when `important` is passed as the prop
@@ -30,10 +31,11 @@ When a string is passed to the mod definition
 
 ```tsx{3,3}
 const Badge = bemed({
+    name: "Badge",
     mods: {
         important: "really-important",
     },
-})("Badge");
+});
 ```
 
 It will be passed as is when the prop is added
@@ -53,12 +55,13 @@ used
 import { css } from "react-bemed/css";
 
 const Badge = bemed({
+    name: "Badge",
     mods: {
         important: css`
             box-shadow: 0px 0px 30px 10px purple;
         `,
     },
-})("Badge");
+});
 ```
 
 ## Enum Mods
@@ -67,6 +70,7 @@ Enum mods should be used when only one mod value makes sense at once
 
 ```tsx
 const Badge = bemed({
+    name: "Badge",
     mods: {
         prize: {
             gold: css`
@@ -80,7 +84,7 @@ const Badge = bemed({
             `,
         },
     },
-})("Badge");
+});
 ```
 
 ```tsx

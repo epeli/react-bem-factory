@@ -113,6 +113,7 @@ const Blk = bemed({
 
 const code1 = `
 const Link = bemed({
+  name: "TutorialLink",
   as: "a",
   css: css\`
     background-color: hotpink;
@@ -133,7 +134,7 @@ const Link = bemed({
       }
     }),
   },
-})("TutorialLink");
+});
 `;
 
 const code2 = `

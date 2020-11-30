@@ -39,7 +39,7 @@ Simplest possible component (or a "Block" in BEM terms) with BEMed is
 ```tsx
 import { bemed } from "react-bemed";
 
-const Button = bemed({})("MyButton");
+const Button = bemed({ name: "MyButton" });
 ```
 
 This just creates a `div` with a `MyButton` class
@@ -58,12 +58,13 @@ within the component definition
 import { css } from "react-bemed/css";
 
 const Button = bemed({
+    name: "MyButton",
     css: css`
         color: white;
         background-color: hotpink;
         padding: 10px;
     `,
-})("MyButton");
+});
 ```
 
 and now with
@@ -85,13 +86,14 @@ button. Lets make it into a real button
 
 ```tsx{2,2}
 const Button = bemed({
+    name: "MyButton",
     as: "button",
     css: css`
         color: white;
         background-color: hotpink;
         padding: 10px;
     `,
-})("MyButton");
+});
 ```
 
 ```tsx
@@ -144,6 +146,7 @@ This can be done by adding a default prop for it
 
 ```tsx{4,6}
 const Button = bemed({
+    name: "MyButton",
     as: "button",
     className: "reset-button",
     defaultProps: {
@@ -154,7 +157,7 @@ const Button = bemed({
         background-color: hotpink;
         padding: 10px;
     `,
-})("MyButton");
+});
 ```
 
 ```tsx
@@ -171,6 +174,7 @@ make the button look more important
 
 ```tsx{12,15}
 const Button = bemed({
+    name: "MyButton",
     as: "button",
     className: "reset-button",
     defaultProps: {
@@ -186,7 +190,7 @@ const Button = bemed({
             box-shadow: 0px 0px 30px 10px purple;
         `
     }
-})("MyButton");
+});
 ```
 
 We can apply this mod just by adding the `important` boolean prop
@@ -225,6 +229,7 @@ The `bemed()` function supports this convention with the `elements` property
 import { FaReact } from "react-icons/fa";
 
 const Button = bemed({
+    name: "MyButton",
     as: "button",
     className: "reset-button",
     defaultProps: {
@@ -245,7 +250,7 @@ const Button = bemed({
             as: FaReact,
         }),
     },
-})("MyButton");
+});
 ```
 
 These element components are not techincally any different from the
@@ -290,11 +295,10 @@ you need to do is to make sure it handles the `className` prop properly by
 passing it to the underlying component:
 
 ```tsx
-function MyLink(props: {className?: string}) {
-  return <a className={props.className}>MyLink</a>;
+function MyLink(props: { className?: string }) {
+    return <a className={props.className}>MyLink</a>;
 }
 ```
-
 
 ## Scoped CSS Selectors
 
@@ -302,6 +306,7 @@ The styling of the icon is bit off though. Lets fix that
 
 ```tsx{20,27}
 const Button = bemed({
+    name: "MyButton",
     as: "button",
     className: "reset-button",
     defaultProps: {
@@ -330,7 +335,7 @@ const Button = bemed({
             `,
         }),
     },
-})("MyButton");
+});
 ```
 
 We can target the `path` element inside the svg icon. This selector is scoped

@@ -56,10 +56,11 @@ Eg. code like this does will not work
 
 ```tsx{3,3}
 const Button = bemed({
+    name: "MyButton",
     css: css`
         margin-${MARGIN_DIRECTION}: 10px;
     `,
-})("MyButton");
+});
 ```
 
 because `margin-var(--BEMED): 10px` is not valid CSS.

@@ -26,6 +26,7 @@ So for example with BEM Block of
 
 ```tsx
 const MyButton = bemed({
+    name: "MyButton",
     as: "button",
     css: css`
         background-color: hotpink;
@@ -43,7 +44,7 @@ const MyButton = bemed({
             `,
         }),
     },
-})("MyButton");
+});
 ```
 
 and JSX
