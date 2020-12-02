@@ -177,32 +177,54 @@ export default function bemedBabelPlugin(
                     return;
                 }
 
-                if (path.parentPath.node.type !== "CallExpression") {
+                if (path.parentPath.node.type !== "VariableDeclarator") {
                     return;
                 }
 
-                if (path.parentPath.parent.type !== "VariableDeclarator") {
+                if (path.parentPath.node.id.type !== "Identifier") {
                     return;
                 }
 
-                if (path.parentPath.parent.id.type !== "Identifier") {
-                    return;
-                }
-
-                if (path.parentPath.node.arguments[0]) {
-                    return;
-                }
-
-                const name = path.parentPath.parent.id.name;
+                const name = path.parentPath.node.id.name;
                 const filename = basename(state.filename)
                     // Remove extension
                     .replace(/\.[^/.]+$/, "")
                     // remove weird characters
-                    .replace(/[^a-zA-Z0-9\-]+/, "-");
+                    .replace(/[^a-zA-Z0-9]+/g, "-");
 
-                path.parentPath.node.arguments[0] = t.stringLiteral(
-                    `${filename}--${name}`,
+                const fullName = `${filename}--${name}`;
+
+                const currentArg = path.node.arguments[0];
+
+                const nameProp = t.objectProperty(
+                    t.identifier("name"),
+                    t.stringLiteral(fullName),
                 );
+
+                if (!currentArg) {
+                    path.node.arguments[0] = t.objectExpression([nameProp]);
+                    return;
+                }
+
+                if (currentArg.type !== "ObjectExpression") {
+                    return;
+                }
+
+                const hasNameProp = currentArg.properties.some((prop) => {
+                    if (prop.type !== "ObjectProperty") {
+                        return false;
+                    }
+
+                    if (!t.isIdentifier(prop.key)) {
+                        return false;
+                    }
+
+                    return prop.key.name === "name";
+                });
+
+                if (!hasNameProp) {
+                    currentArg.properties.unshift(nameProp);
+                }
             },
 
             TaggedTemplateExpression(path, state) {
