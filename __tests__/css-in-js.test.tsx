@@ -1026,3 +1026,20 @@ test("can generate class name from the css if no name was provided", () => {
         expect.stringMatching(/^\.bm-/),
     );
 });
+
+test("can generate class name from the css for elements too", () => {
+    const bemed = createBemed();
+    const Block = bemed({
+        css: css`
+            color: orange;
+        `,
+        elements: {
+            Elem: bemed(),
+        },
+    });
+
+    const rtl = render(<Block.Elem>test</Block.Elem>);
+
+    const el = rtl.getByText("test");
+    expect(el.className).toEqual(expect.stringMatching(/^bm-.+__Elem$/));
+});
