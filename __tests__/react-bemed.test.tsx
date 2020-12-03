@@ -99,7 +99,7 @@ test("can set defaults to enum mods", () => {
                 bar: true,
             },
         },
-        modDefaults: {
+        defaultMods: {
             things: "bar",
         },
     });
@@ -125,7 +125,7 @@ test("enum mod defaults can be overridden", () => {
                 bar: true,
             },
         },
-        modDefaults: {
+        defaultMods: {
             things: "bar",
         },
     });

@@ -33,7 +33,7 @@ export interface BEMComponentProperties {
     displayName: string;
     css?: BEMCSS;
     mods?: Mods;
-    modDefaults: ModDefaults;
+    defaultMods: ModDefaults;
     asElement(
         elementName: string,
         blockName: string,
@@ -104,9 +104,9 @@ function applyMods(opts: {
 
     // shallow copy the props and fill in the defaults
     const props = Object.assign({}, opts.providedProps);
-    for (const defaultProp in opts.component.modDefaults) {
+    for (const defaultProp in opts.component.defaultMods) {
         if (!props[defaultProp]) {
-            props[defaultProp] = opts.component.modDefaults[defaultProp];
+            props[defaultProp] = opts.component.defaultMods[defaultProp];
         }
     }
 
@@ -417,7 +417,7 @@ export function createBemed(bemedOptions: BemedOptions | undefined = {}) {
                   as?: BEMBlockDOMElement;
                   defaultProps?: DefaultProps;
                   mods?: BEMBlockMods;
-                  modDefaults?: EnumModDefaults<BEMBlockMods>;
+                  defaultMods?: EnumModDefaults<BEMBlockMods>;
                   css?: BEMCSS;
                   className?: ClassNamesTypes | ClassNamesTypes[];
                   elements?: Elements;
@@ -456,7 +456,7 @@ export function createBemed(bemedOptions: BemedOptions | undefined = {}) {
                 className: "",
                 css: blockOptions.css,
                 mods: blockOptions.mods,
-                modDefaults: (blockOptions.modDefaults ?? {}) as ModDefaults,
+                defaultMods: (blockOptions.defaultMods ?? {}) as ModDefaults,
                 asElement(elementName, parentBlockName) {
                     const fullElementName =
                         parentBlockName + separators.element + elementName;

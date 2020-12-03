@@ -397,7 +397,7 @@ test("cannot set default for unknown enum mods", () => {
 
     bemed({
         name: "Block",
-        modDefaults: {
+        defaultMods: {
             // @ts-expect-error
             things: "bad enum type",
         },
@@ -411,7 +411,7 @@ test("cannot set default for unknown enum mods", () => {
 
     bemed({
         name: "Block",
-        modDefaults: {
+        defaultMods: {
             // @ts-expect-error
             booleanMod: "bad type",
         },
@@ -422,7 +422,7 @@ test("cannot set default for unknown enum mods", () => {
 
     bemed({
         name: "Block",
-        modDefaults: {
+        defaultMods: {
             // @ts-expect-error
             stringMod: "bad type",
         },
