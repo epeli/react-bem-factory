@@ -4,6 +4,9 @@ import { Title } from "../components/Title";
 
 # Modifier Types
 
+Modifier types or "mods" is a way to alter the appearance of a component by
+passing props matching the defined mods when rendered.
+
 ## Boolean Mods
 
 Most basic modifier is the boolean mod.
@@ -134,7 +137,13 @@ const Badge = bemed({
         },
     },
     defaultMods: {
-        prize: "gold",
+        prize: "bronze",
     },
 });
+```
+
+```tsx
+<Badge />
+// ->
+<div className="Badge Badge--bronze" />
 ```
