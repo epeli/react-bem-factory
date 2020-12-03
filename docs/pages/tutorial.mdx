@@ -21,7 +21,7 @@ convention.
 Feature highlights
 
 -   Human readable class names
--   Optional CSS-in-JS api
+-   Optional CSS-in-JS API
     -   Server-side rendering of critical CSS
     -   Source maps and zero-runtime when using the Babel plugin
 -   Perfect for hybrid approaches: Write essential component structure with
@@ -54,7 +54,7 @@ We could just start styling this right away with vanilla CSS into a external
 stylesheet file but we can also use the CSS-in-JS api and write the styles
 within the component definition
 
-```tsx{1,1}{4,8}
+```tsx{1,1}{5,9}
 import { css } from "react-bemed/css";
 
 const Button = bemed({
@@ -84,7 +84,7 @@ we get
 but this is not very accessible button because it's a `div` and not a real
 button. Lets make it into a real button
 
-```tsx{2,2}
+```tsx{3,3}
 const Button = bemed({
     name: "MyButton",
     as: "button",
@@ -112,7 +112,7 @@ It's better but now the default browser styles have ruined our cool button style
 Luckily we have already defined an utility class that can reset button
 styles. Let's apply it to our button
 
-```tsx{3,3}
+```tsx{4,4}
 const Button = bemed({
     name: "MyButton",
     as: "button",
@@ -173,7 +173,7 @@ const Button = bemed({
 Some buttons are more important than others. So lets add a modifier that can
 make the button look more important
 
-```tsx{12,15}
+```tsx{13,16}
 const Button = bemed({
     name: "MyButton",
     as: "button",
@@ -226,7 +226,7 @@ standalone meaning but are part of a larger "Block" component.
 
 The `bemed()` function supports this convention with the `elements` property
 
-```tsx{1,1}{19,23}
+```tsx{1,1}{20,24}
 import { FaReact } from "react-icons/fa";
 
 const Button = bemed({
@@ -305,7 +305,7 @@ function MyLink(props: { className?: string }) {
 
 The styling of the icon is bit off though. Lets fix that
 
-```tsx{20,27}
+```tsx{21,28}
 const Button = bemed({
     name: "MyButton",
     as: "button",

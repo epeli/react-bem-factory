@@ -115,22 +115,15 @@ const code1 = `
 const Link = bemed({
   name: "TutorialLink",
   as: "a",
-  css: css\`
-    background-color: hotpink;
-    ...
-  \`,
   mods: {
-    awesome: css\`
-      box-shadow: 0px 0px 30px 10px purple;
-      ...
-    \`
+    awesome: true
   },
   elements: {
     Icon: bemed({
       as: ReactSVGIcon,
       className: "react-colors",
       mods: {
-        playAnimation "icon-animation",
+        playAnimation: true,
       }
     }),
   },
@@ -147,7 +140,10 @@ const code2 = `
 const code3 = `
 <a class="TutorialLink TutorialLink--awesome"
    href="/tutorial">
-    <svg class="TutorialLink__Icon react-colors" ... />
+    <svg class="
+        TutorialLink__Icon
+        TutorialLink__Icon--playAnimation
+      "  />
     Get started!
 </a>
 `;
