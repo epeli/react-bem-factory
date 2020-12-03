@@ -175,6 +175,17 @@ export function Menu() {
                         href="/reusing-css#scoped-css-selectors"
                     />
                 </GrouppedItems>
+                <GrouppedItems
+                    title="Tailwind and CSS Modules"
+                    href="/tailwind"
+                >
+                    <Item sub title="Tailwind" href="/tailwind#tailwind" />
+                    <Item
+                        sub
+                        title="CSS Modules"
+                        href="/tailwind#css-modules"
+                    />
+                </GrouppedItems>
 
                 <Item title="Server-Side Rendering" href="/ssr" />
 

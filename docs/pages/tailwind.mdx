@@ -1,0 +1,76 @@
+# Tailwind and CSS Modules
+
+Since BEMed Components is a just fancy way to manage class names it works
+really well with any CSS Framework that provides you a set of class names or
+even generates those (CSS Modules).
+
+## Tailwind
+
+Here's how you would define a button with [Tailwind CSS](https://tailwindcss.com/) which can be in two modes:
+
+```tsx
+const Button = bemed({
+    as: "button",
+    className: ["border-solid", "border-8", "rounded-md", "p-3", "text-white"],
+    mods: {
+        mode: {
+            normal: ["border-gray-600", "bg-gray-400"],
+            danger: ["border-red-600", "bg-red-400"],
+        },
+    },
+    modDefaults: {
+        mode: "normal",
+    },
+});
+```
+
+When rendered without any props
+
+```tsx
+<Button>Click</Button>
+```
+
+it will get `className` of
+
+```
+border-solid border-8 rounded-md p-3 text-white border-gray-600 bg-gray-400
+```
+
+because we defined the mod `mode` to default to `"normal"`.
+
+So when we render it with
+
+```tsx
+<Button mode="danger">Delete stuff</Button>
+```
+
+we would get
+
+```
+border-solid border-8 rounded-md p-3 text-white border-red-600 bg-red-400
+```
+
+Note how `border-gray-600 bg-gray-400` was removed and `border-red-600 bg-red-400` was added.
+
+## CSS Modules
+
+For CSS modules the situation is basically the same since it gives you an
+object of class names
+
+```tsx
+import styles from "./button.module.css";
+
+const Button = bemed({
+    as: "button",
+    className: styles.base,
+    mods: {
+        mode: {
+            normal: styles.normal,
+            danger: styles.danger,
+        },
+    },
+    modDefaults: {
+        mode: "normal",
+    },
+});
+```
