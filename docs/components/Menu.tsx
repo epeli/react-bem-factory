@@ -150,6 +150,11 @@ export function Menu() {
                 <GrouppedItems title="Modifier Types" href="/mods">
                     <Item sub title="Boolean Mods" href="/mods#boolean-mods" />
                     <Item sub title="String Mods" href="/mods#string-mods" />
+                    <Item
+                        sub
+                        title="String Array Mods"
+                        href="/mods#string-array-mods"
+                    />
                     <Item sub title="Enum Mods" href="/mods#enum-mods" />
                 </GrouppedItems>
 

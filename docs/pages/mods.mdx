@@ -46,6 +46,24 @@ It will be passed as is when the prop is added
 <button class="Badge really-important" />
 ```
 
+## String Array Mods
+
+When the mod value is array all the class names will be applied from it. This
+can be usefull when working with utility CSS Frameworks such as Tailwind CSS.
+
+```tsx{5,7}
+const Badge = bemed({
+    name: "Badge",
+    mods: {
+        important: [
+            "border-red-600",
+            "border-solid",
+            "border-8"
+        ]
+    },
+});
+```
+
 ## CSS Mods
 
 CSS mod is like the boolean mod but the given CSS is also injected when it's
