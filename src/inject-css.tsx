@@ -64,7 +64,7 @@ function devInject(id: string, css: string, sourceMap: string) {
         const style = document.createElement("style");
         style.dataset.bemed = id;
         style.dataset.ver = "1";
-        style.innerHTML = css;
+        style.innerHTML = cssWithMapping;
         document.head.appendChild(style);
     }
 }
