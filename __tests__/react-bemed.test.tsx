@@ -739,3 +739,14 @@ test("can extend other bemed components", () => {
     expect(el.className).toBe("Base TestBlock Base--foo TestBlock--bar");
     expect(el.title).toBe("title from base");
 });
+
+test("can be used without name", () => {
+    const bemed = createBemed({});
+
+    const Block = bemed({});
+
+    const rtl = render(<Block>test</Block>);
+    const el = rtl.getByText("test");
+
+    expect(el.className).toBe("");
+});

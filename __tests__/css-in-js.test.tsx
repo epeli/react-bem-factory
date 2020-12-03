@@ -1003,3 +1003,26 @@ test("can use enum mods with css", () => {
     expect(injectGlobal).toBeCalledTimes(1);
     expect(mockInjectGlobal.mock.calls[0][0]).toEqual("Block--things--foo");
 });
+
+test("can generate class name from the css if no name was provided", () => {
+    const bemed = createBemed();
+    const Block = bemed({
+        css: css`
+            color: orange;
+        `,
+    });
+
+    const generatedClassName = expect.stringMatching(/^bm-.+/);
+
+    const rtl = render(<Block>test</Block>);
+
+    const el = rtl.getByText("test");
+    expect(el.className).toEqual(generatedClassName);
+
+    expect(injectGlobal).toBeCalledTimes(1);
+    expect(mockInjectGlobal.mock.calls[0][0]).toEqual(generatedClassName);
+    expect(mockInjectGlobal.mock.calls[0][1]).toContain("orange");
+    expect(mockInjectGlobal.mock.calls[0][1]).toEqual(
+        expect.stringMatching(/^\.bm-/),
+    );
+});

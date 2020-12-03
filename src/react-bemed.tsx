@@ -205,7 +205,7 @@ function createReactBEMComponent<
           >
 >(opts: {
     component: Comp;
-    blockClassName: string;
+    blockClassName: string | undefined;
     knownMods: KnownMods;
     staticClassNames: ClassNamesTypes[];
     globalStaticClassNames: ClassNamesTypes[];
@@ -399,11 +399,6 @@ export function createBemed(bemedOptions: BemedOptions | undefined = {}) {
               }
             | undefined = {},
     ) {
-        // if (!blockName) {
-        //     throw new Error(
-        //         "You must pass class name to bemed() or use the babel plugin to automatically generate one",
-        //     );
-        // }
         const separators = Object.assign(
             {
                 modifier: "--",
@@ -415,9 +410,15 @@ export function createBemed(bemedOptions: BemedOptions | undefined = {}) {
         const prefix =
             typeof bemedOptions.prefix === "string" ? bemedOptions.prefix : "";
 
-        const blockName = blockOptions.name
+        let blockName = blockOptions.name
             ? prefix + blockOptions.name
             : undefined;
+
+        if (!blockName && blockOptions.css) {
+            blockName =
+                (prefix || "bm-") +
+                blockOptions.css.hash(blockOptions.css.cssString);
+        }
 
         // Ensure the type is BEMBlockDOMElement and not union with "div"
         const comp: BEMBlockDOMElement = (blockOptions.as || "div") as any;
@@ -436,16 +437,6 @@ export function createBemed(bemedOptions: BemedOptions | undefined = {}) {
                     return init(fullElementName);
                 },
             };
-
-            if (!name) {
-                const Null = () => {
-                    throw new Error(
-                        "This component has no name. Pass in name or use it as an element",
-                    );
-                };
-                Object.assign(Null, bemProperties);
-                return (Null as any) as BEMBlock<typeof Block, Elements>;
-            }
 
             const Block = createReactBEMComponent({
                 component: comp,
@@ -467,6 +458,11 @@ export function createBemed(bemedOptions: BemedOptions | undefined = {}) {
             if (blockOptions.elements) {
                 for (const key in blockOptions.elements) {
                     const def = blockOptions.elements[key];
+                    if (!name) {
+                        throw new Error(
+                            `The parent of the element "${key}" has no name`,
+                        );
+                    }
                     out[key] = def.asElement(key, name);
                 }
             }

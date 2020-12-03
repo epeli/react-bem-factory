@@ -6,6 +6,27 @@ declare const process: any;
 
 type StyleRenderRecord = Record<string, true | number>;
 
+const SEED = 5381;
+
+// When we have separate strings it's useful to run a progressive
+// version of djb2 where we pretend that we're still looping over
+// the same string
+const phash = (h: number, x: string) => {
+    let i = x.length;
+
+    while (i) {
+        h = (h * 33) ^ x.charCodeAt(--i);
+    }
+
+    return h;
+};
+
+// This is a djb2 hashing function. Borrowed from styled-components (compat
+// license)
+const hash = (x: string) => {
+    return String(phash(SEED, x));
+};
+
 /**
  * Record CSS strings that are rendered to DOM
  */
@@ -198,6 +219,7 @@ export function createCSSTag(providedCompiler: CSSCompiler) {
         cssString: string;
         sourceMap: string;
         render: typeof renderWithStyleTags;
+        hash: typeof hash;
     };
 
     function css(style: string, sourceMap: string): ReturnValue;
@@ -254,6 +276,7 @@ export function createCSSTag(providedCompiler: CSSCompiler) {
 
         return {
             cssString,
+            hash,
             sourceMap,
             render: renderWithStyleTags,
             asCSS,
