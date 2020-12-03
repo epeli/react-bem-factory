@@ -111,6 +111,30 @@ const Badge = bemed({
 <div className="Badge Badge--gold" />
 ```
 
-Values of the enum definitions can be any other mod types (boolean, string, css).
+Values of the enum definitions can be any other mod types (boolean, string,
+string array, or css). In TypeScript the type of the `prize` prop will be
+optional union of the mod string literals `"gold" | "silver" | "bronze"`.
 
-In TypeScript the type of the `prize` prop will be `"gold" | "silver" | "bronze" | undefined`.
+A default can be provided when the prop is not present
+
+```tsx{16,18}
+const Badge = bemed({
+    name: "Badge",
+    mods: {
+        prize: {
+            gold: css`
+                color: gold;
+            `,
+            silver: css`
+                color: silver;
+            `,
+            bronze: css`
+                color: bronze;
+            `,
+        },
+    },
+    modDefaults: {
+        prize: "gold",
+    },
+});
+```

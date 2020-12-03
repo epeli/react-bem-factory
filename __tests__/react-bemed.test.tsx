@@ -88,6 +88,58 @@ test("can use enum mods with booleans", () => {
     expect(el.className).toBe("Block Block--things--foo");
 });
 
+test("can set defaults to enum mods", () => {
+    const bemed = createBemed();
+
+    const Block = bemed({
+        name: "Block",
+        mods: {
+            things: {
+                foo: true,
+                bar: true,
+            },
+        },
+        modDefaults: {
+            things: "bar",
+        },
+    });
+
+    const rtl = render(
+        <div>
+            <Block>test</Block>
+        </div>,
+    );
+
+    const el = rtl.getByText("test");
+    expect(el.className).toBe("Block Block--things--bar");
+});
+
+test("enum mod defaults can be overridden", () => {
+    const bemed = createBemed();
+
+    const Block = bemed({
+        name: "Block",
+        mods: {
+            things: {
+                foo: true,
+                bar: true,
+            },
+        },
+        modDefaults: {
+            things: "bar",
+        },
+    });
+
+    const rtl = render(
+        <div>
+            <Block things="foo">test</Block>
+        </div>,
+    );
+
+    const el = rtl.getByText("test");
+    expect(el.className).toBe("Block Block--things--foo");
+});
+
 test("can use union block mods with strings", () => {
     const bemed = createBemed();
 

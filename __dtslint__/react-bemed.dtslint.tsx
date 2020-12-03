@@ -391,3 +391,43 @@ test("default prop types", () => {
         },
     });
 });
+
+test("cannot set default for unknown enum mods", () => {
+    const bemed = createBemed();
+
+    bemed({
+        name: "Block",
+        modDefaults: {
+            // @ts-expect-error
+            things: "bad enum type",
+        },
+        mods: {
+            things: {
+                foo: true,
+                bar: true,
+            },
+        },
+    });
+
+    bemed({
+        name: "Block",
+        modDefaults: {
+            // @ts-expect-error
+            booleanMod: "bad type",
+        },
+        mods: {
+            booleanMod: true,
+        },
+    });
+
+    bemed({
+        name: "Block",
+        modDefaults: {
+            // @ts-expect-error
+            stringMod: "bad type",
+        },
+        mods: {
+            stringMod: "dsaf",
+        },
+    });
+});

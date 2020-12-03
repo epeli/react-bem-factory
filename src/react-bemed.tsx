@@ -33,6 +33,7 @@ export interface BEMComponentProperties {
     displayName: string;
     css?: BEMCSS;
     mods?: Mods;
+    modDefaults: ModDefaults;
     asElement(
         elementName: string,
         blockName: string,
@@ -101,7 +102,15 @@ function applyMods(opts: {
 
     const knownMods = opts.component.mods || {};
 
-    for (const prop in opts.providedProps) {
+    // shallow copy the props and fill in the defaults
+    const props = Object.assign({}, opts.providedProps);
+    for (const defaultProp in opts.component.modDefaults) {
+        if (!props[defaultProp]) {
+            props[defaultProp] = opts.component.modDefaults[defaultProp];
+        }
+    }
+
+    for (const prop in props) {
         const modType = knownMods[prop];
 
         // This prop does not match with a mod. Skip it.
@@ -113,7 +122,7 @@ function applyMods(opts: {
         out.modProps[prop] = true;
 
         // Inactive props. Eg. mymod={false} passed
-        if (!opts.providedProps[prop]) {
+        if (!props[prop]) {
             continue;
         }
 
@@ -155,7 +164,7 @@ function applyMods(opts: {
         // At this point modType can be only an enum mod
 
         const knownSubMods = modType;
-        const selectedEnumMod = opts.providedProps[prop];
+        const selectedEnumMod = props[prop];
         const enumModValue = knownSubMods[selectedEnumMod];
         const enumModClassName =
             modClassName + opts.modifierSeparator + selectedEnumMod;
@@ -340,6 +349,21 @@ type ModProps<T extends undefined | Record<string, AllModTypeds>> = {
         : keyof T[P];
 };
 
+/**
+ * Generate type for setting enum mod defaults
+ */
+type EnumModDefaults<T> = {
+    [P in keyof T]?: T[P] extends object
+        ? T[P] extends object
+            ? keyof T[P]
+            : never
+        : never;
+};
+
+interface ModDefaults {
+    [mod: string]: string | undefined;
+}
+
 export interface BemedOptions {
     className?: ClassNamesTypes | ClassNamesTypes[];
     prefix?: string;
@@ -393,6 +417,7 @@ export function createBemed(bemedOptions: BemedOptions | undefined = {}) {
                   as?: BEMBlockDOMElement;
                   defaultProps?: DefaultProps;
                   mods?: BEMBlockMods;
+                  modDefaults?: EnumModDefaults<BEMBlockMods>;
                   css?: BEMCSS;
                   className?: ClassNamesTypes | ClassNamesTypes[];
                   elements?: Elements;
@@ -431,6 +456,7 @@ export function createBemed(bemedOptions: BemedOptions | undefined = {}) {
                 className: "",
                 css: blockOptions.css,
                 mods: blockOptions.mods,
+                modDefaults: (blockOptions.modDefaults ?? {}) as ModDefaults,
                 asElement(elementName, parentBlockName) {
                     const fullElementName =
                         parentBlockName + separators.element + elementName;
