@@ -49,7 +49,7 @@ test("single class name with prefix", () => {
     expect(el.className).toBe("prefix-test-block");
 });
 
-test("can use block mods", () => {
+test("can use boolean mods", () => {
     const bemed = createBemed({ prefix: "prefix-" });
 
     const Block = bemed({
@@ -109,6 +109,41 @@ test("can use union block mods with strings", () => {
 
     const el = rtl.getByText("test");
     expect(el.className).toBe("Block my-foo");
+});
+
+test("can use array mods", () => {
+    const bemed = createBemed();
+
+    const Block = bemed({
+        name: "Test",
+        mods: {
+            ding: ["foo", "bar"],
+        },
+    });
+
+    const rtl = render(<Block ding>test</Block>);
+    const el = rtl.getByText("test");
+
+    expect(el.className).toBe("Test bar foo");
+});
+
+test("can use arrays in enum mods", () => {
+    const bemed = createBemed();
+
+    const Block = bemed({
+        name: "Test",
+        mods: {
+            ding: {
+                foo: ["ding", "dong"],
+                bar: ["lol", "haha"],
+            },
+        },
+    });
+
+    const rtl = render(<Block ding="bar">test</Block>);
+    const el = rtl.getByText("test");
+
+    expect(el.className).toBe("Test haha lol");
 });
 
 test("can use multiple submods at once", () => {

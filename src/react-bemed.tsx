@@ -49,8 +49,9 @@ interface Mods {
     [key: string]:
         | true
         | string
+        | string[]
         | InlineCSS
-        | Record<string, true | string | InlineCSS>;
+        | Record<string, true | string | string[] | InlineCSS>;
 }
 
 interface CSSWithClassName {
@@ -146,6 +147,11 @@ function applyMods(opts: {
             continue;
         }
 
+        if (Array.isArray(modType)) {
+            out.usedModClassNames.push(...modType);
+            continue;
+        }
+
         // At this point modType can be only an enum mod
 
         const knownSubMods = modType;
@@ -156,6 +162,11 @@ function applyMods(opts: {
 
         if (enumModValue === true) {
             out.usedModClassNames.push(enumModClassName);
+            continue;
+        }
+
+        if (Array.isArray(enumModValue)) {
+            out.usedModClassNames.push(...enumModValue);
             continue;
         }
 
@@ -188,8 +199,9 @@ function createReactBEMComponent<
               string,
               | true
               | string
+              | string[]
               | InlineCSS
-              | Record<string, true | string | InlineCSS>
+              | Record<string, true | string | string[] | InlineCSS>
           >
 >(opts: {
     component: Comp;
@@ -310,7 +322,7 @@ function createReactBEMComponent<
     return (BEMComponent as any) as (props: FinalProps) => any;
 }
 
-type ModPrimitives = string | true | InlineCSS;
+type ModPrimitives = string | string[] | true | InlineCSS;
 
 type AllModTypeds = ModPrimitives | Record<string, ModPrimitives>;
 
@@ -318,6 +330,8 @@ type ModProps<T extends undefined | Record<string, AllModTypeds>> = {
     [P in keyof T]?: T[P] extends boolean
         ? boolean
         : T[P] extends string
+        ? boolean
+        : T[P] extends string[]
         ? boolean
         : T[P] extends InlineCSS
         ? boolean
@@ -367,8 +381,9 @@ export function createBemed(bemedOptions: BemedOptions | undefined = {}) {
                   string,
                   | true
                   | string
+                  | string[]
                   | InlineCSS
-                  | Record<string, true | string | InlineCSS>
+                  | Record<string, true | string | string[] | InlineCSS>
               >
             | undefined = undefined
     >(
