@@ -158,6 +158,8 @@ function assertUniqueNames(opts: {
     );
 }
 
+const CSS_CACHE = new Map<string, string[] | undefined>();
+
 export default function bemedBabelPlugin(
     babel: Babel,
 ): { visitor: Visitor<VisitorState> } {
@@ -168,6 +170,8 @@ export default function bemedBabelPlugin(
      */
     let cssImportName: string | null = null;
     let bemedImportName: string | null = null;
+
+    let adaptedStylis: ReturnType<typeof adaptStylis> | null = null;
 
     return {
         visitor: {
@@ -356,12 +360,22 @@ export default function bemedBabelPlugin(
                 });
 
                 if (opts.precompile) {
-                    const finalStylis = opts.stylis || customStylis;
+                    if (!adaptedStylis) {
+                        const finalStylis = opts?.stylis ?? customStylis;
+                        adaptedStylis = adaptStylis(finalStylis);
+                    }
+
                     const styleString = cssArray.join("__BEMED_VAR__");
-                    const adaptedStylis = adaptStylis(finalStylis);
-                    cssArray = adaptedStylis("__BEMED__", styleString).split(
-                        "__BEMED_VAR__",
-                    );
+                    const cached = CSS_CACHE.get(styleString);
+                    if (cached) {
+                        cssArray = cached;
+                    } else {
+                        cssArray = adaptedStylis(
+                            "__BEMED__",
+                            styleString,
+                        ).split("__BEMED_VAR__");
+                        CSS_CACHE.set(styleString, cssArray);
+                    }
                 }
 
                 const arrayJoin = t.callExpression(
