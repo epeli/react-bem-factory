@@ -313,7 +313,7 @@ test("adds name automatically", () => {
     );
 });
 
-test("adds name automatically to existing object", () => {
+test("adds name automatically to existing object (const)", () => {
     const code = dedent`
     import { bemed } from "react-bemed";
     const Container = bemed({className: "ding"});
@@ -328,6 +328,28 @@ test("adds name automatically to existing object", () => {
         lines(
             'import { bemed } from "react-bemed";',
             "const Container = bemed({",
+            '  name: "Container",',
+            '  className: "ding"',
+            "});",
+        ),
+    );
+});
+
+test("adds name automatically to existing object (let)", () => {
+    const code = dedent`
+    import { bemed } from "react-bemed";
+    let Container = bemed({className: "ding"});
+    `;
+
+    const res = runPlugin(code, {
+        precompile: true,
+        sourceMap: true,
+    });
+
+    expect(cleanSourceMapComment(res.code)).toEqual(
+        lines(
+            'import { bemed } from "react-bemed";',
+            "let Container = bemed({",
             '  name: "Container",',
             '  className: "ding"',
             "});",
