@@ -26,6 +26,7 @@ export interface BemedBabelPluginOptions {
     stylis?: typeof stylis;
     precompile?: boolean;
     sourceMap?: boolean;
+    assertUniqueNames?: boolean;
     generateName?: (options: {
         filename: string;
         variableName: string;
@@ -111,6 +112,52 @@ function createArrayExpression(
     return t.arrayExpression(out);
 }
 
+export const SEEN_NAMES = new Map<
+    string,
+    { file: string; varName: string; line: number }
+>();
+
+export const SEEN_FILES = new Set<string>();
+
+function assertUniqueNames(opts: {
+    name: string;
+    file: string | undefined;
+    path: NodePath<BabelTypes.CallExpression>;
+}) {
+    if (process.env.NODE_ENV !== "production") {
+        return;
+    }
+
+    if (process.env.BEMED_DISABLE_DUPLICATE_DETECTION) {
+        return;
+    }
+
+    if (!opts.file) {
+        return;
+    }
+
+    // Do not check files twice since for example Next.js compiles each file
+    // twice, once for the client and once for the server
+    if (SEEN_FILES.has(opts.file)) {
+        return;
+    }
+
+    const dup = SEEN_NAMES.get(opts.name);
+
+    if (!dup) {
+        SEEN_NAMES.set(opts.name, {
+            file: opts.file,
+            varName: opts.name,
+            line: opts.path.node.loc?.start.line ?? 0,
+        });
+        return;
+    }
+
+    throw opts.path.buildCodeFrameError(
+        `bemed component name "${opts.name}" already defined in ${dup.file} line ${dup.line}`,
+    );
+}
+
 export default function bemedBabelPlugin(
     babel: Babel,
 ): { visitor: Visitor<VisitorState> } {
@@ -124,10 +171,17 @@ export default function bemedBabelPlugin(
 
     return {
         visitor: {
-            Program() {
-                // Reset import name state when entering a new file
-                cssImportName = null;
-                bemedImportName = null;
+            Program: {
+                enter() {
+                    // Reset import name state when entering a new file
+                    cssImportName = null;
+                    bemedImportName = null;
+                },
+                exit(path, state) {
+                    if (state.filename) {
+                        SEEN_FILES.add(state.filename);
+                    }
+                },
             },
 
             ImportDeclaration(path, state) {
@@ -189,25 +243,45 @@ export default function bemedBabelPlugin(
                     return;
                 }
 
-                let hasNameProp = false;
+                let existingName: string | null = null;
 
                 const currentArg = path.node.arguments[0];
 
                 if (currentArg?.type === "ObjectExpression") {
-                    hasNameProp = currentArg.properties.some((prop) => {
+                    const props = currentArg.properties.map((prop) => {
                         if (prop.type !== "ObjectProperty") {
-                            return false;
+                            return;
                         }
 
                         if (!t.isIdentifier(prop.key)) {
-                            return false;
+                            return;
                         }
 
-                        return prop.key.name === "name";
+                        if (prop.value.type !== "StringLiteral") {
+                            return;
+                        }
+
+                        return {
+                            propName: prop.key.name,
+                            value: prop.value.value,
+                        };
                     });
+
+                    const existing = props.find(
+                        (prop) => prop?.propName === "name",
+                    );
+
+                    if (existing) {
+                        existingName = existing.value;
+                    }
                 }
 
-                if (hasNameProp) {
+                if (existingName) {
+                    assertUniqueNames({
+                        name: existingName,
+                        path,
+                        file: state.filename,
+                    });
                     return;
                 }
 
@@ -231,11 +305,13 @@ export default function bemedBabelPlugin(
                 );
 
                 if (!currentArg) {
+                    assertUniqueNames({ name, path, file: state.filename });
                     path.node.arguments[0] = t.objectExpression([nameProp]);
                     return;
                 }
 
                 if (currentArg.type === "ObjectExpression") {
+                    assertUniqueNames({ name, path, file: state.filename });
                     currentArg.properties.unshift(nameProp);
                 }
             },

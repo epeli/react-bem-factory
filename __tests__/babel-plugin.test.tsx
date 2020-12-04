@@ -2,7 +2,11 @@ import dedent from "dedent";
 import Stylis from "stylis";
 import { transform } from "@babel/core";
 import * as vlq from "vlq";
-import { BemedBabelPluginOptions } from "../src/babel-plugin";
+import {
+    BemedBabelPluginOptions,
+    SEEN_FILES,
+    SEEN_NAMES,
+} from "../src/babel-plugin";
 
 declare const __dirname: string;
 declare const process: any;
@@ -42,6 +46,8 @@ function lines(...args: string[]) {
 
 beforeEach(() => {
     process.env.NODE_ENV = "test";
+    SEEN_FILES.clear();
+    SEEN_NAMES.clear();
 });
 
 function runPlugin(
@@ -440,4 +446,82 @@ test("can use custom function to generate the name", () => {
             "});",
         ),
     );
+});
+
+test("detects duplicates when generating name props", () => {
+    process.env.NODE_ENV = "production";
+    const code = dedent`
+    import { bemed } from "react-bemed";
+    let Container = bemed();
+    `;
+
+    runPlugin(code, {
+        filename: "a.ts",
+        pluginOptions: {
+            precompile: true,
+            sourceMap: true,
+        },
+    });
+
+    expect(() => {
+        runPlugin(code, {
+            filename: "b.ts",
+            pluginOptions: {
+                precompile: true,
+                sourceMap: true,
+            },
+        });
+    }).toThrowError('bemed component name "Container" already defined in');
+});
+
+test("detects duplicates with existing string literals", () => {
+    process.env.NODE_ENV = "production";
+    const code = dedent`
+    import { bemed } from "react-bemed";
+    let Container = bemed({name: "DuplicateContainer"});
+    `;
+
+    runPlugin(code, {
+        filename: "a.ts",
+        pluginOptions: {
+            precompile: true,
+            sourceMap: true,
+        },
+    });
+
+    expect(() => {
+        runPlugin(code, {
+            filename: "b.ts",
+            pluginOptions: {
+                precompile: true,
+                sourceMap: true,
+            },
+        });
+    }).toThrowError(
+        'bemed component name "DuplicateContainer" already defined in',
+    );
+});
+
+test("duplicate detection does not get confused by multiple compile passes", () => {
+    process.env.NODE_ENV = "production";
+    const code = dedent`
+    import { bemed } from "react-bemed";
+    let Container = bemed();
+    `;
+
+    runPlugin(code, {
+        filename: "a.ts",
+        pluginOptions: {
+            precompile: true,
+            sourceMap: true,
+        },
+    });
+
+    runPlugin(code, {
+        filename: "a.ts",
+        pluginOptions: {
+            precompile: true,
+            sourceMap: true,
+        },
+    });
 });
