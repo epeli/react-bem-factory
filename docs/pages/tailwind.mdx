@@ -32,8 +32,9 @@ When rendered without any props
 
 it will get `className` of
 
-```
-border-solid border-8 rounded-md p-3 text-white border-gray-600 bg-gray-400
+<!-- prettier-ignore -->
+```tsx
+"border-solid border-8 rounded-md p-3 text-white border-gray-600 bg-gray-400"
 ```
 
 because we defined the mod `mode` to default to `"normal"`.
@@ -46,8 +47,9 @@ So when we render it with
 
 we would get
 
-```
-border-solid border-8 rounded-md p-3 text-white border-red-600 bg-red-400
+<!-- prettier-ignore -->
+```tsx
+"border-solid border-8 rounded-md p-3 text-white border-red-600 bg-red-400"
 ```
 
 Note how `border-gray-600 bg-gray-400` was removed and `border-red-600 bg-red-400` was added.
