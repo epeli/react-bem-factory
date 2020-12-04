@@ -8,6 +8,15 @@
  * - babylon: 7.11.5
  * - flow: 0.138.0
  * - recast: 0.20.4
+ *
+ * Transforms
+ *
+ * const Button = bemed({ as: "button" })("Button");
+ *
+ * to
+ *
+ * const Button = bemed({ name: "Button", as: "button" });
+ *
  */
 import { ASTNode, Transform } from "jscodeshift";
 
