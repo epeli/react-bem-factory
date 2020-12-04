@@ -1,6 +1,13 @@
 /**
  * Transform from react-bemed 0.7 to 1.0
  * usage: jscodeshift -t v1.0-upgrade.ts --parser=tsx --extensions=ts,tsx pathtodir
+ *
+ * Version used:
+ * jscodeshift: 0.11.0
+ * - babel: 7.12.9
+ * - babylon: 7.11.5
+ * - flow: 0.138.0
+ * - recast: 0.20.4
  */
 import { ASTNode, Transform } from "jscodeshift";
 
