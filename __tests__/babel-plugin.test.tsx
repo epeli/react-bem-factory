@@ -44,11 +44,19 @@ beforeEach(() => {
     process.env.NODE_ENV = "test";
 });
 
-function runPlugin(code: string, options?: BemedBabelPluginOptions) {
+function runPlugin(
+    code: string,
+    options?: {
+        filename?: string;
+        pluginOptions: BemedBabelPluginOptions;
+    },
+) {
     const res = transform(code, {
         babelrc: false,
-        filename: "test.ts",
-        plugins: [[__dirname + "/../src/babel-plugin.ts", options]],
+        filename: options?.filename ?? "test.ts",
+        plugins: [
+            [__dirname + "/../src/babel-plugin.ts", options?.pluginOptions],
+        ],
     });
 
     if (!res) {
@@ -65,8 +73,10 @@ test("adds source maps", () => {
     `;
 
     const res = runPlugin(code, {
-        precompile: true,
-        sourceMap: true,
+        pluginOptions: {
+            precompile: true,
+            sourceMap: true,
+        },
     });
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
@@ -83,8 +93,10 @@ test("adds source maps without precompiling", () => {
     `;
 
     const res = runPlugin(code, {
-        precompile: false,
-        sourceMap: true,
+        pluginOptions: {
+            precompile: false,
+            sourceMap: true,
+        },
     });
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
@@ -104,8 +116,7 @@ test("source map points to correct line", () => {
     `;
 
     const res = runPlugin(code, {
-        precompile: true,
-        sourceMap: true,
+        pluginOptions: { precompile: true, sourceMap: true },
     });
     const map = decodeSourceMap(res.code);
 
@@ -121,8 +132,10 @@ test("can handle single placeholder", () => {
     );
 
     const res = runPlugin(code, {
-        precompile: true,
-        sourceMap: true,
+        pluginOptions: {
+            precompile: true,
+            sourceMap: true,
+        },
     });
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
@@ -139,8 +152,10 @@ test("can handle single placeholder without precompiling", () => {
     );
 
     const res = runPlugin(code, {
-        precompile: false,
-        sourceMap: true,
+        pluginOptions: {
+            precompile: false,
+            sourceMap: true,
+        },
     });
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
@@ -157,8 +172,10 @@ test("can handle two placeholders", () => {
     );
 
     const res = runPlugin(code, {
-        precompile: true,
-        sourceMap: true,
+        pluginOptions: {
+            precompile: true,
+            sourceMap: true,
+        },
     });
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
@@ -175,8 +192,10 @@ test("can handle three placeholders", () => {
     );
 
     const res = runPlugin(code, {
-        precompile: true,
-        sourceMap: true,
+        pluginOptions: {
+            precompile: true,
+            sourceMap: true,
+        },
     });
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
@@ -198,8 +217,10 @@ test("precompiles css", () => {
     `;
 
     const res = runPlugin(code, {
-        precompile: true,
-        sourceMap: true,
+        pluginOptions: {
+            precompile: true,
+            sourceMap: true,
+        },
     });
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
@@ -219,11 +240,13 @@ test("can force prefixing with custom Stylis instance", () => {
     `;
 
     const res = runPlugin(code, {
-        precompile: true,
-        sourceMap: true,
-        stylis: new Stylis({
-            prefix: true,
-        }),
+        pluginOptions: {
+            precompile: true,
+            sourceMap: true,
+            stylis: new Stylis({
+                prefix: true,
+            }),
+        },
     });
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
@@ -248,8 +271,10 @@ test("separates rules with /*|*/", () => {
     `;
 
     const res = runPlugin(code, {
-        precompile: true,
-        sourceMap: true,
+        pluginOptions: {
+            precompile: true,
+            sourceMap: true,
+        },
     });
     expect(cleanSourceMapComment(res.code)).toEqual(
         lines(
@@ -275,13 +300,17 @@ test("separates rules with /*|*/ with media queries", () => {
 
     // Make sure stylis internal state does not mess things up
     runPlugin(code, {
-        precompile: true,
-        sourceMap: true,
+        pluginOptions: {
+            precompile: true,
+            sourceMap: true,
+        },
     });
 
     const res = runPlugin(code, {
-        precompile: true,
-        sourceMap: true,
+        pluginOptions: {
+            precompile: true,
+            sourceMap: true,
+        },
     });
 
     expect(cleanSourceMapComment(res.code)).toEqual(
@@ -299,8 +328,10 @@ test("adds name automatically", () => {
     `;
 
     const res = runPlugin(code, {
-        precompile: true,
-        sourceMap: true,
+        pluginOptions: {
+            precompile: true,
+            sourceMap: true,
+        },
     });
 
     expect(cleanSourceMapComment(res.code)).toEqual(
@@ -320,8 +351,10 @@ test("adds name automatically to existing object (const)", () => {
     `;
 
     const res = runPlugin(code, {
-        precompile: true,
-        sourceMap: true,
+        pluginOptions: {
+            precompile: true,
+            sourceMap: true,
+        },
     });
 
     expect(cleanSourceMapComment(res.code)).toEqual(
@@ -342,8 +375,10 @@ test("adds name automatically to existing object (let)", () => {
     `;
 
     const res = runPlugin(code, {
-        precompile: true,
-        sourceMap: true,
+        pluginOptions: {
+            precompile: true,
+            sourceMap: true,
+        },
     });
 
     expect(cleanSourceMapComment(res.code)).toEqual(
@@ -364,8 +399,10 @@ test("does not touch existing name", () => {
     `;
 
     const res = runPlugin(code, {
-        precompile: true,
-        sourceMap: true,
+        pluginOptions: {
+            precompile: true,
+            sourceMap: true,
+        },
     });
 
     expect(cleanSourceMapComment(res.code)).toEqual(
@@ -385,10 +422,12 @@ test("can use custom function to generate the name", () => {
     `;
 
     const res = runPlugin(code, {
-        precompile: true,
-        sourceMap: true,
-        generateName(options) {
-            return "custom-" + options.variableName;
+        pluginOptions: {
+            precompile: true,
+            sourceMap: true,
+            generateName(options) {
+                return "custom-" + options.variableName;
+            },
         },
     });
 
