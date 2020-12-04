@@ -26,6 +26,10 @@ export interface BemedBabelPluginOptions {
     stylis?: typeof stylis;
     precompile?: boolean;
     sourceMap?: boolean;
+    generateName?: (options: {
+        filename: string;
+        variableName: string;
+    }) => string | undefined;
 }
 
 interface VisitorState {
@@ -185,13 +189,45 @@ export default function bemedBabelPlugin(
                     return;
                 }
 
-                const variableName = path.parentPath.node.id.name;
+                let hasNameProp = false;
 
                 const currentArg = path.node.arguments[0];
 
+                if (currentArg?.type === "ObjectExpression") {
+                    hasNameProp = currentArg.properties.some((prop) => {
+                        if (prop.type !== "ObjectProperty") {
+                            return false;
+                        }
+
+                        if (!t.isIdentifier(prop.key)) {
+                            return false;
+                        }
+
+                        return prop.key.name === "name";
+                    });
+                }
+
+                if (hasNameProp) {
+                    return;
+                }
+
+                const variableName = path.parentPath.node.id.name;
+
+                let name = variableName;
+
+                if (state.opts?.generateName) {
+                    const generatedName = state.opts.generateName({
+                        variableName,
+                        filename: state.filename,
+                    });
+                    if (generatedName) {
+                        name = generatedName;
+                    }
+                }
+
                 const nameProp = t.objectProperty(
                     t.identifier("name"),
-                    t.stringLiteral(variableName),
+                    t.stringLiteral(name),
                 );
 
                 if (!currentArg) {
@@ -199,23 +235,7 @@ export default function bemedBabelPlugin(
                     return;
                 }
 
-                if (currentArg.type !== "ObjectExpression") {
-                    return;
-                }
-
-                const hasNameProp = currentArg.properties.some((prop) => {
-                    if (prop.type !== "ObjectProperty") {
-                        return false;
-                    }
-
-                    if (!t.isIdentifier(prop.key)) {
-                        return false;
-                    }
-
-                    return prop.key.name === "name";
-                });
-
-                if (!hasNameProp) {
+                if (currentArg.type === "ObjectExpression") {
                     currentArg.properties.unshift(nameProp);
                 }
             },

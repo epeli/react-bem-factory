@@ -377,3 +377,28 @@ test("does not touch existing name", () => {
         ),
     );
 });
+
+test("can use custom function to generate the name", () => {
+    const code = dedent`
+    import { bemed } from "react-bemed";
+    const Container = bemed({className: "ding"});
+    `;
+
+    const res = runPlugin(code, {
+        precompile: true,
+        sourceMap: true,
+        generateName(options) {
+            return "custom-" + options.variableName;
+        },
+    });
+
+    expect(cleanSourceMapComment(res.code)).toEqual(
+        lines(
+            'import { bemed } from "react-bemed";',
+            "const Container = bemed({",
+            '  name: "custom-Container",',
+            '  className: "ding"',
+            "});",
+        ),
+    );
+});
