@@ -17,6 +17,8 @@
  *
  * const Button = bemed({ name: "Button", as: "button" });
  *
+ * More info https://github.com/esamattis/react-bemed/releases/tag/v1.0.0
+ *
  */
 import { ASTNode, Transform } from "jscodeshift";
 
