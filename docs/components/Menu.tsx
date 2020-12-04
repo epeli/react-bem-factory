@@ -193,6 +193,16 @@ export function Menu() {
                     <Item sub title="Source Maps" href="/babel#source-maps" />
                     <Item
                         sub
+                        title='Automatic "name"'
+                        href="/babel#automatic-name"
+                    />
+                    <Item
+                        sub
+                        title="Duplicate detection"
+                        href="/babel#duplicate-detection"
+                    />
+                    <Item
+                        sub
                         title="CSS Precompiling"
                         href="/babel#css-precompiling"
                     />

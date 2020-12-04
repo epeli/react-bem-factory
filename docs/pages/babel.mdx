@@ -24,6 +24,28 @@ module.exports = {
 When the plugin is active source maps are enabled by default in development
 and removed in production.
 
+## Automatic "name"
+
+When the plugin is active the name property is automatically added from the
+variable name if not defined.
+
+Example:
+
+```tsx
+const Button = bemed({ as: "button" });
+```
+
+will compile to
+
+```tsx
+const Button = bemed({ name: "Button", as: "button" });
+```
+
+## Duplicate detection
+
+When the compiler is run in production with `NODE_ENV=production` it will
+look for duplicate names and will error the compilation if it finds any.
+
 ## CSS Precompiling
 
 You can enable CSS precompiling by passing `precompile: true` as the plugin options
