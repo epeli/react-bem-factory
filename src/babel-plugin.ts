@@ -172,7 +172,18 @@ export default function bemedBabelPlugin(
     return {
         visitor: {
             Program: {
-                enter() {
+                enter(path, state) {
+                    if (!state.opts) {
+                        state.opts = {};
+                    }
+
+                    const opts = state.opts;
+
+                    // Default to true
+                    if (opts.precompile !== false) {
+                        opts.precompile = true;
+                    }
+
                     // Reset import name state when entering a new file
                     cssImportName = null;
                     bemedImportName = null;
