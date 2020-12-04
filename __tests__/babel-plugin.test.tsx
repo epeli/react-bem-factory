@@ -131,7 +131,7 @@ test("source map points to correct line", () => {
     expect(mappings).toEqual([0, 0, 3, 12]);
 });
 
-test("can handle single placeholder", () => {
+test("can handle single placeholder when precompiling", () => {
     const code = lines(
         'import { css } from "react-bemed/css";',
         "const foo = css`color: ${123}; border: 1px solid black;`;",
@@ -147,6 +147,31 @@ test("can handle single placeholder", () => {
         lines(
             'import { css } from "react-bemed/css-precompiled";',
             'const foo = css(["__BEMED__{color:", 123, ";border:1px solid black;}"].join(""), "/*# sourceMappingURL=SOURCEMAP */");',
+        ),
+    );
+});
+
+test("can precompile variables media queries", () => {
+    const code = lines(
+        'import { css } from "react-bemed/css";',
+        "const foo = css`",
+        "    @media (${variable}) {",
+        "        color: red;",
+        "    }",
+        "`",
+    );
+
+    const res = runPlugin(code, {
+        pluginOptions: {
+            precompile: true,
+            sourceMap: false,
+        },
+    });
+
+    expect(res.code).toEqual(
+        lines(
+            'import { css } from "react-bemed/css-precompiled";',
+            'const foo = css(["@media (", variable, "){__BEMED__{color:red;}}"].join(""), "");',
         ),
     );
 });
