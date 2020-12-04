@@ -18,6 +18,8 @@ interface SourceMap {
     sourcesContent: string[];
 }
 
+process.env.BEMED_MEDIA_QUERY_VARS = "1";
+
 function cleanSourceMapComment(s: string | undefined | null) {
     return (s || "").replace(SOUREMAP_RE, "sourceMappingURL=SOURCEMAP");
 }
@@ -128,6 +130,55 @@ test("can handle single placeholder", () => {
         lines(
             'import { css } from "react-bemed/css-precompiled";',
             'const foo = css(["__BEMED__{color:", 123, ";border:1px solid black;}"].join(""), "/*# sourceMappingURL=SOURCEMAP */");',
+        ),
+    );
+});
+
+test("can precompile variables media queries", () => {
+    const code = lines(
+        'import { css } from "react-bemed/css";',
+        "const foo = css`",
+        "    @media (${variable}) {",
+        "        color: red;",
+        "    }",
+        "`",
+    );
+
+    const res = runPlugin(code, {
+        precompile: true,
+        sourceMap: false,
+    });
+
+    expect(res.code).toEqual(
+        lines(
+            'import { css } from "react-bemed/css-precompiled";',
+            'const foo = css(["@media (", variable, "){__BEMED__{color:red;}}"].join(""), "");',
+        ),
+    );
+});
+
+test("can use variable in the media query position", () => {
+    const code = lines(
+        'import { css } from "react-bemed/css";',
+        "const foo = css`",
+        "    ${variable} {",
+        "       div { color: red; }",
+        "       p { ${other} { color: blue; } }",
+        "    }",
+        "`",
+    );
+
+    const res = runPlugin(code, {
+        precompile: true,
+        sourceMap: false,
+    });
+
+    console.log(res.code);
+
+    expect(res.code).toEqual(
+        lines(
+            'import { css } from "react-bemed/css-precompiled";',
+            'const foo = css([variable, " {__BEMED__ div{color:red;}", other, " {__BEMED__ p{color:blue;}}}"].join(""), "");',
         ),
     );
 });
