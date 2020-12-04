@@ -41,27 +41,29 @@ will compile to
 const Button = bemed({ name: "Button", as: "button" });
 ```
 
+The name geration can be customized with the `generateName()` option in `babel.config.js`
+
+```js{6,8}
+module.exports = {
+    plugins: [
+        [
+            "react-bemed/babel",
+            {
+                generateName(options) {
+                    return "custom-prefix-" + options.variableName;
+                },
+            },
+        ],
+    ],
+};
+```
+
 ## Duplicate detection
 
 When the compiler is run in production with `NODE_ENV=production` it will
 look for duplicate names and will error the compilation if it finds any.
 
 ## CSS Precompiling
-
-You can enable CSS precompiling by passing `precompile: true` as the plugin options
-
-<!-- prettier-ignore-start -->
-```tsx{5,5}
-module.exports = {
-    plugins: [
-        [
-            "react-bemed/babel",
-            { precompile: true }
-        ]
-    ],
-};
-```
-<!-- prettier-ignore-end -->
 
 This will precompile the `css` tagged template literals during build-time as
 opposed to doing it during runtime in the browser. It will yield to smaller
@@ -86,6 +88,21 @@ const Button = bemed({
 ```
 
 because `margin-var(--BEMED): 10px` is not valid CSS.
+
+This can be disabled by setting `precompile` to false in `babel.config.js`.
+
+<!-- prettier-ignore-start -->
+```tsx{5,5}
+module.exports = {
+    plugins: [
+        [
+            "react-bemed/babel",
+            { precompile: false }
+        ]
+    ],
+};
+```
+<!-- prettier-ignore-end -->
 
 ## CSS File Extraction
 
