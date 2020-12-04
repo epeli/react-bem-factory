@@ -185,20 +185,13 @@ export default function bemedBabelPlugin(
                     return;
                 }
 
-                const name = path.parentPath.node.id.name;
-                const filename = basename(state.filename)
-                    // Remove extension
-                    .replace(/\.[^/.]+$/, "")
-                    // remove weird characters
-                    .replace(/[^a-zA-Z0-9]+/g, "-");
-
-                const fullName = `${filename}--${name}`;
+                const variableName = path.parentPath.node.id.name;
 
                 const currentArg = path.node.arguments[0];
 
                 const nameProp = t.objectProperty(
                     t.identifier("name"),
-                    t.stringLiteral(fullName),
+                    t.stringLiteral(variableName),
                 );
 
                 if (!currentArg) {

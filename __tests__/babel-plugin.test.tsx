@@ -307,7 +307,7 @@ test("adds name automatically", () => {
         lines(
             'import { bemed } from "react-bemed";',
             "const Container = bemed({",
-            '  name: "test--Container"',
+            '  name: "Container"',
             "});",
         ),
     );
@@ -328,7 +328,7 @@ test("adds name automatically to existing object", () => {
         lines(
             'import { bemed } from "react-bemed";',
             "const Container = bemed({",
-            '  name: "test--Container",',
+            '  name: "Container",',
             '  className: "ding"',
             "});",
         ),
