@@ -390,7 +390,7 @@ export default function bemedBabelPlugin(
                 //
                 const array = t.arrayExpression(
                     cssArray.map((s) => {
-                        const match = /__BEMED_VAR_([0-9]+)__/.exec(s);
+                        const match = /^__BEMED_VAR_([0-9]+)__$/.exec(s);
                         if (match?.[1]) {
                             const index = Number(match[1]);
                             return path.node.quasi.expressions[index];
