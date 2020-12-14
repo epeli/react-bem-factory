@@ -88,28 +88,19 @@ function createArrayExpression(
     t: typeof BabelTypes,
     strings: string[],
     expressions: BabelTypes.Expression[],
-    out: BabelTypes.Expression[],
+    // out: BabelTypes.Expression[],
 ): BabelTypes.ArrayExpression {
-    if (strings.length > 1 && expressions.length >= 1) {
-        if (strings[0]) {
-            out.push(t.stringLiteral(strings[0]));
-        }
-        out.push(expressions[0]);
-        return createArrayExpression(
-            t,
-            strings.slice(1),
-            expressions.slice(1),
-            out,
-        );
-    }
+    return t.arrayExpression(
+        strings.map((s) => {
+            const match = /__BEMED_VAR_([0-9]+)__/.exec(s);
+            if (match?.[1]) {
+                const index = Number(match[1]);
+                return expressions[index];
+            }
 
-    if (strings.length === 1) {
-        if (strings[0]) {
-            out.push(t.stringLiteral(strings[0]));
-        }
-    }
-
-    return t.arrayExpression(out);
+            return t.stringLiteral(s);
+        }),
+    );
 }
 
 export const SEEN_NAMES = new Map<
@@ -355,9 +346,23 @@ export default function bemedBabelPlugin(
                     ? getSourceMap(path.node.loc.start, state.file)
                     : "";
 
-                let cssArray = path.node.quasi.quasis.map((q) => {
-                    return q.value.raw;
-                });
+                // Interleave template string parts with variable index placeholders
+                // Ex.
+                //      `color: ${colorVar};`
+                // to
+                //      [ "color:", "__BEMED_VAR_0__", ";" ]
+                //
+                let cssArray = path.node.quasi.quasis
+                    .map((q) => {
+                        return q.value.raw as string;
+                    })
+                    .flatMap((value, index, array) => {
+                        if (array.length - 1 !== index) {
+                            return [value, `__BEMED_VAR_${index}__`];
+                        }
+
+                        return value;
+                    });
 
                 if (opts.precompile) {
                     if (!adaptedStylis) {
@@ -365,29 +370,39 @@ export default function bemedBabelPlugin(
                         adaptedStylis = adaptStylis(finalStylis);
                     }
 
-                    const styleString = cssArray.join("__BEMED_VAR__");
+                    const styleString = cssArray.join("");
+
                     const cached = CSS_CACHE.get(styleString);
                     if (cached) {
                         cssArray = cached;
                     } else {
-                        cssArray = adaptedStylis(
-                            "__BEMED__",
-                            styleString,
-                        ).split("__BEMED_VAR__");
+                        const newCSS = adaptedStylis("__BEMED__", styleString);
+                        cssArray = newCSS.split(/(__BEMED_VAR_[0-9]+__)/);
                         CSS_CACHE.set(styleString, cssArray);
                     }
                 }
 
+                // Put template expressions to the placeholders in the array
+                //
+                //      [ "color:", "__BEMED_VAR_0__", ";" ]
+                //  to
+                //      [ "color:", colorVar, ";" ]
+                //
+                const array = t.arrayExpression(
+                    cssArray.map((s) => {
+                        const match = /__BEMED_VAR_([0-9]+)__/.exec(s);
+                        if (match?.[1]) {
+                            const index = Number(match[1]);
+                            return path.node.quasi.expressions[index];
+                        }
+
+                        return t.stringLiteral(s);
+                    }),
+                );
+
+                // [..., ...].join("")
                 const arrayJoin = t.callExpression(
-                    t.memberExpression(
-                        createArrayExpression(
-                            t,
-                            cssArray,
-                            path.node.quasi.expressions,
-                            [],
-                        ),
-                        t.identifier("join"),
-                    ),
+                    t.memberExpression(array, t.identifier("join")),
                     [t.stringLiteral("")],
                 );
 

@@ -352,6 +352,33 @@ test("separates rules with /*|*/ with media queries", () => {
     );
 });
 
+test("precompile variables with prefixer", () => {
+    const code = lines(
+        'import { css } from "react-bemed/css";',
+        "css`",
+        "   flex: ${variable};",
+        "   color: ${red};",
+        "`",
+    );
+
+    const res = runPlugin(code, {
+        pluginOptions: {
+            precompile: true,
+            sourceMap: false,
+            stylis: new Stylis({
+                prefix: true,
+            }),
+        },
+    });
+
+    expect(cleanSourceMapComment(res.code)).toEqual(
+        lines(
+            'import { css } from "react-bemed/css-precompiled";',
+            'css(["__BEMED__{-webkit-flex:", variable, ";-ms-flex:", variable, ";flex:", variable, ";color:", red, ";}"].join(""), "");',
+        ),
+    );
+});
+
 test("adds name automatically", () => {
     const code = dedent`
     import { bemed } from "react-bemed";
