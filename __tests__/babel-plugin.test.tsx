@@ -22,8 +22,6 @@ interface SourceMap {
     sourcesContent: string[];
 }
 
-process.env.BEMED_MEDIA_QUERY_VARS = "1";
-
 function cleanSourceMapComment(s: string | undefined | null) {
     return (s || "").replace(SOUREMAP_RE, "sourceMappingURL=SOURCEMAP");
 }
@@ -174,34 +172,6 @@ test("can precompile variables media queries", () => {
         lines(
             'import { css } from "react-bemed/css-precompiled";',
             'const foo = css(["@media (", variable, "){__BEMED__{color:red;}}"].join(""), "");',
-        ),
-    );
-});
-
-test("can use variable in the media query position", () => {
-    const code = lines(
-        'import { css } from "react-bemed/css";',
-        "const foo = css`",
-        "    ${variable} {",
-        "       div { color: red; }",
-        "       p { ${other} { color: blue; } }",
-        "    }",
-        "`",
-    );
-
-    const res = runPlugin(code, {
-        pluginOptions: {
-            precompile: true,
-            sourceMap: false,
-        },
-    });
-
-    console.log(res.code);
-
-    expect(res.code).toEqual(
-        lines(
-            'import { css } from "react-bemed/css-precompiled";',
-            'const foo = css([variable, " {__BEMED__ div{color:red;}", other, " {__BEMED__ p{color:blue;}}}"].join(""), "");',
         ),
     );
 });

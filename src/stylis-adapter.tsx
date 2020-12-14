@@ -58,49 +58,6 @@ export function createSelectorsPlugin() {
     };
 }
 
-function replaceAll(str: string, find: string, replacement: string) {
-    return str.split(find).join(replacement);
-}
-
-const MQ_PLACEHOlDER = "@media(PLACEHOLDER){";
-
-/**
- * Workaround for following variable usage:
- *
- *     ${mediaquery.large} {
- *       padding: 10px;
- *     }
- *
- *  Stylis does not detect this to be a media query so it just removes it. This
- *  plugin makes it look like a media query for the compilation
- */
-export function fixFullMediaQueryVariable() {
-    let replacePlaceholder = false;
-
-    return (
-        context: StylisContext,
-        content: string,
-        selectors: string,
-        parent: string,
-        line: number,
-        column: number,
-        length: number,
-    ) => {
-        if (context === ContextTypes.PREPARATION) {
-            const pat = /__BEMED_VAR__ +\{/g;
-            return content.replace(pat, () => {
-                replacePlaceholder = true;
-                return MQ_PLACEHOlDER;
-            });
-        }
-
-        if (replacePlaceholder && context === ContextTypes.POST_PROCESS) {
-            replacePlaceholder = false;
-            return replaceAll(content, MQ_PLACEHOlDER, "__BEMED_VAR__ {");
-        }
-    };
-}
-
 /**
  * Borrowed from https://github.com/thysultan/stylis.js/blob/4561e9bc830fccf1cb0e9e9838488b4d1d5cebf5/plugins/rule-sheet/index.js#L29
  */
@@ -166,9 +123,6 @@ export function createInsertRule(insertRule: (rule: string) => void) {
  */
 export function adaptStylis(stylis: typeof Stylis): CSSCompiler {
     const rules: string[] = [];
-    if (process.env.BEMED_MEDIA_QUERY_VARS) {
-        stylis.use(fixFullMediaQueryVariable() as any);
-    }
     stylis.use(createSelectorsPlugin() as any);
     stylis.use(
         createInsertRule((rule) => {
