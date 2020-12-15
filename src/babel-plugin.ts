@@ -6,10 +6,6 @@ import convert from "convert-source-map";
 import Stylis from "stylis";
 import { adaptStylis } from "./stylis-adapter";
 
-const customStylis = new Stylis({
-    prefix: process.env.NODE_ENV === "production",
-});
-
 declare const process: any;
 
 interface BabelFile {
@@ -24,6 +20,7 @@ export interface BemedBabelPluginOptions {
     target?: string;
     runtime?: string;
     stylis?: typeof stylis;
+    stylisOptions?: ConstructorParameters<typeof Stylis>[0];
     precompile?: boolean;
     sourceMap?: boolean;
     assertUniqueNames?: boolean;
@@ -366,7 +363,12 @@ export default function bemedBabelPlugin(
 
                 if (opts.precompile) {
                     if (!adaptedStylis) {
-                        const finalStylis = opts?.stylis ?? customStylis;
+                        const finalStylis =
+                            opts?.stylis ??
+                            new Stylis({
+                                prefix: process.env.NODE_ENV === "production",
+                                ...opts?.stylisOptions,
+                            });
                         adaptedStylis = adaptStylis(finalStylis);
                     }
 
