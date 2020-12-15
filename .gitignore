@@ -2,3 +2,4 @@
 /package-lock.json
 /lib
 /example/dist
+*.tgz
