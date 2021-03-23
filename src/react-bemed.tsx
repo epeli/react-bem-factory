@@ -380,7 +380,7 @@ type BEMBlock<Block, Elements extends { [key: string]: ElementBlock }> = Block &
     BEMComponentProperties &
     Elements;
 
-interface ElementBlock {
+export interface ElementBlock {
     (props: any): React.ReactNode;
     asElement(
         elementName: string,
